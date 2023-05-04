@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="22E252" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="ChapterMO" representedClassName=".ChapterMO" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ItemMO" inverseName="chapter" inverseEntity="ItemMO"/>
+    </entity>
+    <entity name="ItemMO" representedClassName=".ItemMO" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="sentiment" optional="YES" attributeType="String"/>
+        <attribute name="text" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <relationship name="chapter" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ChapterMO" inverseName="items" inverseEntity="ChapterMO"/>
+        <relationship name="mediaAlbum" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MediaAlbumMO" inverseName="item" inverseEntity="MediaAlbumMO"/>
+    </entity>
+    <entity name="MediaAlbumMO" representedClassName="MediaAlbumMO" syncable="YES">
+        <relationship name="attachments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MediaMO" inverseName="album" inverseEntity="MediaMO"/>
+        <relationship name="item" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ItemMO" inverseName="mediaAlbum" inverseEntity="ItemMO"/>
+    </entity>
+    <entity name="MediaMO" representedClassName="MediaMO" syncable="YES">
+        <attribute name="data" optional="YES" attributeType="Binary"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MediaAlbumMO" inverseName="attachments" inverseEntity="MediaAlbumMO"/>
+    </entity>
+</model>
