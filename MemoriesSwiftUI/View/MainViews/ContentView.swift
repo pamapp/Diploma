@@ -11,7 +11,7 @@ import Photos
 struct ContentView: View {
     
     // MARK: - Variables
-    @ObservedObject var chapterViewModel: ChapterViewModel
+    @ObservedObject var chapterViewModel: ChapterVM
     @ObservedObject var audioPlayer = AudioPlayerVM()
     
     @State var scrollToBottom = false

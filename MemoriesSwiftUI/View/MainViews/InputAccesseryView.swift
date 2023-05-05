@@ -11,8 +11,8 @@ import AVKit
 
 struct InputAccesseryView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @ObservedObject var itemViewModel: ItemViewModel
-    @ObservedObject var chapterViewModel: ChapterViewModel
+    @ObservedObject var itemViewModel: ItemVM
+    @ObservedObject var chapterViewModel: ChapterVM
     @ObservedObject var cameraModel: CameraVM
     @ObservedObject var audioRecorder: AudioRecorderVM
     @ObservedObject var audioPlayerVM: AudioPlayerVM
@@ -34,9 +34,9 @@ struct InputAccesseryView: View {
     
     var chapter: ChapterMO
     
-    init(chapter: ChapterMO, audioPlayer: AudioPlayerVM, chapterVM: ChapterViewModel, isKeyboardPresented: Binding<Bool>) {
-        self.itemViewModel = ItemViewModel(chapter: chapter)
-        self.audioRecorder = AudioRecorderVM(itemModel: ItemViewModel(chapter: chapter))
+    init(chapter: ChapterMO, audioPlayer: AudioPlayerVM, chapterVM: ChapterVM, isKeyboardPresented: Binding<Bool>) {
+        self.itemViewModel = ItemVM(chapter: chapter)
+        self.audioRecorder = AudioRecorderVM(itemModel: ItemVM(chapter: chapter))
         self.audioPlayerVM = audioPlayer
         self.cameraModel = CameraVM()
         self.chapter = chapter
@@ -105,9 +105,9 @@ struct InputAccesseryView: View {
                                                 selectedItems.removeAll(where: { $0 == item })
                                             }
                                         }, label: {
-                                            Image("cross")
+                                            Image("cross-white")
                                         })
-                                        .offset(x: 17, y: -17)
+                                        .offset(x: 18, y: -18)
                                     )
                                 
                             }

@@ -63,6 +63,7 @@
 		91CCE4F729A0E61E005C6441 /* MemoriesSwiftUIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCE4F629A0E61E005C6441 /* MemoriesSwiftUIUITests.swift */; };
 		91CCE4F929A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCE4F829A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift */; };
 		91CCE50929A0E7B4005C6441 /* InputAccesseryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCE50829A0E7B4005C6441 /* InputAccesseryView.swift */; };
+		91E2ACE22A0569B40043BE42 /* CustomLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E2ACE12A0569B40043BE42 /* CustomLineChartView.swift */; };
 		91F6F46429B508CC00DCF329 /* MemoriesSwiftUI.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 91F6F46229B508CC00DCF329 /* MemoriesSwiftUI.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
@@ -128,6 +129,7 @@
 		91CCE4F629A0E61E005C6441 /* MemoriesSwiftUIUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoriesSwiftUIUITests.swift; sourceTree = "<group>"; };
 		91CCE4F829A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoriesSwiftUIUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		91CCE50829A0E7B4005C6441 /* InputAccesseryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccesseryView.swift; sourceTree = "<group>"; };
+		91E2ACE12A0569B40043BE42 /* CustomLineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLineChartView.swift; sourceTree = "<group>"; };
 		91F6F46329B508CC00DCF329 /* MemoriesSwiftUI.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MemoriesSwiftUI.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -159,6 +161,7 @@
 		9107ADA329C754590030A3C7 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				91E2ACDE2A0414FD0043BE42 /* ViewModifiers */,
 				912BBD3129F959DE003BFD65 /* UIViewRepresentable */,
 				9107ADA629C7560E0030A3C7 /* MainViews */,
 			);
@@ -168,10 +171,10 @@
 		9107ADA629C7560E0030A3C7 /* MainViews */ = {
 			isa = PBXGroup;
 			children = (
+				91E2ACE02A0569960043BE42 /* Statistics */,
 				91CCE4D829A0E61C005C6441 /* ContentView.swift */,
 				91B380BC29A120D7003163AB /* ChapterCellView.swift */,
 				91CCE50829A0E7B4005C6441 /* InputAccesseryView.swift */,
-				91B04C0829DDF9CA003B29AB /* StatsView.swift */,
 				9107ADA429C7548D0030A3C7 /* CameraView.swift */,
 				917D171929E6CBD4009B9E8A /* MemoryCells */,
 			);
@@ -216,7 +219,6 @@
 				91B380BE29A240B8003163AB /* Date+Extensions.swift */,
 				91B380C029A243E3003163AB /* Font+Extensions.swift */,
 				91B380C629A267D1003163AB /* View+Extensions.swift */,
-				917D171A29E6CE55009B9E8A /* ViewModifiers.swift */,
 				91769A7029A4F0F00087E769 /* String+Extensions.swift */,
 				91B380C829A26D0F003163AB /* UIApplication+Extensions.swift */,
 				912B14562A012D310081ED84 /* Array+Extensions.swift */,
@@ -309,6 +311,23 @@
 				91CCE4F829A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift */,
 			);
 			path = MemoriesSwiftUIUITests;
+			sourceTree = "<group>";
+		};
+		91E2ACDE2A0414FD0043BE42 /* ViewModifiers */ = {
+			isa = PBXGroup;
+			children = (
+				917D171A29E6CE55009B9E8A /* ViewModifiers.swift */,
+			);
+			path = ViewModifiers;
+			sourceTree = "<group>";
+		};
+		91E2ACE02A0569960043BE42 /* Statistics */ = {
+			isa = PBXGroup;
+			children = (
+				91B04C0829DDF9CA003B29AB /* StatsView.swift */,
+				91E2ACE12A0569B40043BE42 /* CustomLineChartView.swift */,
+			);
+			path = Statistics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -450,6 +469,7 @@
 				91B380C929A26D0F003163AB /* UIApplication+Extensions.swift in Sources */,
 				91B380BD29A120D7003163AB /* ChapterCellView.swift in Sources */,
 				912B14532A012AD70081ED84 /* StatsVM.swift in Sources */,
+				91E2ACE22A0569B40043BE42 /* CustomLineChartView.swift in Sources */,
 				9107ADA229C7543A0030A3C7 /* CameraVM.swift in Sources */,
 				917D171829E6C5EB009B9E8A /* CollageLayoutView.swift in Sources */,
 				91CCE4E029A0E61D005C6441 /* Persistence.swift in Sources */,

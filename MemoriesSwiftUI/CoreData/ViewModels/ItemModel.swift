@@ -10,7 +10,7 @@ import CoreData
 import CoreML
 import SwiftUI
 
-class ItemViewModel: ObservableObject {
+class ItemVM: ObservableObject {
     private let viewContext = PersistenceController.shared.viewContext
     @Published var items: [ItemMO] = []
     var chapter: ChapterMO

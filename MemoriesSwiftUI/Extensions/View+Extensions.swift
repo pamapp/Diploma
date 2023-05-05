@@ -27,6 +27,10 @@ extension View {
         self.modifier(MemoryTime())
     }
     
+    public func memoryAudioTimeStyle() -> some View {
+        self.modifier(MemoryTime())
+    }
+    
     public func chapterYearStyle() -> some View {
         self.modifier(ChapterYear())
     }

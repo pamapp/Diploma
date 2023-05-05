@@ -167,7 +167,6 @@ struct AutosizingTF : UIViewRepresentable {
         
         // - Send Button -
         
-//        sendButton.isEnabled = true
         sendButton.isHighlighted = false
         sendButton.setImage(UIImage(named: text.isEmpty ? "send-inactive" : "send-active"), for: .normal)
         sendButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 32), forImageIn: .normal)
@@ -250,19 +249,5 @@ struct AutosizingTF : UIViewRepresentable {
 class CustomView: UIView {
     override var intrinsicContentSize: CGSize {
         return CGSize.zero
-    }
-}
-
-extension UIImage {
-    func roundedImage(withCornerRadius radius: CGFloat) -> UIImage {
-        let rect = CGRect(origin: .zero, size: self.size)
-        UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
-        let context = UIGraphicsGetCurrentContext()!
-        context.addPath(UIBezierPath(roundedRect: rect, cornerRadius: radius).cgPath)
-        context.clip()
-        self.draw(in: rect)
-        let roundedImage = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
-        return roundedImage
     }
 }

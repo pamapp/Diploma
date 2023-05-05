@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-class ChapterViewModel: NSObject, ObservableObject, NSFetchedResultsControllerDelegate {
+class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate {
     private let controller : NSFetchedResultsController<ChapterMO>
     public var alert = false
     public var alertMessage = ""
@@ -143,7 +143,6 @@ class ChapterViewModel: NSObject, ObservableObject, NSFetchedResultsControllerDe
             return "inactive-long-time"
         }
     }
-    
 }
 
 //

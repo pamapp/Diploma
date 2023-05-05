@@ -23,9 +23,9 @@ class AudioRecorderVM: NSObject,ObservableObject {
     
     @Published var isRecording = false
     
-    var itemModel: ItemViewModel
+    var itemModel: ItemVM
 
-    init(itemModel: ItemViewModel) {
+    init(itemModel: ItemVM) {
         self.itemModel = itemModel
     }
     

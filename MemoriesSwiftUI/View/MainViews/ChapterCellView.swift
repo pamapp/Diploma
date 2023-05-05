@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ChapterCellView: View {
-    @ObservedObject var itemViewModel: ItemViewModel
+    @ObservedObject var itemViewModel: ItemVM
     private var chapterDate: String
     private var chapterNum: Int
     var searchText: String
@@ -25,7 +25,7 @@ struct ChapterCellView: View {
     let cellWidth = UIScreen.main.bounds.width - 32
     
     init(chapter: ChapterMO, searchText: String) {
-        self.itemViewModel = ItemViewModel(chapter: chapter)
+        self.itemViewModel = ItemVM(chapter: chapter)
         self.chapterDate = chapter.safeDateContent.getFormattedDateString(format: "d MMMM. EEEE")
         self.chapterNum = chapter.safeContainsNumber
         self.searchText = searchText

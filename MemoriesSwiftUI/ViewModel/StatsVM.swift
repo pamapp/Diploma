@@ -13,10 +13,9 @@ class StatsVM: ObservableObject {
     @Published var popularEmojies: Array<Dictionary<String, Int>.Element>.SubSequence = []
     @Published var moodDynamics: [StepCount] = []
     
-    
-    var chapterModel: ChapterViewModel
+    var chapterModel: ChapterVM
 
-    init(chapterModel: ChapterViewModel) {
+    init(chapterModel: ChapterVM) {
         self.chapterModel = chapterModel
         updateMoodDynamics()
         updatePopularWords()
@@ -41,13 +40,14 @@ class StatsVM: ObservableObject {
         for chapter in chapterModel.chapters {
             var itemsCountPerChapter = 0.0
             var itemsSentimentPerChapter = 0.0
-            for item in chapter.itemsArray {
-                itemsSentimentPerChapter += item.safeSentimentValue
+            if !chapter.itemsArray.isEmpty {
+                for item in chapter.itemsArray {
+                    itemsSentimentPerChapter += item.safeSentimentValue
+                }
+                itemsCountPerChapter += Double(chapter.itemsArray.count)
+                moodDynamics.append(StepCount(weekday: chapter.safeDateContent, value: itemsSentimentPerChapter / itemsCountPerChapter))
             }
-            itemsCountPerChapter += Double(chapter.itemsArray.count)
-            moodDynamics.append(StepCount(weekday: chapter.safeDateContent, value: itemsSentimentPerChapter / itemsCountPerChapter))
         }
-
         self.moodDynamics = moodDynamics
     }
     
@@ -62,7 +62,7 @@ class StatsVM: ObservableObject {
     }
 }
 
-struct StepCount: Identifiable {
+struct StepCount: Identifiable, Equatable {
     let id = UUID()
     let weekday: Date
     let value: Double

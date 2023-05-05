@@ -24,3 +24,13 @@ extension Image {
             .cornerRadius(2)
     }
 }
+
+extension UIImage {
+    func scaled(to size: CGSize, scale displayScale: CGFloat = UIScreen.main.scale) -> UIImage {
+        let format = UIGraphicsImageRendererFormat.preferred()
+        format.scale = displayScale
+        return UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+}
