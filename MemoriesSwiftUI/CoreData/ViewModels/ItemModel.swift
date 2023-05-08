@@ -4,6 +4,7 @@
 //
 //  Created by Alina Potapova on 18.02.2023.
 //
+
 import NaturalLanguage
 import Foundation
 import CoreData

@@ -43,7 +43,7 @@ struct AutosizingTF : UIViewRepresentable {
                 generator.impactOccurred()
                 
                 UIView.transition(with: parent.sendButton, duration: 0.1, options: .transitionCrossDissolve, animations: {
-                    self.parent.sendButton.setImage(UIImage(named: "send-inactive"), for: .normal)
+                    self.parent.sendButton.setImage(UIImage(named: UI.Buttons.send_inactive), for: .normal)
                 }, completion: nil)
                 
                 parent.send()
@@ -78,6 +78,10 @@ struct AutosizingTF : UIViewRepresentable {
         func textViewDidChange(_ textView: UITextView) {
             parent.text = textView.text
             parent.containerHeight = textView.contentSize.height
+            
+            textView.attributedText = textView.text.resolveHashTags(color: UIColor(.c6))
+            textView.linkTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.red]
+            
         }
         
         func textViewDidEndEditing(_ textView: UITextView) {
@@ -109,8 +113,8 @@ struct AutosizingTF : UIViewRepresentable {
     @Binding var containerHeight : CGFloat
     var isFirstResponder: Bool = false
     
-    var hint : String = "Дорогой дневник,"
-    var drafts : String = "Черновик"
+    var hint : String = UI.Strings.dear_diary
+    var drafts : String = UI.Strings.draft
     
     var opened : ()->()
     var send : ()->()
@@ -144,31 +148,30 @@ struct AutosizingTF : UIViewRepresentable {
         // - Media Button -
     
         addMediaButton.isEnabled = true
-        addMediaButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
-        addMediaButton.tintColor = .black
+        addMediaButton.setImage(UIImage(named: UI.Icons.attachments), for: .normal)
+        addMediaButton.tintColor = UIColor(.c1)
         addMediaButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 20), forImageIn: .normal)
         addMediaButton.addTarget(context.coordinator, action: #selector(context.coordinator.handleMedia), for: .touchUpInside)
         
         // - Tag Button -
         
         tagButton.isEnabled = true
-        tagButton.setImage(UIImage(systemName: "number"), for: .normal)
-        tagButton.tintColor = .black
+        tagButton.setImage(UIImage(named: UI.Icons.tag), for: .normal)
+        tagButton.tintColor = UIColor(.c1)
         tagButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 20), forImageIn: .normal)
         tagButton.addTarget(context.coordinator, action: #selector(context.coordinator.handleTag), for: .touchUpInside)
 
-        
         // - Clear Button -
         
         clearButton.isEnabled = true
-        clearButton.setImage(UIImage(named: "trash"), for: .normal)
+        clearButton.setImage(UIImage(named: UI.Icons.trash), for: .normal)
         clearButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 20), forImageIn: .normal)
         clearButton.addTarget(context.coordinator, action: #selector(context.coordinator.handleClearAll), for: .touchUpInside)
         
         // - Send Button -
         
         sendButton.isHighlighted = false
-        sendButton.setImage(UIImage(named: text.isEmpty ? "send-inactive" : "send-active"), for: .normal)
+        sendButton.setImage(UIImage(named: text.isEmpty ? UI.Buttons.send_inactive : UI.Buttons.send_active), for: .normal)
         sendButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 32), forImageIn: .normal)
         sendButton.addTarget(context.coordinator, action: #selector(context.coordinator.handleSend), for: .touchUpInside)
         
@@ -219,7 +222,10 @@ struct AutosizingTF : UIViewRepresentable {
                 context.coordinator.parent.clearButton.isHidden = false
             }
             
-            context.coordinator.parent.sendButton.setImage(UIImage(named: context.coordinator.parent.text.isEmpty ? "send-inactive" : "send-active"), for: .normal)
+            context.coordinator.parent.sendButton.setImage(
+                UIImage(named: context.coordinator.parent.text.isEmpty ? UI.Buttons.send_inactive : UI.Buttons.send_active)
+                , for: .normal
+            )
             
             if context.coordinator.parent.clearButton.isSelected {
                 uiView.text = ""
@@ -244,6 +250,8 @@ struct AutosizingTF : UIViewRepresentable {
         }
         
     }
+    
+    
 }
 
 class CustomView: UIView {

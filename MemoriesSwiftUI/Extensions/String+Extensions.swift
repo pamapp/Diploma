@@ -13,11 +13,20 @@ extension String {
         var output: Text = Text("")
         
         for word in words {
-            if word.hasPrefix("#") { // Pick out hash in words
-                output = output + Text(" ") + Text(String(word))
-                    .foregroundColor(color) // Add custom styling here
+            if word.hasPrefix("#") {
+                if word == words.first {
+                    output = Text(String(word))
+                        .foregroundColor(color)
+                } else {
+                    output = output + Text(" ") + Text(String(word))
+                        .foregroundColor(color)
+                }
             } else {
-                output = output + Text(" ") + Text(String(word))
+                if word == words.first {
+                    output = Text(String(word))
+                } else {
+                    output = output + Text(" ") + Text(String(word))
+                }
             }
         }
         return output

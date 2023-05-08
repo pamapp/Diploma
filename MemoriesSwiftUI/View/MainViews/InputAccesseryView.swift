@@ -70,7 +70,7 @@ struct InputAccesseryView: View {
                         }
                     } label: {
                         HStack(spacing: 0) {
-                            Image("attachment")
+                            Image(UI.Icons.attachments)
                                 .padding(16)
                                 .foregroundColor(.cW)
                             Rectangle()
@@ -79,10 +79,10 @@ struct InputAccesseryView: View {
                         }
                     }
                     .alert(isPresented: $showAlert) {
-                        Alert(title: Text("Доступ к библиотеке фотографий"),
-                              message: Text("Пожалуйста, предоставьте доступ в настройках, чтобы продолжить"),
-                              primaryButton: .default(Text("Отменить")),
-                              secondaryButton: .default(Text("Настройки"), action: {
+                        Alert(title: Text(UI.Alearts.alert_title),
+                              message: Text(UI.Alearts.message_text),
+                              primaryButton: .default(Text(UI.Alearts.primaryBtn_text)),
+                              secondaryButton: .default(Text(UI.Alearts.secondaryBtn_text), action: {
                                     guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
                                           UIApplication.shared.open(settingsURL)
                               }))
@@ -105,7 +105,7 @@ struct InputAccesseryView: View {
                                                 selectedItems.removeAll(where: { $0 == item })
                                             }
                                         }, label: {
-                                            Image("cross-white")
+                                            Image(UI.Icons.cross_white)
                                         })
                                         .offset(x: 18, y: -18)
                                     )
@@ -113,7 +113,7 @@ struct InputAccesseryView: View {
                             }
                             Spacer()
                         }
-//                        .transition(.opacity)
+                        .transition(.opacity)
                         .padding(.top, 28)
                         .padding(.leading, 16)
                         .transition(.opacity)
@@ -149,7 +149,7 @@ struct InputAccesseryView: View {
                                 .frame(width: 2, height: 44)
                                 .foregroundColor(.c3)
 
-                            Image("video-message")
+                            Image(UI.Icons.audio_message)
                                 .padding(16)
                                 .foregroundColor(.cW)
                         }

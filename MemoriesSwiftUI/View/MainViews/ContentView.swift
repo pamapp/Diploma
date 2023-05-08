@@ -89,11 +89,9 @@ struct ContentView: View {
                                                 showFloatingButton = false
                                             }
                                         } else {
-//                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                                withAnimation {
-                                                    showFloatingButton = true
-                                                }
-//                                            }
+                                            withAnimation {
+                                                showFloatingButton = true
+                                            }
                                         }
                                     }
                                 )
@@ -145,7 +143,7 @@ struct ContentView: View {
                                 Button(action: {
                                     scrollToBottom.toggle()
                                 }, label: {
-                                    Image("scroll-to-bottom")
+                                    Image(UI.Buttons.scroll_to_bottom)
                                         .font(.system(size: 25))
                                         .foregroundColor(.black)
                                     
@@ -202,14 +200,12 @@ struct ContentView: View {
                     Button(action: {
                         self.isSearchPresented.toggle()
                     }) {
-                        Image("search")
+                        Image(UI.Icons.search)
                     }
             )
             .navigationBarTitle("Апрель", displayMode: .inline)
             .onAppear {
-//                chapterViewModel.addTestSet()
                 chapterViewModel.addChapter()
-//                chapterViewModel.deleteAll()
             }
         }
     }

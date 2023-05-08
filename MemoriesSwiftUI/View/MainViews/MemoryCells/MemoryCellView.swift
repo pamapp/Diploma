@@ -16,7 +16,7 @@ struct MemoryEmptyCellView: View {
                 .foregroundColor(.c8)
             
             VStack {
-                Text("Сегодня записей нет")
+                Text(UI.Strings.empty_chapter_text)
                     .font(.memoryTextBase())
                     .foregroundColor(.c7)
             }
@@ -34,7 +34,6 @@ struct MemoryCellView: View {
         .publish(every: 0.01, on: .main, in: .common)
         .autoconnect()
     
-    
     var memory: ItemMO
     
     let columns = [
@@ -46,9 +45,7 @@ struct MemoryCellView: View {
         self.memory = memory
         self.audioPlayer = AudioPlayerVM()
         
-        let thumbImage : UIImage = UIImage(named: "drower")!
-//        let size = CGSizeMake(thumbImage.size.width * 0.4, thumbImage.size.height * 0.4)
-        
+        let thumbImage : UIImage = UIImage(named: UI.Icons.drower)!        
         UISlider.appearance().minimumTrackTintColor = UIColor(.c3)
         UISlider.appearance().maximumTrackTintColor = UIColor(.c4)
         UISlider.appearance().setThumbImage(thumbImage, for: .normal)
@@ -73,7 +70,7 @@ struct MemoryCellView: View {
                     }
 
                     if memory.safeType == "text" {
-                        Text(memory.safeText)
+                        memory.safeText.textWithHashtags(color: .c6)
                             .memoryTextBaseStyle()
                             .textSelection(.enabled)
                     }
@@ -91,7 +88,7 @@ struct MemoryCellView: View {
                             CollageLayoutThree(images: memory.mediaAlbum?.attachmentsArray ?? [])
                         }
                         
-                        Text(memory.safeText)
+                        memory.safeText.textWithHashtags(color: .c6)
                             .memoryTextImageStyle()
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
@@ -117,8 +114,6 @@ struct MemoryCellView: View {
                     }
                 }
             }
-            
-            
         }
     }
     
@@ -137,7 +132,7 @@ struct MemoryCellView: View {
 //                    audioPlayer.resumePlayback()
                 }
             } label: {
-                Image(audioPlayer.isPlaying ? "pause-audio" : "play-audio")
+                Image(audioPlayer.isPlaying ? UI.Buttons.pause_audio : UI.Buttons.play_audio)
             }
 
             Slider(value: $sliderValue, in: 0...((audioPlayer.currentlyPlaying != nil) ? audioPlayer.audioPlayer!.duration : 0)) { dragging in
@@ -168,77 +163,3 @@ struct MemoryCellView: View {
         }
     }
 }
-
-//
-//struct MemoryVoiceView: View {
-//    @ObservedObject var audioPlayer: AudioPlayerVM
-//    @State var sliderValue: Double = 0.0
-//    @State private var isDragging = false
-//
-//    var media: MediaMO
-//
-//    let timer = Timer
-//        .publish(every: 0.01, on: .main, in: .common)
-//        .autoconnect()
-//
-//    init(media: MediaMO, audioPlayer: AudioPlayerVM) {
-//        self.media = media
-//        self.audioPlayer = audioPlayer
-//
-//        let thumbImage : UIImage = UIImage(named: "Drower")!
-//        let size = CGSizeMake( thumbImage.size.width * 0.4, thumbImage.size.height * 0.4 )
-//        UISlider.appearance().minimumTrackTintColor = UIColor(.c3)
-//        UISlider.appearance().maximumTrackTintColor = UIColor(.c4)
-//        UISlider.appearance().setThumbImage(thumbImage.scaled(to: size), for: .normal)
-//    }
-//
-//    var body: some View {
-//        HStack {
-//            Button {
-//                if audioPlayer.isPlaying {
-//                    // Pause
-//                    audioPlayer.pausePlayback()
-//                } else {
-//                    // Play
-//                    audioPlayer.startPlayback(recording: media )
-//
-////                    audioPlayer.resumePlayback()
-//                }
-//            } label: {
-//                Image(audioPlayer.isPlaying ? "pause-audio" : "play-audio")
-//            }
-//
-//            Slider(value: $sliderValue, in: 0...((audioPlayer.currentlyPlaying != nil) ? audioPlayer.audioPlayer!.duration : 0)) { dragging in
-//                print("Editing the slider: \(dragging)")
-//                isDragging = dragging
-//                if !dragging {
-//                    audioPlayer.audioPlayer!.currentTime = sliderValue
-//                }
-//            }
-//            .tint(.c3)
-//
-//            if let recordingData = media.data, let duration = getDuration(of: recordingData) {
-//                Text(DateComponentsFormatter.positional.string(from: duration) ?? "0:00")
-//                    .font(.caption2)
-//                    .foregroundColor(.secondary)
-//            }
-//        }
-//        .onAppear {
-//            sliderValue = 0
-//        }
-//        .onReceive(timer) { _ in
-//            guard let player = audioPlayer.audioPlayer, !isDragging else { return }
-//            sliderValue = player.currentTime
-//        }
-//    }
-//
-//    func getDuration(of recordingData: Data) -> TimeInterval? {
-//        do {
-//            return try AVAudioPlayer(data: recordingData).duration
-//        } catch {
-//            print("Failed to get the duration for recording on the list: Recording")
-//            return nil
-//        }
-//    }
-//}
-//

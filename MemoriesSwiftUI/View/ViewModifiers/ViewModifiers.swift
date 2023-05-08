@@ -33,7 +33,7 @@ struct MemoryTextBase: ViewModifier {
         content
             .font(.memoryTextBase())
             .foregroundColor(.c1)
-            .fixedSize(horizontal: false, vertical: true)
+//            .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -46,7 +46,7 @@ struct MemoryTextImage: ViewModifier {
             .padding(.leading, 8)
             .padding(.trailing, 16)
             .padding(.vertical, 8)
-            .fixedSize(horizontal: false, vertical: true)
+//            .fixedSize(horizontal: false, vertical: true)
     }
 }
 

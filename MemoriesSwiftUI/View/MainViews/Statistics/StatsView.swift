@@ -56,14 +56,14 @@ struct StatsView: View {
                 .zIndex(1)
                 
                 VStack(spacing: 32) {
-                    ChartView(title: "График настроя",
-                              subtitle: "Показывает общее настроение ваших воспоминаний. Это помогает остледить уровень эмоций.")
+                    ChartView(title: UI.Strings.mood_chart_title,
+                              text: UI.Strings.mood_chart_text)
 
-                    TopEmojiView(title: "Топ Emoji",
+                    TopEmojiView(title: UI.Strings.emoji_top,
                                  sequence: statsViewModel.popularEmojies)
 
-                    TopWordsView(title: "Топ 10 слов",
-                                 subtitle: "Это может помочь Вам лучше отслеживать ваши чувства и переживания",
+                    TopWordsView(title: UI.Strings.words_top_title,
+                                 text: UI.Strings.words_top_text,
                                  sequence: statsViewModel.popularWords)
                 }
                 .background(Color.cW.edgesIgnoringSafeArea(.all))
@@ -92,9 +92,9 @@ struct StatsView: View {
         .opacity(getOpacity())
     }
     
-    func ChartView(title: String, subtitle: String) -> some View {
+    func ChartView(title: String, text: String) -> some View {
         VStack {
-            sectionHeaderItem(title: title, subtitle: subtitle)
+            sectionHeaderItem(title: title, subtitle: text)
 
             ZStack {
                 chartBody
@@ -116,12 +116,12 @@ struct StatsView: View {
     }
     
     @ViewBuilder
-    func TopWordsView(title: String, subtitle: String, sequence: Array<Dictionary<String, Int>.Element>.SubSequence) -> some View {
+    func TopWordsView(title: String, text: String, sequence: Array<Dictionary<String, Int>.Element>.SubSequence) -> some View {
         var width = CGFloat.zero
         var height = CGFloat.zero
         
         VStack(spacing: 8) {
-            sectionHeaderItem(title: title, subtitle: subtitle)
+            sectionHeaderItem(title: title, subtitle: text)
             
             VStack(spacing: 0) {
                 GeometryReader { geometry in
@@ -187,7 +187,7 @@ struct StatsView: View {
                 Button {
                     self.presentationMode.wrappedValue.dismiss()
                 } label: {
-                    Image("cross-white")
+                    Image(UI.Icons.cross_white)
                 }
             }
         }
