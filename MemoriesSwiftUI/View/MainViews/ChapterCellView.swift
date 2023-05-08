@@ -23,6 +23,7 @@ struct ChapterCellView: View {
     }
     
     let cellWidth = UIScreen.main.bounds.width - 32
+    @State var cellHeight: CGFloat = 0
     
     init(chapter: ChapterMO, searchText: String) {
         self.itemViewModel = ItemVM(chapter: chapter)
@@ -42,48 +43,70 @@ struct ChapterCellView: View {
                 .background(Color.c8)
                 .cornerRadius(12)
             
-            VStack(alignment: .leading, spacing: 16) {
-                if chapterNum != 0 {
-                    ForEach(searchResult, id: \.self) { item in
-                        MemoryCellView(memory: item)
-                            .frame(width: cellWidth - 32)
-                            .gesture(
-                                DragGesture()
-                                    .onEnded { value in
-                                        if value.translation.width < -50 {
-                                            withAnimation {
-                                                itemViewModel.deleteItem(item: item)
-                                            }
+                VStack(alignment: .leading, spacing: 16) {
+                    if chapterNum != 0 {
+                        ForEach(searchResult, id: \.self) { item in
+//                            SwipeItem(content: {
+                                MemoryCellView(memory: item)
+                                    .frame(width: cellWidth - 32)
+                                    .background(
+                                        GeometryReader { proxy in
+                                            Color.clear
+                                                .onAppear {
+                                                    let height = proxy.size.height
+                                                    self.cellHeight = height
+                                                }
                                         }
-                                    }
-                            )
-                        
+                                    )
+//                                     },
+//                                     left: {
+//                                        ZStack {
+//                                            Rectangle()
+//                                                .fill(Color.orange)
+//
+//                                            Image(systemName: "pencil.circle")
+//                                                .foregroundColor(.white)
+//                                                .font(.title)
+//                                        }
+//                                     },
+//                                     right: {
+//                                        ZStack {
+//                                            Rectangle()
+//                                                .fill(Color.red)
+//
+//                                            Image(systemName: "trash.circle")
+//                                                .foregroundColor(.white)
+//                                                .font(.title)
+//                                        }
+//                                     }, itemHeight: cellHeight)
+                            .onAppear {
+                                print(cellHeight)
+                                print(item.safeText)
+                                print("------------")
+                            }
+                        }
+                    } else {
+                        MemoryEmptyCellView()
+                            .frame(width: cellWidth - 32)
                     }
-                } else {
-                    MemoryEmptyCellView()
-                        .frame(width: cellWidth - 32)
                 }
-            }
-            .padding(.vertical, 16)
-            .frame(width: cellWidth)
-            .background(Color.white)
-            .cornerRadius(16)
-            .shadowMemoryStatic()
+                .padding(.vertical, 16)
+                .frame(width: cellWidth)
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadowMemoryStatic()
         }
         .frame(width: cellWidth)
-        .onAppear {
-//            itemViewModel.deleteAll()
-//            viewModel.deleteLast()
-//            viewModel.addItem(chapter: chapter)
-        }
     }
 }
+
+
 
 struct SwipeItem<Content: View, Left: View, Right: View>: View {
     var content: () -> Content
     var left: () -> Left
     var right: () -> Right
-//    var itemHeight: CGFloat
+    var itemHeight: CGFloat
     
     @State var hoffset: CGFloat = 0
     @State var anchor: CGFloat = 0
@@ -97,11 +120,12 @@ struct SwipeItem<Content: View, Left: View, Right: View>: View {
     
     init(@ViewBuilder content: @escaping () -> Content,
          @ViewBuilder left: @escaping () -> Left,
-         @ViewBuilder right: @escaping () -> Right) {
+         @ViewBuilder right: @escaping () -> Right,
+         itemHeight: CGFloat) {
         self.content = content
         self.left = left
         self.right = right
-//        self.itemHeight = itemHeight
+        self.itemHeight = itemHeight
     }
     
     var drag: some Gesture {
@@ -166,7 +190,7 @@ struct SwipeItem<Content: View, Left: View, Right: View>: View {
             }
         }
         .offset(x: -anchorWidth + hoffset)
-        .frame(height: 300)
+        .frame(height: itemHeight)
         .contentShape(Rectangle())
         .gesture(drag)
         .clipped()
@@ -174,32 +198,32 @@ struct SwipeItem<Content: View, Left: View, Right: View>: View {
 }
 
 
-//                        SwipeItem(content: {
-//                            MemoryCellView(memory: item)
-//                                .frame(width: cellWidth - 32)
-//                                 },
-//                                 left: {
-//                                    ZStack {
-//                                        Rectangle()
-//                                            .fill(Color.orange)
+//SwipeItem(content: {
+//    MemoryCellView(memory: item)
+//        .frame(width: cellWidth - 32)
+//         },
+//         left: {
+//            ZStack {
+//                Rectangle()
+//                    .fill(Color.orange)
 //
-//                                        Image(systemName: "pencil.circle")
-//                                            .foregroundColor(.white)
-//                                            .font(.largeTitle)
-//                                    }
-//                                 },
-//                                 right: {
-//                                    ZStack {
-//                                        Rectangle()
-//                                            .fill(Color.red)
+//                Image(systemName: "pencil.circle")
+//                    .foregroundColor(.white)
+//                    .font(.largeTitle)
+//            }
+//         },
+//         right: {
+//            ZStack {
+//                Rectangle()
+//                    .fill(Color.red)
 //
-//                                        Image(systemName: "trash.circle")
-//                                            .foregroundColor(.white)
-//                                            .font(.largeTitle)
-//                                    }
-//                                 })
-
-
+//                Image(systemName: "trash.circle")
+//                    .foregroundColor(.white)
+//                    .font(.largeTitle)
+//            }
+//         })
+//
+//
 //                            .gesture(
 //                                DragGesture()
 //                                    .onEnded { value in
@@ -210,4 +234,4 @@ struct SwipeItem<Content: View, Left: View, Right: View>: View {
 //                                        }
 //                                    }
 //                            )
-    
+//
