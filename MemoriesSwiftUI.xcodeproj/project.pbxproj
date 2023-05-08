@@ -64,7 +64,7 @@
 		91CCE4F929A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCE4F829A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift */; };
 		91CCE50929A0E7B4005C6441 /* InputAccesseryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCE50829A0E7B4005C6441 /* InputAccesseryView.swift */; };
 		91E2ACE22A0569B40043BE42 /* CustomLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E2ACE12A0569B40043BE42 /* CustomLineChartView.swift */; };
-		91E2ACE42A0951D00043BE42 /* Constaints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E2ACE32A0951D00043BE42 /* Constaints.swift */; };
+		91E2ACE42A0951D00043BE42 /* Сonstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E2ACE32A0951D00043BE42 /* Сonstants.swift */; };
 		91F6F46429B508CC00DCF329 /* MemoriesSwiftUI.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 91F6F46229B508CC00DCF329 /* MemoriesSwiftUI.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
@@ -131,7 +131,7 @@
 		91CCE4F829A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoriesSwiftUIUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		91CCE50829A0E7B4005C6441 /* InputAccesseryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccesseryView.swift; sourceTree = "<group>"; };
 		91E2ACE12A0569B40043BE42 /* CustomLineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLineChartView.swift; sourceTree = "<group>"; };
-		91E2ACE32A0951D00043BE42 /* Constaints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constaints.swift; sourceTree = "<group>"; };
+		91E2ACE32A0951D00043BE42 /* Сonstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Сonstants.swift"; sourceTree = "<group>"; };
 		91F6F46329B508CC00DCF329 /* MemoriesSwiftUI.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MemoriesSwiftUI.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -163,7 +163,7 @@
 		9107ADA329C754590030A3C7 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				91E2ACE32A0951D00043BE42 /* Constaints.swift */,
+				91E2ACE32A0951D00043BE42 /* Сonstants.swift */,
 				91E2ACDE2A0414FD0043BE42 /* ViewModifiers */,
 				912BBD3129F959DE003BFD65 /* UIViewRepresentable */,
 				9107ADA629C7560E0030A3C7 /* MainViews */,
@@ -483,7 +483,7 @@
 				917D171B29E6CE55009B9E8A /* ViewModifiers.swift in Sources */,
 				91B380B129A11243003163AB /* ItemMO.swift in Sources */,
 				91B380AD29A10280003163AB /* Color+Extensions.swift in Sources */,
-				91E2ACE42A0951D00043BE42 /* Constaints.swift in Sources */,
+				91E2ACE42A0951D00043BE42 /* Сonstants.swift in Sources */,
 				9107ADE529CF16BF0030A3C7 /* MediaAlbumMO.swift in Sources */,
 				91CCE4D929A0E61C005C6441 /* ContentView.swift in Sources */,
 				9107ADA529C7548D0030A3C7 /* CameraView.swift in Sources */,

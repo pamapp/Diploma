@@ -1,5 +1,5 @@
 //
-//  Constaints.swift
+//  Сonstants.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 08.05.2023.
