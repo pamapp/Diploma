@@ -89,7 +89,7 @@ struct InputAccesseryView: View {
                     }
                     .transition(.move(edge: .leading))
                     .sheet(isPresented: $showImagePicker) {
-                        MultiPicker(selections: $selectedItems, selectionsVideo: $selectionsvideo, addFunc: withAnimation { addItem })
+                        ImagesPicker(selections: $selectedItems, selectionsVideo: $selectionsvideo, addFunc: withAnimation { addItem })
                     }
                     
                 }
@@ -130,7 +130,7 @@ struct InputAccesseryView: View {
                     .padding(.horizontal, 8)
                     .frame(height: containerHeight <= 150 ? containerHeight : 150)
                     .sheet(isPresented: $showImagePickerInTF) {
-                        MultiPicker(selections: $selectedItems, selectionsVideo: $selectionsvideo, addFunc: {})
+                        ImagesPicker(selections: $selectedItems, selectionsVideo: $selectionsvideo, addFunc: {})
                     }
                 }
 

@@ -171,8 +171,8 @@
 		9107ADA629C7560E0030A3C7 /* MainViews */ = {
 			isa = PBXGroup;
 			children = (
-				91E2ACE02A0569960043BE42 /* Statistics */,
 				91CCE4D829A0E61C005C6441 /* ContentView.swift */,
+				91E2ACE02A0569960043BE42 /* Statistics */,
 				91B380BC29A120D7003163AB /* ChapterCellView.swift */,
 				91CCE50829A0E7B4005C6441 /* InputAccesseryView.swift */,
 				9107ADA429C7548D0030A3C7 /* CameraView.swift */,

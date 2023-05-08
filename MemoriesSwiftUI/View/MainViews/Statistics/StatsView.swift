@@ -47,27 +47,7 @@ struct StatsView: View {
                             in: RoundedCorner(radius: getCornerRadius(), corners: [.bottomRight, .bottomLeft])
                         )
                         .overlay (
-                            ZStack {
-                                VStack {
-                                    VStack(alignment: .center) {
-                                        statusIndicator
-                                            .opacity(topBarTitleOpacity())
-                                    }
-                                }
-                                HStack {
-                                    Spacer()
-                                    
-                                    Button {
-                                        self.presentationMode.wrappedValue.dismiss()
-                                    } label: {
-                                        Image("cross-white")
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
-                            .frame(height: 40)
-                            .foregroundColor(.white)
-                            .padding(.top, topEdge)
+                            simplifiedHeader
                             , alignment: .top
                         )
                 }
@@ -94,7 +74,6 @@ struct StatsView: View {
         .coordinateSpace(name: "SCROLL")
     }
 
-    @ViewBuilder
     func StatusView(topEge: CGFloat, offset: Binding<CGFloat>, maxHeight: CGFloat) -> some View {
         VStack(spacing: 8) {
             HStack {
@@ -113,13 +92,11 @@ struct StatsView: View {
         .opacity(getOpacity())
     }
     
-    @ViewBuilder
     func ChartView(title: String, subtitle: String) -> some View {
         VStack {
-            sectionHeader(title: title, subtitle: subtitle)
+            sectionHeaderItem(title: title, subtitle: subtitle)
 
             ZStack {
-//                gridBody
                 chartBody
             }
             .clipShape(RoundedRectangle(cornerRadius: 14))
@@ -142,8 +119,9 @@ struct StatsView: View {
     func TopWordsView(title: String, subtitle: String, sequence: Array<Dictionary<String, Int>.Element>.SubSequence) -> some View {
         var width = CGFloat.zero
         var height = CGFloat.zero
+        
         VStack(spacing: 8) {
-            sectionHeader(title: title, subtitle: subtitle)
+            sectionHeaderItem(title: title, subtitle: subtitle)
             
             VStack(spacing: 0) {
                 GeometryReader { geometry in
@@ -179,7 +157,6 @@ struct StatsView: View {
         }
     }
     
-    @ViewBuilder
     func TopEmojiView(title: String, sequence: Array<Dictionary<String, Int>.Element>.SubSequence) -> some View {
         VStack(spacing: 8) {
             HStack {
@@ -196,6 +173,30 @@ struct StatsView: View {
         }
     }
 
+    private var simplifiedHeader: some View {
+        ZStack {
+            VStack {
+                VStack(alignment: .center) {
+                    statusIndicator
+                        .opacity(topBarTitleOpacity())
+                }
+            }
+            HStack {
+                Spacer()
+                
+                Button {
+                    self.presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Image("cross-white")
+                }
+            }
+        }
+        .padding(.horizontal)
+        .frame(height: 40)
+        .foregroundColor(.white)
+        .padding(.top, topEdge)
+    }
+    
     private var statusIndicator: some View {
         HStack(spacing: 2) {
             ForEach(1...7, id: \.self) { i in
@@ -248,9 +249,9 @@ struct StatsView: View {
 
 extension StatsView {
     
-    // MARK: Private Functions
+    // MARK: - Private Functions
     
-    private func sectionHeader(title: String, subtitle: String) -> some View {
+    private func sectionHeaderItem(title: String, subtitle: String) -> some View {
         VStack(spacing: 8) {
             HStack {
                 Text(title)
@@ -265,7 +266,6 @@ extension StatsView {
             }
         }.padding(.bottom, 24)
     }
-
     
     private func wordItem(key: String, value: Int) -> some View {
         HStack {
@@ -314,6 +314,8 @@ extension StatsView {
             return .clear
         }
     }
+    
+    // MARK: - Private Functions
 }
 
 

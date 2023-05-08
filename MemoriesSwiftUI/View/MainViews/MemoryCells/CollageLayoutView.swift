@@ -18,7 +18,7 @@ struct CollageLayoutOne: View {
             VStack(spacing: 4) {
                 HStack(spacing: 4) {
                     Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                        .interpolation(.medium)
+                        .interpolation(.low)
                         .memoryImageStyle(w: width / 2 - 2, h: height, corners: [.allCorners])
                         .onTapGesture {
                             print("Первая фотка")
@@ -29,7 +29,7 @@ struct CollageLayoutOne: View {
             VStack(spacing: 4) {
                 HStack(spacing: 4) {
                     Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                        .interpolation(.medium)
+                        .interpolation(.low)
                         .memoryImageStyle(w: width, h: height, corners: [.allCorners])
                         .onTapGesture {
                             print("Первая фотка")
@@ -61,7 +61,7 @@ struct CollageLayoutTwo: View {
             VStack(spacing: 4) {
                 HStack(spacing: 4) {
                     Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                        .interpolation(.medium)
+                        .interpolation(.low)
                         .memoryImageStyle(w: width / 2 - 2, h: height, corners: [.topLeft, .bottomLeft])
                         .onTapGesture {
                             print("Первая фотка")
@@ -69,7 +69,7 @@ struct CollageLayoutTwo: View {
                     
                     if images.count > 1 {
                         Image(uiImage: UIImage(data: images[1].safeDataContent) ?? UIImage())
-                            .interpolation(.medium)
+                            .interpolation(.low)
                             .memoryImageStyle(w: width / 2 - 2, h: height, corners: [.topRight, .bottomRight])
                             .onTapGesture {
                                 print("Вторая фотка")
@@ -81,7 +81,7 @@ struct CollageLayoutTwo: View {
             VStack(spacing: 4) {
                 VStack(spacing: 4) {
                     Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                        .interpolation(.medium)
+                        .interpolation(.low)
                         .memoryImageStyle(w: width, h: height, corners: [.topLeft, .topRight])
                         .onTapGesture {
                             print("Первая фотка")
@@ -89,7 +89,7 @@ struct CollageLayoutTwo: View {
                     
                     if images.count > 1 {
                         Image(uiImage: UIImage(data: images[1].safeDataContent) ?? UIImage())
-                            .interpolation(.medium)
+                            .interpolation(.low)
                             .memoryImageStyle(w: width, h: height, corners: [.bottomLeft, .bottomRight])
                             .onTapGesture {
                                 print("Вторая фотка")
@@ -135,7 +135,7 @@ struct CollageLayoutThree: View {
         VStack(spacing: 4) {
             HStack(spacing: 4) {
                 Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                    .interpolation(.medium)
+                    .interpolation(.low)
                     .memoryImageStyle(w: width / 2 - 2, h: height, corners: [.topLeft])
                     .onTapGesture {
                         print("Первая фотка")
@@ -147,7 +147,7 @@ struct CollageLayoutThree: View {
                 
                 if images.count > 1 {
                     Image(uiImage: UIImage(data: images[1].safeDataContent) ?? UIImage())
-                        .interpolation(.medium)
+                        .interpolation(.low)
                         .memoryImageStyle(w: width / 2 - 2, h: height, corners: [.topRight])
                         .onTapGesture {
                             print("Вторая фотка")
@@ -160,7 +160,7 @@ struct CollageLayoutThree: View {
             
             if images.count > 2 {
                 Image(uiImage: UIImage(data: images[2].safeDataContent) ?? UIImage())
-                    .interpolation(.medium)
+                    .interpolation(.low)
                     .memoryImageStyle(w: width, h: height, corners: [.bottomLeft, .bottomRight])
                     .onTapGesture {
                         print("Третья фотка")

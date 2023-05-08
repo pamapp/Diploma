@@ -58,6 +58,8 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
     }
 
     func addChapter() {
+        deleteEmpty()
+        
         if chapters.last?.safeDateContent.isToday == false {
             let chapter = ChapterMO(context: controller.managedObjectContext)
             chapter.id = UUID()
@@ -81,6 +83,16 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
     func deleteAll() {
         for chapter in chapters {
             controller.managedObjectContext.delete(chapter)
+        }
+        saveContext()
+        getConsecutiveDays()
+    }
+    
+    func deleteEmpty() {
+        for chapter in chapters {
+            if chapter.itemsArray.isEmpty && !chapter.safeDateContent.isToday {
+                controller.managedObjectContext.delete(chapter)
+            }
         }
         saveContext()
         getConsecutiveDays()

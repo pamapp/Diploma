@@ -1,5 +1,5 @@
 //
-//  ImagePicker.swift
+//  ImagesPicker.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 01.03.2023.
@@ -9,11 +9,11 @@ import SwiftUI
 import PhotosUI
 
 
-struct MultiPicker: UIViewControllerRepresentable {
+struct ImagesPicker: UIViewControllerRepresentable {
     class Coordinator: PHPickerViewControllerDelegate {
-        let parent: MultiPicker
+        let parent: ImagesPicker
 
-        init(_ parent: MultiPicker) {
+        init(_ parent: ImagesPicker) {
             self.parent = parent
         }
         

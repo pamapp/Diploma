@@ -24,6 +24,10 @@ struct MemoriesSwiftUIApp: App {
             ContentView(chapterViewModel: .init(moc: persistenceController.container.viewContext))
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .preferredColorScheme(.light)
+                .onAppear {
+                    UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+                    AppDelegate.orientationLock = .portrait
+                }
         }
     }
 }
