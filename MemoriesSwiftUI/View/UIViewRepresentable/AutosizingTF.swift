@@ -12,7 +12,6 @@ import Combine
 struct AutosizingTF : UIViewRepresentable {
     class Coordinator: NSObject, UITextViewDelegate {
         var parent : AutosizingTF
-        var didBecomeFirstResponder = false
         var tempSize: Double = 0.0
         
         init(parent : AutosizingTF) {
@@ -57,8 +56,8 @@ struct AutosizingTF : UIViewRepresentable {
         
         func textViewDidBeginEditing(_ textView: UITextView) {
             textView.contentSize.height = tempSize
-            parent.containerHeight = textView.contentSize.height
             parent.view.textContainerInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 20)
+            parent.containerHeight = textView.contentSize.height
             
             textView.textColor = .black
             if textView.text == parent.hint {
@@ -88,17 +87,19 @@ struct AutosizingTF : UIViewRepresentable {
             parent.containerHeight = 0
             tempSize = textView.contentSize.height
             parent.view.textContainerInset = UIEdgeInsets(top: 17, left: 0, bottom: 18, right: 0)
-            textView.textColor = UIColor(.c3)
             
             if let newPosition = textView.position(from: textView.beginningOfDocument, offset: textView.text.count) {
                 textView.selectedTextRange = textView.textRange(from: newPosition, to: newPosition)
             }
             
             if textView.text == "" {
+                textView.textColor = UIColor(.c3)
                 textView.text = parent.hint
             } else {
+                textView.textColor = UIColor(.cW)
                 parent.text = textView.text
                 textView.text = parent.drafts
+                
             }
             
             parent.isFirstResponder = false
@@ -242,13 +243,14 @@ struct AutosizingTF : UIViewRepresentable {
             if containerHeight == 0 {
                 containerHeight = uiView.contentSize.height
             }
+            
+            if isFirstResponder {
+                uiView.becomeFirstResponder()
+            } else {
+                uiView.resignFirstResponder()
+            }
+            
         }
-        
-        if isFirstResponder && !context.coordinator.didBecomeFirstResponder  {
-            uiView.becomeFirstResponder()
-            context.coordinator.didBecomeFirstResponder = true
-        }
-        
     }
     
     
