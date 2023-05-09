@@ -164,11 +164,6 @@ struct ContentView: View {
                                 .edgesIgnoringSafeArea(.bottom)
                                 .padding(.top, 10)
                         )
-                        .onTapGesture {
-                            withAnimation {
-                                isKeyboardPresented = true
-                            }
-                        }
                     }
                 })
             }
