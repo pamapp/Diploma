@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - Shadows
+// MARK: - Shadows Modifiers -
 
 struct ShadowMemoryStatic: ViewModifier {
     func body(content: Content) -> some View {
@@ -25,15 +25,15 @@ struct ShadowInputControl: ViewModifier {
     }
 }
 
-
-// MARK: - Text
+// MARK: - Text Modifiers -
 
 struct MemoryTextBase: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.memoryTextBase())
             .foregroundColor(.c1)
-//            .fixedSize(horizontal: false, vertical: true)
+            .textSelection(.enabled)
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -46,7 +46,7 @@ struct MemoryTextImage: ViewModifier {
             .padding(.leading, 8)
             .padding(.trailing, 16)
             .padding(.vertical, 8)
-//            .fixedSize(horizontal: false, vertical: true)
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -55,6 +55,7 @@ struct MemoryTime: ViewModifier {
         content
             .font(.subscription(12.5))
             .foregroundColor(.c7)
+            .padding(.trailing, 8)
     }
 }
 
@@ -106,6 +107,7 @@ struct StatsSubtitle: ViewModifier {
 
 struct WordTag: ViewModifier {
     var color: Color
+    
     func body(content: Content) -> some View {
         content
             .font(.title(17))
@@ -113,8 +115,9 @@ struct WordTag: ViewModifier {
     }
 }
 
-struct OffsetModifier: ViewModifier{
+struct OffsetModifier: ViewModifier {
     @Binding var offset : CGFloat
+    
     func body(content: Content) -> some View {
         content
             .overlay(
@@ -130,27 +133,26 @@ struct OffsetModifier: ViewModifier{
     }
 }
 
-
-// MARK: - ToolBar
+// MARK: - ToolBar Modifiers -
 
 struct KeyboardToolbar<ToolbarView: View>: ViewModifier {
-    @State var height: CGFloat = 0
     private let toolbarView: ToolbarView
-
+    private var height: CGFloat = 0
+    
     init(@ViewBuilder toolbar: () -> ToolbarView) {
         self.toolbarView = toolbar()
     }
 
     func body(content: Content) -> some View {
-            ZStack(alignment: .bottom) {
-                GeometryReader { geometry in
-                    VStack {
-                        content
-                    }
-                    .frame(width: geometry.size.width, height: geometry.size.height - height)
+        ZStack(alignment: .bottom) {
+            GeometryReader { geometry in
+                VStack {
+                    content
                 }
-                toolbarView
+                .frame(width: geometry.size.width, height: geometry.size.height - height)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            toolbarView
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
 }

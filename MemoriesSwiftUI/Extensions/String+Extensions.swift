@@ -7,7 +7,48 @@
 
 import SwiftUI
 
+// MARK: - String Extensions -
+
 extension String {
+    
+    // MARK: String Modifications (for hashtags)
+    
+    public func separate(withChar char : String) -> [String] {
+        var word : String = ""
+        var words : [String] = [String]()
+        
+        for chararacter in self {
+            if String(chararacter) == char && word != "" {
+                words.append(word)
+                word = char
+            } else {
+                word += String(chararacter)
+            }
+        }
+        
+        words.append(word)
+        return words
+    }
+
+    public func resolveHashTags(color: UIColor) -> NSAttributedString {
+        var length: Int = 0
+        let text: String = self
+        let words: [String] = text.separate(withChar: " ")
+        let hashtagWords = words.flatMap({$0.separate(withChar: "#")})
+        let attrs = [NSAttributedString.Key.font: UIFont.newYorkFont()]
+        let attrString = NSMutableAttributedString(string: text, attributes: attrs)
+        
+        for word in hashtagWords {
+            if word.hasPrefix("#") {
+                let matchRange: NSRange = NSMakeRange(length, word.count)
+                attrString.addAttribute(.foregroundColor, value: color, range: matchRange)
+            }
+            length += word.count
+        }
+        
+        return attrString
+    }
+    
     func textWithHashtags(color: Color) -> Text {
         let words = self.split(separator: " ")
         var output: Text = Text("")
@@ -29,52 +70,15 @@ extension String {
                 }
             }
         }
+        
         return output
     }
 }
 
 extension String {
-    public func separate(withChar char : String) -> [String] {
-        var word : String = ""
-        var words : [String] = [String]()
-        for chararacter in self {
-            if String(chararacter) == char && word != "" {
-                words.append(word)
-                word = char
-            }else {
-                word += String(chararacter)
-            }
-        }
-        words.append(word)
-        return words
-    }
-}
-
-extension String {
-    public func resolveHashTags(color: UIColor) -> NSAttributedString {
-        var length: Int = 0
-        let text: String = self
-        let words: [String] = text.separate(withChar: " ")
-        let hashtagWords = words.flatMap({$0.separate(withChar: "#")})
-        let attrs = [NSAttributedString.Key.font: UIFont.newYorkFont()]
-        let attrString = NSMutableAttributedString(string: text, attributes: attrs)
-        
-        for word in hashtagWords {
-            if word.hasPrefix("#") {
-                let matchRange: NSRange = NSMakeRange(length, word.count)
-                attrString.addAttribute(.foregroundColor, value: color, range: matchRange)
-            }
-            length += word.count
-        }
-        return attrString
-    }
-}
-
-extension String {
-    func stringByRemovingEmoji() -> String {
-        return String(self.filter { !$0.isEmoji() })
-    }
-    func stringByRemovingWords() -> String {
-        return String(self.filter { $0.isEmoji() })
-    }
+    
+    // MARK: String Modifications (for WordCount)
+    
+    func stringByRemovingEmoji() -> String { String(self.filter { !$0.isEmoji() }) }
+    func stringByRemovingWords() -> String { String(self.filter { $0.isEmoji() }) }
 }

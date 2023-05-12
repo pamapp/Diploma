@@ -24,23 +24,26 @@ struct InputAccesseryView: View {
 
     @State var showAlert: Bool = false
 
-    @State private var message = ""
+    @State private var message: String = ""
+    
     @Binding var isKeyboardPresented: Bool
     @State var containerHeight : CGFloat = 0
 
     @State private var selectedItems: [UIImage] = []
     @State private var selectionsvideo = [URL]()
-
     @State private var selectedImagesData: [Data] = []
     
     var chapter: ChapterMO
     
-    init(chapter: ChapterMO, audioPlayer: AudioPlayerVM, chapterVM: ChapterVM, isKeyboardPresented: Binding<Bool>) {
+    init(chapter: ChapterMO, audioPlayer: AudioPlayerVM, chapterVM: ChapterVM,
+//         message: Binding<String>,
+         isKeyboardPresented: Binding<Bool>) {
         self.itemViewModel = ItemVM(chapter: chapter)
         self.audioRecorder = AudioRecorderVM(itemModel: ItemVM(chapter: chapter))
         self.audioPlayerVM = audioPlayer
         self.cameraModel = CameraVM()
         self.chapter = chapter
+//        self._message = message
         self._isKeyboardPresented = isKeyboardPresented
         self.chapterViewModel = chapterVM
         itemViewModel.fetchItems()
@@ -81,7 +84,7 @@ struct InputAccesseryView: View {
                         .transition(.opacity)
                     }
                     
-                    AutosizingTF(text: $message, containerHeight: $containerHeight, isFirstResponder: isKeyboardPresented, opened: {
+                    AutosizingTextField(text: $message, containerHeight: $containerHeight, isFirstResponder: isKeyboardPresented, opened: {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     }, send: {
                         self.addItem()

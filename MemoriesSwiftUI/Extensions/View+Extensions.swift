@@ -8,12 +8,35 @@
 import SwiftUI
 import Combine
 
+// MARK: - UIView Extensions -
+
 extension UIView {
     func addSubviews(_ subviews: UIView...) { subviews.forEach { addSubview($0) } }
 }
 
+extension UIView {
+    func zoomIn(duration: TimeInterval = 0.2) {
+        self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
+            self.transform = CGAffineTransform.identity
+        }) { (animationCompleted: Bool) -> Void in
+        }
+    }
+
+    func zoomOut(duration: TimeInterval = 0.2) {
+        self.transform = CGAffineTransform.identity
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
+            self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
+        }) { (animationCompleted: Bool) -> Void in
+        }
+    }
+}
+
+// MARK: - View Extensions -
+
 extension View {
-    // MARK: - Texts
+
+    // MARK: Texts Modifiers
     
     public func memoryTextBaseStyle() -> some View {
         self.modifier(MemoryTextBase())
@@ -51,7 +74,7 @@ extension View {
         self.modifier(WordTag(color: color))
     }
     
-    // MARK: - Shadows
+    // MARK: Shadows Modifiers
     
     public func shadowMemoryStatic() -> some View {
         self.modifier(ShadowMemoryStatic())
@@ -60,9 +83,24 @@ extension View {
     public func shadowInputControl() -> some View {
         self.modifier(ShadowInputControl())
     }
+    
+    public func shadowFloating() -> some View {
+        self.modifier(ShadowFloating())
+    }
+    
+    public func statsPopUpTitleStyle() -> some View {
+        self.modifier(StatsPopUpTitle())
+    }
+    
+    public func statsPopUpTextStyle() -> some View {
+        self.modifier(StatsPopUpText())
+    }
 }
 
 extension View {
+
+    // MARK: Keyboard Publisher & Modifiers
+    
     var keyboardPublisher: AnyPublisher<Bool, Never> {
         Publishers
             .Merge (
@@ -78,14 +116,32 @@ extension View {
             .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
             .eraseToAnyPublisher()
     }
-}
-
-extension View {
+    
     func keyboardToolbar<ToolbarView>(view: @escaping () -> ToolbarView) -> some View where ToolbarView: View {
         modifier(KeyboardToolbar(toolbar: view))
     }
 }
 
+extension View {
+    func searchable(text: Binding<String>, isPresented: Binding<Bool>, keyboard: Binding<Bool>) -> some View {
+        overlay(
+            Group {
+                if isPresented.wrappedValue {
+                    VStack(spacing: 0) {
+                        HStack(alignment: .top) {
+                            SearchBar(text: text, isFirstResponder: isPresented, keyboard: keyboard)
+                                .animation(.linear(duration: 0.2), value: 10)
+                        }
+                        Divider()
+                        Spacer()
+                    }
+                } else {
+                    EmptyView()
+                }
+            }
+        )
+    }
+}
 
 extension View {
     public func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
@@ -127,25 +183,5 @@ struct LineShape: Shape {
             path.addLine(to: pt)
         }
         return path
-    }
-}
-
-
-
-extension UIView {
-    func zoomIn(duration: TimeInterval = 0.2) {
-        self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
-        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
-            self.transform = CGAffineTransform.identity
-        }) { (animationCompleted: Bool) -> Void in
-        }
-    }
-
-    func zoomOut(duration: TimeInterval = 0.2) {
-        self.transform = CGAffineTransform.identity
-        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
-            self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
-        }) { (animationCompleted: Bool) -> Void in
-        }
     }
 }

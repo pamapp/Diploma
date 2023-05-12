@@ -8,12 +8,17 @@
 import SwiftUI
 
 extension Image {
+    
+    // MARK: Images Properties
+    
     func memoryImageStyle(w: CGFloat, h: CGFloat, corners: UIRectCorner) -> some View {
         self
             .resizable()
             .scaledToFill()
             .frame(width: w, height: h)
+            .clipped()
             .cornerRadius(8, corners: corners)
+            .fixedSize(horizontal: true, vertical: true)
     }
 
     func imageInTFStyle(w: CGFloat, h: CGFloat) -> some View {
@@ -21,16 +26,16 @@ extension Image {
             .resizable()
             .scaledToFill()
             .frame(width: w, height: h)
+            .clipped()
             .cornerRadius(2)
     }
-}
-
-extension UIImage {
-    func scaled(to size: CGSize, scale displayScale: CGFloat = UIScreen.main.scale) -> UIImage {
-        let format = UIGraphicsImageRendererFormat.preferred()
-        format.scale = displayScale
-        return UIGraphicsImageRenderer(size: size, format: format).image { _ in
-            draw(in: CGRect(origin: .zero, size: size))
-        }
+    
+    func imageInPopUpStyle(w: CGFloat) -> some View {
+        self
+            .resizable()
+            .scaledToFill()
+            .frame(width: w)
+            .clipped()
+            .fixedSize(horizontal: true, vertical: true)
     }
 }

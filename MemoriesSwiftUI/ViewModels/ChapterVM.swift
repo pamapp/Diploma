@@ -1,5 +1,5 @@
 //
-//  ItemModel.swift
+//  ChapterVM.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 18.02.2023.
@@ -94,6 +94,12 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
                 controller.managedObjectContext.delete(chapter)
             }
         }
+        saveContext()
+        getConsecutiveDays()
+    }
+    
+    func deleteChapter(_ chapter: ChapterMO) {
+        controller.managedObjectContext.delete(chapter)
         saveContext()
         getConsecutiveDays()
     }

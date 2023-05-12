@@ -11,7 +11,7 @@ import AVFoundation
 import Combine
 import CoreData
 
-class AudioRecorderVM: NSObject,ObservableObject {
+class AudioRecorderVM: NSObject, ObservableObject {
     
 //    let moc = PersistenceController.shared.container.viewContext
 

@@ -1,5 +1,5 @@
 //
-//  ItemModel.swift
+//  ItemVM.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 18.02.2023.
@@ -14,6 +14,8 @@ import SwiftUI
 class ItemVM: ObservableObject {
     private let viewContext = PersistenceController.shared.viewContext
     @Published var items: [ItemMO] = []
+    
+    var chapterVM: ChapterVM
     var chapter: ChapterMO
     
     public var alert = false
@@ -21,6 +23,7 @@ class ItemVM: ObservableObject {
     
     init(chapter: ChapterMO) {
         self.chapter = chapter
+        self.chapterVM = ChapterVM(moc: viewContext)
     }
     
     func fetchItems() {
@@ -80,8 +83,8 @@ class ItemVM: ObservableObject {
             save()
             fetchItems()
         } else {
-            alert.toggle()
-            alertMessage = "Нельзя добавлять больше 3"
+            self.alert =  true
+            self.alertMessage = "You can't add more than 3 photos"
         }
     }
     
@@ -116,17 +119,19 @@ class ItemVM: ObservableObject {
             fetchItems()
             setMemorySentiment(item)
         } else {
-            alert.toggle()
-            alertMessage = "Нельзя добавлять больше 3"
+            self.alert =  true
+            self.alertMessage = "You can't add more than 3 photos"
         }
     }
 
     func setMemorySentiment(_ item: ItemMO){
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                let sentimentPredictor = try NLModel(mlModel: SentimentClassifier().model)
+                let mlModel = try SentimentClassifier(configuration: MLModelConfiguration()).model
+                let customModel = try NLModel(mlModel: mlModel)
+                
                 DispatchQueue.main.async {
-                    item.sentiment = sentimentPredictor.predictedLabel(for: item.safeText) ?? ""
+                    item.sentiment = customModel.predictedLabel(for: item.safeText) ?? ""
                     self.save()
                 }
             } catch {
@@ -146,10 +151,14 @@ class ItemVM: ObservableObject {
         fetchItems()
     }
     
-    func deleteItem(item: ItemMO) {
+    func deleteItem(_ item: ItemMO) {
         viewContext.delete(item)
         save()
         fetchItems()
+        
+        if chapter.itemsArray.isEmpty {
+            chapterVM.deleteChapter(chapter)
+        }
     }
     
 }

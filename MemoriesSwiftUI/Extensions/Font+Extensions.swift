@@ -7,6 +7,21 @@
 
 import SwiftUI
 
+// MARK: - UIFont Extensions -
+
+extension UIFont {
+    static func newYorkFont(_ size: CGFloat = 18) -> UIFont {
+        let descriptor = UIFont.systemFont(ofSize: size, weight: .regular).fontDescriptor
+
+        if let serif = descriptor.withDesign(.serif) {
+            return UIFont(descriptor: serif, size: 0.0)
+        }
+
+        return UIFont(descriptor: descriptor, size: 0.0)
+    }
+}
+
+// MARK: - Font Extensions -
 
 extension Font {
     static func subscription(_ size: CGFloat = 12.5) -> Font {
@@ -32,27 +47,5 @@ extension Font {
     
     static func headline(_ size: CGFloat = 20) -> Font {
         .system(size: size, weight: .heavy, design: .rounded)
-    }
-}
-
-extension UIFont {
-    static func newYorkFont(_ size: CGFloat = 18) -> UIFont {
-        let descriptor = UIFont.systemFont(ofSize: size, weight: .regular).fontDescriptor
-
-        if let serif = descriptor.withDesign(.serif) {
-            return UIFont(descriptor: serif, size: 0.0)
-        }
-
-        return UIFont(descriptor: descriptor, size: 0.0)
-    }
-
-    static func sfProRoundedFont(_ size: CGFloat = 21.6) -> UIFont {
-        let descriptor = UIFont.systemFont(ofSize: size, weight: .heavy).fontDescriptor
-
-        if let roundedFont = descriptor.withDesign(.rounded) {
-            return UIFont(descriptor: roundedFont, size: 0.0)
-        }
-
-        return UIFont(descriptor: descriptor, size: 0.0)
     }
 }

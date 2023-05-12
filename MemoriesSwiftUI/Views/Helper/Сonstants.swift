@@ -30,6 +30,7 @@ struct UI {
         static let search: String = "search"
         static let tag: String = "tag"
         static let trash: String = "trash"
+        static let edit: String = "edit"
         static let video_message: String = "video-message"
         static let audio_message: String = "audio-message"
         static let eye_slash_fill: String = "eye.slash.fill"

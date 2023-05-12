@@ -1,5 +1,5 @@
 //
-//  StatsViewModel.swift
+//  StatsVM.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 02.05.2023.
@@ -80,13 +80,17 @@ struct WordCount {
     init(words: String) {
         var tempArr: String = ""
         let tagger = NLTagger(tagSchemes: [.lexicalClass])
-        tagger.string = words
+        
+        var modStr = words.replacingOccurrences(of: "\u{0027}", with: "")
+        modStr = words.replacingOccurrences(of: "\u{2018}", with: "")
+        modStr = words.replacingOccurrences(of: "\u{2019}", with: "")
+        tagger.string = modStr
         
         let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace]
-        tagger.enumerateTags(in: words.startIndex..<words.endIndex, unit: .word, scheme: .lexicalClass, options: options) { tag, tokenRange in
+        tagger.enumerateTags(in: modStr.startIndex..<modStr.endIndex, unit: .word, scheme: .lexicalClass, options: options) { tag, tokenRange in
             if let tag = tag {
                 if tag.rawValue != "Conjunction" && tag.rawValue != "Pronoun" && tag.rawValue != "Preposition" && tag.rawValue != "Particle" {
-                    tempArr = tempArr + " " + "\(words[tokenRange])"
+                    tempArr = tempArr + " " + "\(modStr[tokenRange])"
                 }
             }
             return true

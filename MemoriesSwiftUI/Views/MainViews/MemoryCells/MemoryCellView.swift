@@ -27,23 +27,31 @@ struct MemoryEmptyCellView: View {
 
 struct MemoryCellView: View {
     @ObservedObject var audioPlayer: AudioPlayerVM
-    @State var sliderValue: Double = 0.0
+    @State private var sliderValue: Double = 0.0
     @State private var isDragging = false
+    @State private var isSwipeable = false
     
+    @State var cellHeight: CGFloat = 0
+    @State var cellWidth: CGFloat = UIScreen.main.bounds.width - 32
+
     let timer = Timer
         .publish(every: 0.01, on: .main, in: .common)
         .autoconnect()
     
     var memory: ItemMO
-    
+    var delete: ()->()
+    var edit: ()->()
+
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
     
-    init(memory: ItemMO) {
+    init(memory: ItemMO, delete: @escaping ()->(), edit: @escaping ()->()) {
         self.memory = memory
         self.audioPlayer = AudioPlayerVM()
+        self.delete = delete
+        self.edit = edit
         
         let thumbImage : UIImage = UIImage(named: UI.Icons.drower)!        
         UISlider.appearance().minimumTrackTintColor = UIColor(.c3)
@@ -52,7 +60,7 @@ struct MemoryCellView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        SwipeItem(content: {
             HStack(spacing: 14) {
                 RoundedRectangle(cornerRadius: 20)
                     .frame(width: 2.3)
@@ -61,18 +69,17 @@ struct MemoryCellView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     if memory.safeType == "photo" {
                         if memory.mediaAlbum?.attachmentsArray.count == 1 {
-                            CollageLayoutOne(images: memory.mediaAlbum?.attachmentsArray ?? [])
+                            CollageLayoutOne(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
                         } else if memory.mediaAlbum?.attachmentsArray.count == 2 {
-                            CollageLayoutTwo(images: memory.mediaAlbum?.attachmentsArray ?? [])
+                            CollageLayoutTwo(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
                         } else {
-                            CollageLayoutThree(images: memory.mediaAlbum?.attachmentsArray ?? [])
+                            CollageLayoutThree(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
                         }
                     }
 
                     if memory.safeType == "text" {
                         memory.safeText.textWithHashtags(color: .c6)
                             .memoryTextBaseStyle()
-                            .textSelection(.enabled)
                     }
                     
                     if memory.safeType == "audio" {
@@ -81,11 +88,11 @@ struct MemoryCellView: View {
                     
                     if memory.safeType == "textWithPhoto" {
                         if memory.mediaAlbum?.attachmentsArray.count == 1 {
-                            CollageLayoutOne(images: memory.mediaAlbum?.attachmentsArray ?? [])
+                            CollageLayoutOne(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
                         } else if memory.mediaAlbum?.attachmentsArray.count == 2 {
-                            CollageLayoutTwo(images: memory.mediaAlbum?.attachmentsArray ?? [])
+                            CollageLayoutTwo(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
                         } else {
-                            CollageLayoutThree(images: memory.mediaAlbum?.attachmentsArray ?? [])
+                            CollageLayoutThree(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
                         }
                         
                         memory.safeText.textWithHashtags(color: .c6)
@@ -113,8 +120,52 @@ struct MemoryCellView: View {
                         }
                     }
                 }
+                .background (
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear {
+                                let height = proxy.size.height
+                                self.cellHeight = height
+                            }
+                    }
+                )
             }
-        }
+        },
+        right: {
+            HStack {
+                Rectangle()
+                    .foregroundColor(.c8)
+                    .frame(width: 2)
+                Spacer()
+                
+                GeometryReader { geo in
+                    HStack {
+                        Button(action: {
+                            withAnimation {
+                                self.edit()
+                            }
+                            
+                        }, label: {
+                            Image(UI.Icons.edit)
+                                .foregroundColor(.c6)
+                        })
+                        .frame(width: geo.size.width / 2, height: geo.size.height)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            withAnimation {
+                                self.delete()
+                            }
+                        }, label: {
+                            Image(UI.Icons.trash)
+                                .foregroundColor(.c5)
+                        })
+                        .frame(width: geo.size.width / 2, height: geo.size.height)
+                    }
+                }
+            }
+        }, itemHeight: cellHeight, endSwipeAction: $isSwipeable)
     }
     
     
@@ -143,7 +194,7 @@ struct MemoryCellView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-//            .tint(.c3)
+            .padding(.trailing, 8)
         }
         .onAppear {
             sliderValue = 0

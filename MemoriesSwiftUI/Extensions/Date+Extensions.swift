@@ -6,7 +6,11 @@
 //
 
 import Foundation
+
 extension Date {
+    
+    // MARK: Formatting the date into the desired string format
+    
     func getFormattedDateString(format: String) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = format
@@ -16,6 +20,9 @@ extension Date {
 }
 
 extension Date {
+    
+    // MARK: Date comparison
+    
     var isToday: Bool { Calendar.current.isDateInToday(self) }
     var isThisYear: Bool { self.year == Date().year }
     var year: Int { Calendar.current.dateComponents([.year], from: self).year! }

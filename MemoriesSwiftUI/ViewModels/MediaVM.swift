@@ -1,5 +1,5 @@
 //
-//  MediaModel.swift
+//  MediaVM.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 02.03.2023.

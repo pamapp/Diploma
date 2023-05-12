@@ -8,6 +8,9 @@
 import SwiftUI
 
 extension Color {
+    
+    // MARK: Get Color from HEX-value
+    
     init(hex: UInt, alpha: Double = 1) {
         self.init(
             .sRGB,

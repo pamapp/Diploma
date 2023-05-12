@@ -1,5 +1,5 @@
 //
-//  CustomToolBar.swift
+//  AutosizingTextField.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 22.02.2023.
@@ -9,12 +9,12 @@ import Foundation
 import SwiftUI
 import Combine
 
-struct AutosizingTF : UIViewRepresentable {
+struct AutosizingTextField: UIViewRepresentable {
     class Coordinator: NSObject, UITextViewDelegate {
-        var parent : AutosizingTF
+        var parent : AutosizingTextField
         var tempSize: Double = 0.0
         
-        init(parent : AutosizingTF) {
+        init(parent : AutosizingTextField) {
             self.parent = parent
         }
         
@@ -107,11 +107,11 @@ struct AutosizingTF : UIViewRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
-        return AutosizingTF.Coordinator(parent: self)
+        return AutosizingTextField.Coordinator(parent: self)
     }
     
-    @Binding var text : String
-    @Binding var containerHeight : CGFloat
+    @Binding var text: String
+    @Binding var containerHeight: CGFloat
     var isFirstResponder: Bool = false
     
     var hint : String = UI.Strings.dear_diary
@@ -249,7 +249,6 @@ struct AutosizingTF : UIViewRepresentable {
             } else {
                 uiView.resignFirstResponder()
             }
-            
         }
     }
     
