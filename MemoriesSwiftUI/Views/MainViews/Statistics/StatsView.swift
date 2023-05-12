@@ -18,9 +18,10 @@ struct StatsView: View {
     
     @ObservedObject var chapterViewModel: ChapterVM
     @ObservedObject var statsViewModel: StatsVM
-    
+
     @State private var currentTab: Tab = .week
     @State private var totalHeight: CGFloat = CGFloat.zero
+    @State private var isPopUpPresented = false
 
     @State var offset : CGFloat = 0
     
@@ -35,47 +36,50 @@ struct StatsView: View {
     }
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 15) {
-                GeometryReader{ proxy in
-                    StatusView(topEge: topEdge, offset: $offset, maxHeight: maxHeight)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: getHeaderheight(), alignment: .bottom)
-                        .background(
-                            Color.c4,
-                            in: RoundedCorner(radius: getCornerRadius(), corners: [.bottomRight, .bottomLeft])
-                        )
-                        .overlay (
-                            simplifiedHeader
-                            , alignment: .top
-                        )
+        ZStack {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 15) {
+                    GeometryReader{ proxy in
+                        StatusView(topEge: topEdge, offset: $offset, maxHeight: maxHeight)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: getHeaderheight(), alignment: .bottom)
+                            .background(
+                                Color.c4,
+                                in: RoundedCorner(radius: getCornerRadius(), corners: [.bottomRight, .bottomLeft])
+                            )
+                            .overlay(simplifiedHeader, alignment: .top)
+                    }
+                    .frame(height: maxHeight)
+                    .offset(y: -offset)
+                    .zIndex(1)
+                    
+                    VStack(spacing: 32) {
+                        ChartView(title: UI.Strings.mood_chart_title,
+                                  text: UI.Strings.mood_chart_text)
+                        
+                        TopEmojiView(title: UI.Strings.emoji_top,
+                                     sequence: statsViewModel.popularEmojies)
+                        
+                        TopWordsView(title: UI.Strings.words_top_title,
+                                     text: UI.Strings.words_top_text,
+                                     sequence: statsViewModel.popularWords)
+                    }
+                    .background(Color.cW.edgesIgnoringSafeArea(.all))
+                    .zIndex(0)
                 }
-                .frame(height: maxHeight)
-                .offset(y: -offset)
-                .zIndex(1)
-                
-                VStack(spacing: 32) {
-                    ChartView(title: UI.Strings.mood_chart_title,
-                              text: UI.Strings.mood_chart_text)
-
-                    TopEmojiView(title: UI.Strings.emoji_top,
-                                 sequence: statsViewModel.popularEmojies)
-
-                    TopWordsView(title: UI.Strings.words_top_title,
-                                 text: UI.Strings.words_top_text,
-                                 sequence: statsViewModel.popularWords)
-                }
-                .background(Color.cW.edgesIgnoringSafeArea(.all))
-                .zIndex(0)
+                .modifier(OffsetModifier(offset: $offset))
             }
-            .modifier(OffsetModifier(offset: $offset))
+            .coordinateSpace(name: "SCROLL")
+            
+            BottomPopUpView(isOpen: self.$isPopUpPresented)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .edgesIgnoringSafeArea(.all)
         }
-        .coordinateSpace(name: "SCROLL")
     }
 
     func StatusView(topEge: CGFloat, offset: Binding<CGFloat>, maxHeight: CGFloat) -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 16) {
             HStack {
                 RoundedRectangle(cornerRadius: 24)
                     .foregroundColor(Color.c8)
@@ -85,6 +89,12 @@ struct StatsView: View {
                             .resizable()
                             .frame(width: 64, height: 84)
                     )
+                    .shadowFloating()
+                    .onTapGesture {
+                        withAnimation {
+                            self.isPopUpPresented.toggle()
+                        }
+                    }
             }
             statusIndicator
         }

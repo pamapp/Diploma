@@ -18,11 +18,7 @@ struct LineChartProvider {
     private var maxXValue: CGFloat {
         CGFloat(data.count - 1)
     }
-    
-    private var firstPoint: StepCount {
-        data.first!
-    }
-    
+
     func path(for geometry: GeometryProxy) -> Path {
         Path { path in
             drawData(path: &path, size: geometry.size)
@@ -40,22 +36,24 @@ struct LineChartProvider {
     }
     
     private func drawData(path: inout Path, size: CGSize) {
-        var previousPoint = CGPoint(x: 0, y: self.data.first!.value)
-        self.data.enumerated().forEach { index, point in
-            let x = (CGFloat(index) / self.maxXValue) * size.width
-            let y = size.height - (point.value / self.maxYValue) * size.height
-
-            let deltaX = x - previousPoint.x
-            let curveXOffset = deltaX * self.lineRadius
-
-            if point == self.data.first {
-                path.move(to: .init(x: 0, y: y))
-            } else {
-                path.addCurve(to: .init(x: x, y: y),
-                              control1: .init(x: previousPoint.x + curveXOffset, y: previousPoint.y),
-                              control2: .init(x: x - curveXOffset, y: y ))
+        if !data.isEmpty {
+            var previousPoint = CGPoint(x: 0, y: self.data.first!.value)
+            self.data.enumerated().forEach { index, point in
+                let x = (CGFloat(index) / self.maxXValue) * size.width
+                let y = size.height - (point.value / self.maxYValue) * size.height
+                
+                let deltaX = x - previousPoint.x
+                let curveXOffset = deltaX * self.lineRadius
+                
+                if point == self.data.first {
+                    path.move(to: .init(x: 0, y: y))
+                } else {
+                    path.addCurve(to: .init(x: x, y: y),
+                                  control1: .init(x: previousPoint.x + curveXOffset, y: previousPoint.y),
+                                  control2: .init(x: x - curveXOffset, y: y ))
+                }
+                previousPoint = .init(x: x, y: y)
             }
-            previousPoint = .init(x: x, y: y)
         }
     }
 }
