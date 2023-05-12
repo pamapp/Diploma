@@ -15,8 +15,7 @@ struct BlurView: UIViewRepresentable {
         return CustomIntensityVisualEffectView(effect: UIBlurEffect(style: style), intensity: intensity)
     }
     
-    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
-    }
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {}
 }
 
 final class CustomIntensityVisualEffectView: UIVisualEffectView {

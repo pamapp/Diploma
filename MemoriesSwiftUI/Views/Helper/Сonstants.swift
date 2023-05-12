@@ -8,9 +8,14 @@
 import Foundation
 import SwiftUI
 
+
 struct UI {
-    enum Defaults {
-        static let margin: CGFloat = 20
+    static let screen_width: CGFloat = UIScreen.main.bounds.width
+    static let screen_height: CGFloat = UIScreen.main.bounds.height
+    static let chapters_spaces: CGFloat = 32
+    
+    enum PopUp {
+        static let watering_a_flower: String = "watering-a-flower"
     }
     
     enum Buttons {
@@ -45,6 +50,10 @@ struct UI {
         static let words_top_title: String = "Топ 10 слов"
         static let words_top_text: String = "Это может помочь Вам лучше отслеживать ваши чувства и переживания"
         static let emoji_top: String = "Топ Emoji"
+        
+        static let stats_description_title: String = "Цветок воспоминаний"
+        static let stats_description_text: String = "Ведите дневник каждый день и ваш цветок будет расти. Память улучшаться. Ум станет острее. Ежедневные записи укрепляют нейроны нашего мозга и питают цветок."
+        static let stats_description_btn_text: String = "Запомню"
     }
     
     enum Alearts {

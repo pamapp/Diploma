@@ -10,6 +10,28 @@ import PhotosUI
 
 
 struct ImagesPicker: UIViewControllerRepresentable {
+    @Environment(\.presentationMode) var presentationMode
+    @Binding var selections: [UIImage]
+    @Binding var selectionsVideo: [URL]
+    var addFunc: ()->()
+    
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+        configuration.filter = .images
+        configuration.selection = .ordered
+        configuration.selectionLimit = 3
+        
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
     class Coordinator: PHPickerViewControllerDelegate {
         let parent: ImagesPicker
 
@@ -43,32 +65,7 @@ struct ImagesPicker: UIViewControllerRepresentable {
                 }
             }
             self.parent.presentationMode.wrappedValue.dismiss()
-
         }
     }
-    
-    @Environment(\.presentationMode) var presentationMode
-    @Binding var selections: [UIImage]
-    @Binding var selectionsVideo: [URL]
-    
-    var addFunc: ()->()
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    func makeUIViewController(context: Context) -> PHPickerViewController {
-        var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
-        configuration.filter = .images
-        configuration.selection = .ordered
-//        configuration.filter = PHPickerFilter.any(of: [.images, .videos])
-        configuration.selectionLimit = 3
-        
-        let picker = PHPickerViewController(configuration: configuration)
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
 }
 

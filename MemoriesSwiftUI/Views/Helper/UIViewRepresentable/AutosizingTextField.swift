@@ -10,106 +10,6 @@ import SwiftUI
 import Combine
 
 struct AutosizingTextField: UIViewRepresentable {
-    class Coordinator: NSObject, UITextViewDelegate {
-        var parent : AutosizingTextField
-        var tempSize: Double = 0.0
-        
-        init(parent : AutosizingTextField) {
-            self.parent = parent
-        }
-        
-        @objc func handleTag() {
-            parent.text += "#"
-            parent.tagButton.isSelected = true
-        }
-        
-        @objc func handleMedia() {
-            parent.media()
-            parent.addMediaButton.isSelected = true
-        }
-        
-        @objc func handleClearAll() {
-            parent.text = ""
-            parent.clearButton.isSelected = true
-        }
-        
-        @objc func handleSend() {
-            if parent.text.isEmpty {
-                let generator = UINotificationFeedbackGenerator()
-                generator.notificationOccurred(.error)
-            } else {
-                let generator = UIImpactFeedbackGenerator(style: .medium)
-                generator.impactOccurred()
-                
-                UIView.transition(with: parent.sendButton, duration: 0.1, options: .transitionCrossDissolve, animations: {
-                    self.parent.sendButton.setImage(UIImage(named: UI.Buttons.send_inactive), for: .normal)
-                }, completion: nil)
-                
-                parent.send()
-                handleClearAll()
-            }
-        }
-        
-        @objc func closeKeyboard() {
-            parent.opened()
-        }
-        
-        func textViewDidBeginEditing(_ textView: UITextView) {
-            textView.contentSize.height = tempSize
-            parent.view.textContainerInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 20)
-            parent.containerHeight = textView.contentSize.height
-            
-            textView.textColor = .black
-            if textView.text == parent.hint {
-                textView.text = ""
-            } else if textView.text == parent.drafts {
-                textView.text = parent.text
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                if let newPosition = textView.position(from: textView.endOfDocument, offset: 0) {
-                    textView.selectedTextRange = textView.textRange(from: newPosition, to: newPosition)
-                    self.parent.view.selectedTextRange = textView.textRange(from: newPosition, to: newPosition)
-                }
-            }
-        }
-        
-        func textViewDidChange(_ textView: UITextView) {
-            parent.text = textView.text
-            parent.containerHeight = textView.contentSize.height
-            
-            textView.attributedText = textView.text.resolveHashTags(color: UIColor(.c6))
-            textView.linkTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.red]
-            
-        }
-        
-        func textViewDidEndEditing(_ textView: UITextView) {
-            parent.containerHeight = 0
-            tempSize = textView.contentSize.height
-            parent.view.textContainerInset = UIEdgeInsets(top: 17, left: 0, bottom: 18, right: 0)
-            
-            if let newPosition = textView.position(from: textView.beginningOfDocument, offset: textView.text.count) {
-                textView.selectedTextRange = textView.textRange(from: newPosition, to: newPosition)
-            }
-            
-            if textView.text == "" {
-                textView.textColor = UIColor(.c3)
-                textView.text = parent.hint
-            } else {
-                textView.textColor = UIColor(.cW)
-                parent.text = textView.text
-                textView.text = parent.drafts
-                
-            }
-            
-            parent.isFirstResponder = false
-        }
-    }
-    
-    func makeCoordinator() -> Coordinator {
-        return AutosizingTextField.Coordinator(parent: self)
-    }
-    
     @Binding var text: String
     @Binding var containerHeight: CGFloat
     var isFirstResponder: Bool = false
@@ -252,7 +152,102 @@ struct AutosizingTextField: UIViewRepresentable {
         }
     }
     
+    func makeCoordinator() -> Coordinator {
+        return AutosizingTextField.Coordinator(parent: self)
+    }
     
+    class Coordinator: NSObject, UITextViewDelegate {
+        var parent : AutosizingTextField
+        var tempSize: Double = 0.0
+        
+        init(parent : AutosizingTextField) {
+            self.parent = parent
+        }
+        
+        @objc func handleTag() {
+            parent.text += "#"
+            parent.tagButton.isSelected = true
+        }
+        
+        @objc func handleMedia() {
+            parent.media()
+            parent.addMediaButton.isSelected = true
+        }
+        
+        @objc func handleClearAll() {
+            parent.text = ""
+            parent.clearButton.isSelected = true
+        }
+        
+        @objc func handleSend() {
+            if parent.text.isEmpty {
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.error)
+            } else {
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+                
+                UIView.transition(with: parent.sendButton, duration: 0.1, options: .transitionCrossDissolve, animations: {
+                    self.parent.sendButton.setImage(UIImage(named: UI.Buttons.send_inactive), for: .normal)
+                }, completion: nil)
+                
+                parent.send()
+                handleClearAll()
+            }
+        }
+        
+        @objc func closeKeyboard() {
+            parent.opened()
+        }
+        
+        func textViewDidBeginEditing(_ textView: UITextView) {
+            textView.contentSize.height = tempSize
+            parent.view.textContainerInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 20)
+            parent.containerHeight = textView.contentSize.height
+            
+            textView.textColor = .black
+            if textView.text == parent.hint {
+                textView.text = ""
+            } else if textView.text == parent.drafts {
+                textView.text = parent.text
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if let newPosition = textView.position(from: textView.endOfDocument, offset: 0) {
+                    textView.selectedTextRange = textView.textRange(from: newPosition, to: newPosition)
+                    self.parent.view.selectedTextRange = textView.textRange(from: newPosition, to: newPosition)
+                }
+            }
+        }
+        
+        func textViewDidChange(_ textView: UITextView) {
+            parent.text = textView.text
+            parent.containerHeight = textView.contentSize.height
+            
+            textView.attributedText = textView.text.resolveHashTags(color: UIColor(.c6))
+        }
+        
+        func textViewDidEndEditing(_ textView: UITextView) {
+            parent.containerHeight = 0
+            tempSize = textView.contentSize.height
+            parent.view.textContainerInset = UIEdgeInsets(top: 17, left: 0, bottom: 18, right: 0)
+            
+            if let newPosition = textView.position(from: textView.beginningOfDocument, offset: textView.text.count) {
+                textView.selectedTextRange = textView.textRange(from: newPosition, to: newPosition)
+            }
+            
+            if textView.text == "" {
+                textView.textColor = UIColor(.c3)
+                textView.text = parent.hint
+            } else {
+                textView.textColor = UIColor(.cW)
+                parent.text = textView.text
+                textView.text = parent.drafts
+            }
+            
+            parent.isFirstResponder = false
+        }
+    }
 }
 
 class CustomView: UIView {

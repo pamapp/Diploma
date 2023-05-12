@@ -69,13 +69,11 @@ struct SearchBar: UIViewRepresentable {
         }
         func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
             text = ""
-//            keyboard = false
             isFirstResponder = false
         }
         
         func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
             text = ""
-//            isFirstResponder = false
         }
     }
 }
