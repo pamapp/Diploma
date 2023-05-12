@@ -11,7 +11,6 @@ import CoreData
 @objc(MediaMO)
 public class MediaMO: NSManagedObject {
     @NSManaged public var id: UUID?
-//    @NSManaged public var kind: String
     @NSManaged public var date: Date?
     @NSManaged public var data: Data?
     @NSManaged public var album: MediaAlbumMO?

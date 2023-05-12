@@ -25,6 +25,13 @@ struct ShadowInputControl: ViewModifier {
     }
 }
 
+struct ShadowFloating: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .shadow(color: .cB.opacity(0.08), radius: 16, y: 8)
+    }
+}
+
 // MARK: - Text Modifiers -
 
 struct MemoryTextBase: ViewModifier {
@@ -102,6 +109,25 @@ struct StatsSubtitle: ViewModifier {
         content
             .foregroundColor(.c7)
             .font(.bodyText(15))
+    }
+}
+
+struct StatsPopUpTitle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(.cB)
+            .font(.headline(21.6))
+            .padding(.vertical, 8)
+    }
+}
+
+struct StatsPopUpText: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(.c1)
+            .multilineTextAlignment(.center)
+            .font(.bodyText(15))
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
 

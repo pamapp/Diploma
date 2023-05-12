@@ -89,6 +89,18 @@ struct InputAccesseryView: View {
                     }, send: {
                         self.addItem()
                     }, media: {
+                        PHPhotoLibrary.requestAuthorization { status in
+                            switch status {
+                            case .authorized, .limited:
+                                self.showImagePicker.toggle()
+                                break
+                            case .denied, .restricted, .notDetermined:
+                                self.showAlert.toggle()
+                                break
+                            @unknown default:
+                                break
+                            }
+                        }
                         self.showImagePickerInTF.toggle()
                     })
 //                    .transition(.scale)

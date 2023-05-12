@@ -11,6 +11,7 @@ import Photos
 struct ContentView: View {
     
     // MARK: - Variables
+    
     @ObservedObject var chapterViewModel: ChapterVM
     @ObservedObject var audioPlayer = AudioPlayerVM()
     
@@ -22,20 +23,17 @@ struct ContentView: View {
     @State private var isStatsPresented = false
     @State private var isKeyboardPresented = true
     
+    @State private var wholeSize: CGSize = .zero
+    @State private var scrollViewSize: CGSize = .zero
     @State private var searchText: String = ""
     
     @Namespace var bottomID
     
-    let hieght: CGFloat = UIScreen.main.bounds.height / 2
+    private let hieght: CGFloat = UI.screen_height / 2
     
-    let spaceName = "scroll"
-
-    @State var wholeSize: CGSize = .zero
-    @State var scrollViewSize: CGSize = .zero
+    private let spaceName = "scroll"
     
     var chapter: ChapterMO?
-    
-//    @State private var message = ""
     
     var searchResult: [ChapterMO] {
         if searchText.isEmpty {
@@ -52,7 +50,7 @@ struct ContentView: View {
         }
     }
     
-    // MARK: - Body
+    // MARK: - View Body
     
     var body: some View {
         NavigationView {
@@ -74,9 +72,8 @@ struct ContentView: View {
                                                         searchText: searchText,
 //                                                        message: $message,
                                                         isKeyboardPresented: $isKeyboardPresented)
-                                        Spacer(minLength: 32)
+                                        Spacer(minLength: UI.chapters_spaces)
                                     }
-
                                     
                                     //когда их мало, не работает
                                     Rectangle()
@@ -230,7 +227,6 @@ struct ContentView: View {
         UIApplication.shared.endEditing()
         withAnimation(.easeInOut) {
             isKeyboardPresented = false
-//            isSearchKeyboardPresented = false
         }
     }
     
@@ -238,7 +234,6 @@ struct ContentView: View {
         UIApplication.shared.beginEditing()
         withAnimation(.easeInOut) {
             isKeyboardPresented = true
-//            isSearchKeyboardPresented = true
         }
     }
     

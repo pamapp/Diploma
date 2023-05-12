@@ -30,7 +30,7 @@ class StatsVM: ObservableObject {
     
     func updatePopularEmojies() {
         let wordCount = getCountStrings()
-        let popularEmojies = wordCount.countEmojies().sorted(by: { $0.1 > $1.1}).prefix(10)
+        let popularEmojies = wordCount.countEmojies().sorted(by: { $0.1 > $1.1}).prefix(5)
         self.popularEmojies = popularEmojies
     }
     

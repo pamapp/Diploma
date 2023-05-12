@@ -1,5 +1,5 @@
 //
-//  CameraViewModel.swift
+//  CameraVM.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 19.03.2023.

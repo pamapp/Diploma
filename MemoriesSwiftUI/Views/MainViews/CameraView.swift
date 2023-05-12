@@ -29,7 +29,6 @@ struct CameraView: View {
         .alert(isPresented: $cameraModel.alert) {
             Alert(title: Text("Please enable cameraModel access or microphone access"))
         }
-        // Progress Bar (Do we need this?)
         .onReceive(Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()) { _ in
             if cameraModel.recordedDuration <= cameraModel.maxDuration && cameraModel.isRecording {
                 cameraModel.recordedDuration += 0.001
@@ -46,8 +45,6 @@ struct CameraView: View {
         }
     }
 }
-
-// MARK: Camera View Model
 
 struct CameraPreview: UIViewRepresentable {
     @EnvironmentObject var cameraModel: CameraVM

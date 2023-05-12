@@ -9,13 +9,6 @@ import SwiftUI
 
 @main
 struct MemoriesSwiftUIApp: App {
-//    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-
-//    // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
-//    // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
-//    let homeView = HomeView(viewModel: HomeView.ViewModel())
-//        .environment(\.managedObjectContext, context)
-    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     let persistenceController = PersistenceController.shared
     
