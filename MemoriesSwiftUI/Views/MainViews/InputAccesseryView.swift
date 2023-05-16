@@ -92,7 +92,7 @@ struct InputAccesseryView: View {
                         PHPhotoLibrary.requestAuthorization { status in
                             switch status {
                             case .authorized, .limited:
-                                self.showImagePicker.toggle()
+                                self.showImagePickerInTF.toggle()
                                 break
                             case .denied, .restricted, .notDetermined:
                                 self.showAlert.toggle()
@@ -101,11 +101,7 @@ struct InputAccesseryView: View {
                                 break
                             }
                         }
-                        self.showImagePickerInTF.toggle()
                     })
-//                    .transition(.scale)
-//                    .animation(.easeInOut(duration: 1), value: isKeyboardPresented)
-
                     .padding(.horizontal, 8)
                     .frame(height: containerHeight <= 150 ? containerHeight : 150)
                     .sheet(isPresented: $showImagePickerInTF) {
@@ -189,8 +185,6 @@ struct InputAccesseryView: View {
                   }))
         }
         .transition(.scale)
-//        .animation(.none, value: isKeyboardPresented)
-
         .sheet(isPresented: $showImagePicker) {
             ImagesPicker(selections: $selectedItems, selectionsVideo: $selectionsvideo, addFunc: withAnimation { addItem })
         }
@@ -210,12 +204,12 @@ struct InputAccesseryView: View {
             }
         }
         .transition(.scale)
-        .onLongPressGesture(minimumDuration: 0.01) {
+        .onLongPressGesture(minimumDuration: 0.5) {
             if !audioRecorder.isRecording {
-                startRecording()
                 withAnimation {
                     self.isRecording = true
                 }
+                startRecording()
             }
          }
          .simultaneousGesture(
