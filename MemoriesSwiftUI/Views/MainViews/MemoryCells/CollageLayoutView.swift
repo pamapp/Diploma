@@ -16,14 +16,12 @@ struct CollageLayoutOne: View {
         if isPortrait() {
             HStack {
                 Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                    .interpolation(.low)
                     .memoryImageStyle(w: width / 3 - 2, h: width / 3 * 1.5, corners: [.allCorners])
                 Spacer()
             }
         } else {
             HStack {
                 Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                    .interpolation(.low)
                     .memoryImageStyle(w: width / 1.5, h: width / 1.5 / 1.5, corners: [.allCorners])
                 Spacer()
             }
@@ -50,24 +48,20 @@ struct CollageLayoutTwo: View {
         if isPortraitMode() {
             HStack(spacing: 4) {
                 Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                    .interpolation(.low)
                     .memoryImageStyle(w: width / 3 - 2, h: width / 3 * 1.5, corners: [.topLeft, .bottomLeft])
                 
                 if images.count > 1 {
                     Image(uiImage: UIImage(data: images[1].safeDataContent) ?? UIImage())
-                        .interpolation(.low)
                         .memoryImageStyle(w: width / 3 - 2, h: width / 3 * 1.5, corners: [.topRight, .bottomRight])
                 }
             }
         } else {
             VStack(spacing: 4) {
                 Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                    .interpolation(.low)
                     .memoryImageStyle(w: width / 1.5, h: width / 1.5 / 1.5, corners: [.topLeft, .topRight])
                 
                 if images.count > 1 {
                     Image(uiImage: UIImage(data: images[1].safeDataContent) ?? UIImage())
-                        .interpolation(.low)
                         .memoryImageStyle(w: width / 1.5, h: width / 1.5 / 1.5, corners: [.bottomLeft, .bottomRight])
                 }
             }
@@ -100,48 +94,23 @@ struct CollageLayoutThree: View {
     var images: [MediaMO] = []
     var width: CGFloat = 0
     
-    @State private var currentIndex = 0
     @State private var showFullscreen = false
     
     var body: some View {
         VStack(spacing: 4) {
             HStack(spacing: 4) {
                 Image(uiImage: UIImage(data: images[0].safeDataContent) ?? UIImage())
-                    .interpolation(.low)
                     .memoryImageStyle(w: width / 3 - 2, h: width / 3 * 1.5, corners: [.topLeft])
-                    .onTapGesture {
-                        print("Первая фотка")
-                        self.currentIndex = 0
-                        withAnimation {
-                            self.showFullscreen = true
-                        }
-                    }
                 
                 if images.count > 1 {
                     Image(uiImage: UIImage(data: images[1].safeDataContent) ?? UIImage())
-                        .interpolation(.low)
                         .memoryImageStyle(w: width / 3 - 2, h: width / 3 * 1.5, corners: [.topRight])
-                        .onTapGesture {
-                            print("Вторая фотка")
-                            self.currentIndex = 1
-                            withAnimation {
-                                self.showFullscreen = true
-                            }
-                        }
                 }
             }.frame(width: width / 1.5)
             
             if images.count > 2 {
                 Image(uiImage: UIImage(data: images[2].safeDataContent) ?? UIImage())
-                    .interpolation(.low)
                     .memoryImageStyle(w: width / 1.5, h: width / 1.5 / 1.5, corners: [.bottomLeft, .bottomRight])
-                    .onTapGesture {
-                        print("Третья фотка")
-                        self.currentIndex = 2
-                        withAnimation {
-                            self.showFullscreen = true
-                        }
-                    }
             }
         }.frame(width: width / 1.5)
         
