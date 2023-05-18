@@ -83,7 +83,14 @@ extension ItemMO {
             return 5.0
         }
     }
-
+    
+    public var isEditable: Bool {
+        guard let timestamp = timestamp else { return true }
+        let currentTime = Date()
+        let timeInterval = currentTime.timeIntervalSince(timestamp)
+        let twentyFourHoursInSeconds: TimeInterval = 24 * 60 * 60
+        return timeInterval <= twentyFourHoursInSeconds
+    }
 }
 
 extension ItemMO : Identifiable {
