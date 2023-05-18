@@ -11,15 +11,25 @@ import CoreData
 import CoreML
 import SwiftUI
 
+enum ItemType: String {
+    case text = "text"
+    case textWithPhoto = "textWithPhoto"
+    case photo = "photo"
+    case audio = "audio"
+}
+
 class ItemVM: ObservableObject {
     private let viewContext = PersistenceController.shared.viewContext
-    @Published var items: [ItemMO] = []
-    
+
     var chapterVM: ChapterVM
     var chapter: ChapterMO
     
-    public var alert = false
-    public var alertMessage = ""
+    @Published var alert: Bool = false
+    @Published var alertMessage: String = ""
+    
+    @Published var items: [ItemMO] = []
+    @Published var message: String = ""
+    @Published var sentiment: String = ""
     
     init(chapter: ChapterMO) {
         self.chapter = chapter
@@ -36,17 +46,16 @@ class ItemVM: ObservableObject {
             alert = false
         } catch {
             alert =  true
-            alertMessage = "Saving data error"
+            alertMessage = Errors.savingDataError
         }
     }
-    
     
     func addItemParagraph(chapter: ChapterMO, text: String) {
         let item = ItemMO(context: viewContext)
         item.id = UUID()
         item.timestamp = Date()
         item.text = text
-        item.type = "text"
+        item.type = ItemType.text.rawValue
         item.sentiment = ""
         item.chapter = chapter
         
@@ -109,7 +118,7 @@ class ItemVM: ObservableObject {
             item.id = UUID()
             item.timestamp = Date()
             item.mediaAlbum = mediaAlbum
-            item.type = "textWithPhoto"
+            item.type = ItemType.textWithPhoto.rawValue
             item.text = text
             item.sentiment = ""
             item.chapter = chapter
@@ -143,6 +152,13 @@ class ItemVM: ObservableObject {
         }
     }
     
+    func setEditingItemText(_ item: ItemMO) {
+        if item.isEditable {
+            self.message = item.safeText
+            print(message)
+        }
+    }
+    
     func deleteAll() {
         for item in items {
             viewContext.delete(item)
@@ -156,9 +172,8 @@ class ItemVM: ObservableObject {
         save()
         fetchItems()
         
-        if chapter.itemsArray.isEmpty {
+        if chapter.itemsArray.isEmpty && !chapter.safeDateContent.isToday {
             chapterVM.deleteChapter(chapter)
         }
     }
-    
 }
