@@ -109,7 +109,7 @@ struct AutosizingTextField: UIViewRepresentable {
         clearButton.centerYAnchor.constraint(equalTo: customInputView.layoutMarginsGuide.centerYAnchor).isActive = true
         
         view.inputAccessoryView = customInputView
-
+        
         return view
     }
     
@@ -207,7 +207,7 @@ struct AutosizingTextField: UIViewRepresentable {
             
             textView.textColor = .black
             if textView.text == parent.hint {
-                textView.text = ""
+                textView.text = parent.text
             } else if textView.text == parent.drafts {
                 textView.text = parent.text
             }

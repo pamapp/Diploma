@@ -8,6 +8,10 @@
 import Foundation
 import SwiftUI
 
+struct Errors {
+    static let savingDataError: String = "Saving data error"
+
+}
 
 struct UI {
     static let screen_width: CGFloat = UIScreen.main.bounds.width

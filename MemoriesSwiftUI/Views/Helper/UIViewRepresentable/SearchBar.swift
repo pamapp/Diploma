@@ -11,7 +11,8 @@ struct SearchBar: UIViewRepresentable {
     @Binding var text: String
     @Binding var isFirstResponder: Bool
     @Binding var keyboard: Bool
-    
+    @ObservedObject var chapterViewModel: ChapterVM
+
     func makeUIView(context: Context) -> UISearchBar {
         let searchBar = UISearchBar()
         searchBar.searchBarStyle = .minimal
@@ -43,28 +44,45 @@ struct SearchBar: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text, isFirstResponder: $isFirstResponder, keyboard: $keyboard)
+        Coordinator(text: $text, isFirstResponder: $isFirstResponder, keyboard: $keyboard, chapterViewModel: chapterViewModel)
     }
 
     class Coordinator: NSObject, UISearchBarDelegate {
         @Binding var text: String
         @Binding var isFirstResponder: Bool
         @Binding var keyboard: Bool
+        @ObservedObject var chapterViewModel: ChapterVM
 
-        init(text: Binding<String>, isFirstResponder: Binding<Bool>, keyboard: Binding<Bool>) {
+        init(text: Binding<String>, isFirstResponder: Binding<Bool>, keyboard: Binding<Bool>, chapterViewModel: ChapterVM) {
             _text = text
             _isFirstResponder = isFirstResponder
             _keyboard = keyboard
+            self.chapterViewModel = chapterViewModel
         }
-
+        
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
             text = searchText
+            
+            if searchText.isEmpty {
+               chapterViewModel.searchAsync(with: "") { [weak self] searchResult in
+                   DispatchQueue.main.async {
+                       self?.chapterViewModel.searchResult = searchResult
+                   }
+               }
+           } else {
+               chapterViewModel.searchAsync(with: searchText) { [weak self] searchResult in
+                   DispatchQueue.main.async {
+                       self?.chapterViewModel.searchResult = searchResult
+                   }
+               }
+           }
         }
 
         func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
             keyboard = true
         }
         func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+//            text = ""
             keyboard = false
         }
         func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
