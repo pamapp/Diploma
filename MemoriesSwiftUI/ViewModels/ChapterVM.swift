@@ -10,11 +10,18 @@ import CoreData
 
 class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate {
     private let controller : NSFetchedResultsController<ChapterMO>
+    private var searchText: String = ""
     public var alert = false
     public var alertMessage = ""
 
     @Published var statusValue: Int = 0
-    
+    @Published var searchResult: [ChapterMO] = []
+
+    private var fetchedChapters: [ChapterMO] {
+        guard let fetchedObjects = controller.fetchedObjects else { return [] }
+        return fetchedObjects
+    }
+
     init(moc: NSManagedObjectContext) {
         let sortDescriptors = [NSSortDescriptor(keyPath: \ChapterMO.date, ascending: true)]
         controller = ChapterMO.resultsController(moc: moc, sortDescriptors: sortDescriptors)
@@ -27,88 +34,120 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
             alert = false
         } catch {
             alert =  true
-            alertMessage = "Saving data error"
+            alertMessage = Errors.savingDataError
         }
     }
-    
+
     func saveContext() {
         do {
             try controller.managedObjectContext.save()
             alert = false
         } catch {
             alert =  true
-            alertMessage = "Saving data error"
+            alertMessage = Errors.savingDataError
         }
     }
 
     var chapters: [ChapterMO] {
-        if controller.fetchedObjects?.isEmpty == true {
+        if fetchedChapters.isEmpty {
             statusValue = 1
-            
-            let chapter1 = ChapterMO(context: controller.managedObjectContext)
-            chapter1.id = UUID()
-            chapter1.date = Date()
+
+            let chapter = ChapterMO(context: controller.managedObjectContext)
+            chapter.id = UUID()
+            chapter.date = Date()
             saveContext()
         }
-        return controller.fetchedObjects ?? []
+        return fetchedChapters
     }
 
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         objectWillChange.send()
     }
 
+    func searchAsync(with searchText: String, completion: @escaping ([ChapterMO]) -> Void) {
+        DispatchQueue.global().async {
+            let searchResult: [ChapterMO]
+            if searchText.isEmpty {
+                searchResult = self.fetchedChapters
+            } else {
+                searchResult = self.fetchedChapters.filter { chapter in
+                    chapter.itemsArray.contains { item in
+                        item.safeText.localizedCaseInsensitiveContains(searchText)
+                    }
+                }
+            }
+            completion(searchResult)
+        }
+    }
+
     func addChapter() {
         deleteEmpty()
-        
-        if chapters.last?.safeDateContent.isToday == false {
+
+        if fetchedChapters.last?.safeDateContent.isToday == false {
             let chapter = ChapterMO(context: controller.managedObjectContext)
             chapter.id = UUID()
             chapter.date = Date()
             saveContext()
         }
-        
+
         getConsecutiveDays()
     }
 
     func getCurrentChapter() -> ChapterMO {
-        return chapters.last!
+        return fetchedChapters.last!
     }
 
     func deleteLast() {
-        controller.managedObjectContext.delete(chapters.last!)
+        defer {
+            getConsecutiveDays()
+        }
+
+        guard let lastChapter = fetchedChapters.last else { return }
+        controller.managedObjectContext.delete(lastChapter)
         saveContext()
-        getConsecutiveDays()
     }
 
     func deleteAll() {
-        for chapter in chapters {
-            controller.managedObjectContext.delete(chapter)
+        defer {
+            getConsecutiveDays()
+        }
+
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: ChapterMO.fetchRequest())
+        do {
+            try controller.managedObjectContext.execute(deleteRequest)
+        } catch {
+            print("Failed to delete chapters: \(error)")
         }
         saveContext()
-        getConsecutiveDays()
     }
-    
+
     func deleteEmpty() {
-        for chapter in chapters {
+        defer {
+            getConsecutiveDays()
+        }
+
+        for chapter in fetchedChapters {
             if chapter.itemsArray.isEmpty && !chapter.safeDateContent.isToday {
                 controller.managedObjectContext.delete(chapter)
             }
         }
         saveContext()
-        getConsecutiveDays()
     }
-    
+
     func deleteChapter(_ chapter: ChapterMO) {
+        defer {
+            getConsecutiveDays()
+        }
+
         controller.managedObjectContext.delete(chapter)
         saveContext()
-        getConsecutiveDays()
     }
-    
+
     func getConsecutiveDays() {
         var streak = 0
         var lastDate: Date?
 
-        for chapter in chapters {
+        for chapter in fetchedChapters {
             if let currentDate = chapter.date {
                 if lastDate == nil {
                     if !chapter.itemsArray.isEmpty {
@@ -117,16 +156,16 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
                     }
                     continue
                 }
-                
+
                 if lastDate!.getDaysNum(currentDate) == 1 {
                     lastDate = currentDate
                     if streak < 7 {
                         streak += 1
                     }
                 } else {
-                    if lastDate!.getDaysNum(currentDate) % 2 == 1 {
-                        if streak > 0 {
-                            streak -= 1
+                    if lastDate!.getDaysNum(currentDate) > 1 {
+                        if streak - lastDate!.getDaysNum(currentDate) >= 0 {
+                            streak -= lastDate!.getDaysNum(currentDate)
                         } else {
                             streak = 0
                         }
@@ -135,7 +174,6 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
                 }
             }
         }
-        
         statusValue = streak
     }
 
@@ -162,6 +200,7 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         }
     }
 }
+
 
 //
 //
