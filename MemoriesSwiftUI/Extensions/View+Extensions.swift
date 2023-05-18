@@ -123,13 +123,13 @@ extension View {
 }
 
 extension View {
-    func searchable(text: Binding<String>, isPresented: Binding<Bool>, keyboard: Binding<Bool>) -> some View {
+    func searchable(text: Binding<String>, isPresented: Binding<Bool>, keyboard: Binding<Bool>, chapterViewModel: ChapterVM) -> some View {
         overlay(
             Group {
                 if isPresented.wrappedValue {
                     VStack(spacing: 0) {
                         HStack(alignment: .top) {
-                            SearchBar(text: text, isFirstResponder: isPresented, keyboard: keyboard)
+                            SearchBar(text: text, isFirstResponder: isPresented, keyboard: keyboard, chapterViewModel: chapterViewModel)
                                 .animation(.linear(duration: 0.2), value: 10)
                         }
                         Divider()

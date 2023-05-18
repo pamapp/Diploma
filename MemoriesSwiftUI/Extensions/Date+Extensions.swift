@@ -19,6 +19,20 @@ extension Date {
     }
 }
 
+extension DateComponentsFormatter {
+    
+    // MARK: Formatting the audio timer
+    
+    static let positional: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.minute, .second]
+        formatter.unitsStyle = .positional
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
+}
+
+
 extension Date {
     
     // MARK: Date comparison
@@ -36,5 +50,11 @@ extension Date {
     
     func getDaysNum(_ date: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: self), to: Calendar.current.startOfDay(for: date)).day ?? 0
+    }
+    
+    func toString( dateFormat format  : String ) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.string(from: self)
     }
 }
