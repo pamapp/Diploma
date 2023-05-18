@@ -12,12 +12,9 @@ import Combine
 import CoreData
 
 class AudioRecorderVM: NSObject, ObservableObject {
-    
-//    let moc = PersistenceController.shared.container.viewContext
-
     var audioRecorder: AVAudioRecorder?
     
-    @Published private var recordingName = "Recording1"
+    @Published private var recordingName = "Recording"
     @Published private var recordingDate = Date()
     @Published private var recordingURL: URL?
     
@@ -28,7 +25,6 @@ class AudioRecorderVM: NSObject, ObservableObject {
     init(itemModel: ItemVM) {
         self.itemModel = itemModel
     }
-    
     
     // MARK: - Start Recording
     
@@ -48,7 +44,6 @@ class AudioRecorderVM: NSObject, ObservableObject {
         recordingDate = currentDateTime
         recordingName = "\(currentDateTime.toString(dateFormat: "dd-MM-YY_'at'_HH:mm:ss"))"
         
-        // save the recording to the temporary directory
         let tempDirectory = FileManager.default.temporaryDirectory
         let recordingFileURL = tempDirectory.appendingPathComponent(recordingName).appendingPathExtension("m4a")
         recordingURL = recordingFileURL
@@ -96,10 +91,10 @@ class AudioRecorderVM: NSObject, ObservableObject {
         
     }
     
-    // MARK: - CoreData --------------------------------------
+    // MARK: - CoreData
     
     func saveRecordingOnCoreData(chapter: ChapterMO, recordingData: Data) {
-        itemModel.addItemMedia(chapter: chapter, attachments: [recordingData], type: "audio")
+        itemModel.addItemMedia(chapter: chapter, attachments: [recordingData], type: ItemType.audio.rawValue)
     }
     
     func deleteRecordingFile() {
@@ -113,23 +108,4 @@ class AudioRecorderVM: NSObject, ObservableObject {
         }
     }
     
-}
-
-
-extension Date {
-    func toString( dateFormat format  : String ) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = format
-        return dateFormatter.string(from: self)
-    }
-}
-
-extension DateComponentsFormatter {
-    static let positional: DateComponentsFormatter = {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.minute, .second]
-        formatter.unitsStyle = .positional
-        formatter.zeroFormattingBehavior = .pad
-        return formatter
-    }()
 }

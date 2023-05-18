@@ -141,5 +141,4 @@ struct WordCount {
         }
         return WordCount(words: tempArr.seporateElements())
     }
-    
 }
