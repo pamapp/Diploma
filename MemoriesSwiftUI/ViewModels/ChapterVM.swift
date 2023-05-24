@@ -13,18 +13,29 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
     private var searchText: String = ""
     public var alert = false
     public var alertMessage = ""
-
+    
+    @Published var message: String = ""
     @Published var statusValue: Int = 0
     @Published var searchResult: [ChapterMO] = []
+    @Published var isEditingMessage: Bool = false
+    var edittingItem: ItemMO
 
     private var fetchedChapters: [ChapterMO] {
         guard let fetchedObjects = controller.fetchedObjects else { return [] }
         return fetchedObjects
     }
+    
+    public var currentChapter: ChapterMO {
+        if !fetchedChapters.isEmpty {
+            return fetchedChapters.last!
+        }
+        return chapters.last!
+    }
 
     init(moc: NSManagedObjectContext) {
         let sortDescriptors = [NSSortDescriptor(keyPath: \ChapterMO.date, ascending: true)]
         controller = ChapterMO.resultsController(moc: moc, sortDescriptors: sortDescriptors)
+        self.edittingItem = ItemMO(context: controller.managedObjectContext)
         super.init()
 
         controller.delegate = self
@@ -36,8 +47,19 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
             alert =  true
             alertMessage = Errors.savingDataError
         }
-    }
+        
+        if fetchedChapters.isEmpty {
+            statusValue = 1
 
+            let chapter = ChapterMO(context: controller.managedObjectContext)
+            chapter.id = UUID()
+            chapter.date = Date()
+            saveContext()
+        }
+        
+        addChapter()
+    }
+    
     func saveContext() {
         do {
             try controller.managedObjectContext.save()
@@ -49,19 +71,35 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
     }
 
     var chapters: [ChapterMO] {
-        if fetchedChapters.isEmpty {
-            statusValue = 1
-
-            let chapter = ChapterMO(context: controller.managedObjectContext)
-            chapter.id = UUID()
-            chapter.date = Date()
-            saveContext()
-        }
         return fetchedChapters
     }
 
+    
+    func changeMessage(chapter: ChapterMO, itemText: String) {
+        if let foundItem = chapter.itemsArray.first(where: { $0.safeText == itemText }) {
+            self.startEdit()
+            self.message = foundItem.safeText
+            edittingItem = foundItem
+        }
+    }
+    
+    func startEdit() {
+        self.isEditingMessage = true
+    }
+    
+    func endEdit() {
+        self.isEditingMessage = false
+    }
+
+    func editItem(itemVM: ItemVM, text: String) {
+        itemVM.editItem(edittingItem, text: text)
+        self.endEdit()
+    }
+    
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        objectWillChange.send()
+        DispatchQueue.main.async { [self] in
+            objectWillChange.send()
+        }
     }
 
     func searchAsync(with searchText: String, completion: @escaping ([ChapterMO]) -> Void) {
@@ -88,15 +126,26 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
             chapter.id = UUID()
             chapter.date = Date()
             saveContext()
+            
+            getConsecutiveDays()
         }
 
         getConsecutiveDays()
     }
-
-    func getCurrentChapter() -> ChapterMO {
-        return fetchedChapters.last!
+    
+    func shouldAddNewChapter() -> Bool {
+        guard let lastChapter = chapters.last else {
+            return true
+        }
+        
+        let calendar = Calendar.current
+        let currentDate = Date()
+        let currentDay = calendar.component(.day, from: currentDate)
+        let lastChapterDay = calendar.component(.day, from: lastChapter.safeDateContent)
+        
+        return currentDay != lastChapterDay
     }
-
+    
     func deleteLast() {
         defer {
             getConsecutiveDays()
@@ -141,6 +190,8 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
 
         controller.managedObjectContext.delete(chapter)
         saveContext()
+        
+        getConsecutiveDays()
     }
 
     func getConsecutiveDays() {
@@ -156,23 +207,37 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
                     }
                     continue
                 }
+//                print("======")
+//                print(lastDate)
+//                print(currentDate)
+//                print(lastDate!.getDaysNum(currentDate))
 
-                if lastDate!.getDaysNum(currentDate) == 1 {
-                    lastDate = currentDate
-                    if streak < 7 {
-                        streak += 1
-                    }
-                } else {
-                    if lastDate!.getDaysNum(currentDate) > 1 {
-                        if streak - lastDate!.getDaysNum(currentDate) >= 0 {
-                            streak -= lastDate!.getDaysNum(currentDate)
-                        } else {
-                            streak = 0
+                if chapter != chapters.last {
+                    if lastDate!.getDaysNum(currentDate) == 1 {
+                        lastDate = currentDate
+                        if streak < 7 {
+                            streak += 1
                         }
+                    } else {
+                        if lastDate!.getDaysNum(currentDate) > 2 {
+                            if streak - lastDate!.getDaysNum(currentDate) >= 0 {
+                                streak -= lastDate!.getDaysNum(currentDate)
+                            } else {
+                                streak = 0
+                            }
+                        }
+                        lastDate = currentDate
                     }
-                    lastDate = currentDate
+                    //доделай
+                } else if chapter == chapters.last && !chapter.itemsArray.isEmpty {
+//                    if chapter.itemsArray.isEmpty && streak == 0 {
+//                        streak = -1
+//                    } else {
+                        streak += 1
+//                    }
                 }
             }
+//            print(streak)
         }
         statusValue = streak
     }

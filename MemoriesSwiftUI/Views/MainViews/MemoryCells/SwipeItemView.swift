@@ -11,8 +11,8 @@ struct SwipeItem<Content: View, Right: View>: View {
     var content: () -> Content
     var right: () -> Right
     var itemHeight: CGFloat = 0
-    @Binding var endSwipeAction: Bool
     
+    @Binding var endSwipeAction: Bool
     @State var hoffset: CGFloat = 0
     @State var anchor: CGFloat = 0
 
@@ -78,7 +78,6 @@ struct SwipeItem<Content: View, Right: View>: View {
                         }
                     } else {
                         anchor = 0
-//                        hoffset = anchor
                     }
                     hoffset = anchor
                 }

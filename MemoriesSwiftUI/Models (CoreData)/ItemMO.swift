@@ -8,7 +8,6 @@
 import Foundation
 import CoreData
 import SwiftUI
-import CryptoKit
 
 @objc(ItemMO)
 public class ItemMO: NSManagedObject {
@@ -93,6 +92,6 @@ extension ItemMO {
     }
 }
 
-extension ItemMO : Identifiable {
+extension ItemMO: Identifiable {
 }
 

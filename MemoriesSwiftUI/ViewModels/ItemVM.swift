@@ -19,7 +19,7 @@ enum ItemType: String {
 }
 
 class ItemVM: ObservableObject {
-    private let viewContext = PersistenceController.shared.viewContext
+    private let controller :  NSFetchedResultsController<ItemMO>
 
     var chapterVM: ChapterVM
     var chapter: ChapterMO
@@ -28,12 +28,16 @@ class ItemVM: ObservableObject {
     @Published var alertMessage: String = ""
     
     @Published var items: [ItemMO] = []
-    @Published var message: String = ""
     @Published var sentiment: String = ""
     
-    init(chapter: ChapterMO) {
+    init(moc: NSManagedObjectContext, chapter: ChapterMO) {
+        let sortDescriptors = [NSSortDescriptor(keyPath: \ItemMO.timestamp, ascending: true)]
+        controller = ItemMO.resultsController(moc: moc, sortDescriptors: sortDescriptors, predicate: NSPredicate(format: "chapter = %@", chapter))
+        
         self.chapter = chapter
-        self.chapterVM = ChapterVM(moc: viewContext)
+        self.chapterVM = ChapterVM(moc: moc)
+
+        fetchItems()
     }
     
     func fetchItems() {
@@ -42,7 +46,7 @@ class ItemVM: ObservableObject {
     
     func save() {
         do {
-            try viewContext.save()
+            try controller.managedObjectContext.save()
             alert = false
         } catch {
             alert =  true
@@ -51,7 +55,7 @@ class ItemVM: ObservableObject {
     }
     
     func addItemParagraph(chapter: ChapterMO, text: String) {
-        let item = ItemMO(context: viewContext)
+        let item = ItemMO(context: controller.managedObjectContext)
         item.id = UUID()
         item.timestamp = Date()
         item.text = text
@@ -67,13 +71,13 @@ class ItemVM: ObservableObject {
     
     func addItemMedia(chapter: ChapterMO, attachments: [Data], type: String) {
         if !attachments.isEmpty && attachments.count <= 3 {
-            let item = ItemMO(context: viewContext)
-            let mediaAlbum = MediaAlbumMO(context: viewContext)
+            let item = ItemMO(context: controller.managedObjectContext)
+            let mediaAlbum = MediaAlbumMO(context: controller.managedObjectContext)
             
             mediaAlbum.item = item
             
             for attachment in attachments {
-                let media = MediaMO(context: viewContext)
+                let media = MediaMO(context: controller.managedObjectContext)
                 media.id = UUID()
                 media.date = Date()
                 media.data = attachment
@@ -100,14 +104,14 @@ class ItemVM: ObservableObject {
     
     func addItemParagraphAndMedia(chapter: ChapterMO, attachments: [Data], text: String) {
         if !attachments.isEmpty && attachments.count <= 3 {
-            let item = ItemMO(context: viewContext)
-            let mediaAlbum = MediaAlbumMO(context: viewContext)
+            let item = ItemMO(context: controller.managedObjectContext)
+            let mediaAlbum = MediaAlbumMO(context: controller.managedObjectContext)
             
             mediaAlbum.item = item
             
             
             for attachment in attachments {
-                let media = MediaMO(context: viewContext)
+                let media = MediaMO(context: controller.managedObjectContext)
                 media.id = UUID()
                 media.date = Date()
                 media.data = attachment
@@ -133,7 +137,7 @@ class ItemVM: ObservableObject {
         }
     }
 
-    func setMemorySentiment(_ item: ItemMO){
+    func setMemorySentiment(_ item: ItemMO) {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let mlModel = try SentimentClassifier(configuration: MLModelConfiguration()).model
@@ -152,23 +156,24 @@ class ItemVM: ObservableObject {
         }
     }
     
-    func setEditingItemText(_ item: ItemMO) {
+    func editItem(_ item: ItemMO, text: String) {
         if item.isEditable {
-            self.message = item.safeText
-            print(message)
+            item.text = text
+            save()
+            fetchItems()
         }
     }
     
     func deleteAll() {
         for item in items {
-            viewContext.delete(item)
+            controller.managedObjectContext.delete(item)
         }
         save()
         fetchItems()
     }
     
     func deleteItem(_ item: ItemMO) {
-        viewContext.delete(item)
+        controller.managedObjectContext.delete(item)
         save()
         fetchItems()
         

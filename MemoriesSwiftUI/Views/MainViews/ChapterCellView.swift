@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct ChapterCellView: View {
+    let persistenceController = PersistenceController.shared
+
+    @EnvironmentObject var chapterViewModel: ChapterVM
+    @EnvironmentObject var quickActionSettings: QuickActionSettings
+
     @ObservedObject var itemViewModel: ItemVM
-    private var chapterDate: String
-    private var chapterNum: Int
-    var searchText: String
-    
-//    @Binding var message: String
     @Binding var isKeyboardPresented: Bool
 
+    private var chapterDate: String
+    private var chapterNum: Int
+    
+    var searchText: String
     
     var searchResult: [ItemMO] {
         if searchText.isEmpty {
@@ -28,18 +32,17 @@ struct ChapterCellView: View {
     }
     
     let cellWidth = UIScreen.main.bounds.width - 32
-
+    var chapter: ChapterMO
+    
     init(chapter: ChapterMO,
          searchText: String,
-//         message: Binding<String>,
          isKeyboardPresented: Binding<Bool>) {
-        self.itemViewModel = ItemVM(chapter: chapter)
+        self.chapter = chapter
+        self.itemViewModel = ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapter)
         self.chapterDate = chapter.safeDateContent.getFormattedDateString(format: "d MMMM. EEEE")
         self.chapterNum = chapter.safeContainsNumber
         self.searchText = searchText
-//        self._message = message
         self._isKeyboardPresented = isKeyboardPresented
-        itemViewModel.fetchItems()
     }
     
     var body: some View {
@@ -58,9 +61,11 @@ struct ChapterCellView: View {
                             MemoryCellView(memory: item,
                                            delete: { itemViewModel.deleteItem(item) },
                                            edit: {
-//                                                message = item.safeText
+                                                chapterViewModel.changeMessage(chapter: chapter, itemText: item.safeText)
                                                 isKeyboardPresented = true
+                                                print(chapterViewModel.message)
                                             })
+                            .environmentObject(quickActionSettings)
                             .frame(width: self.cellWidth - 32)
                         }
                     } else {

@@ -10,7 +10,6 @@ import SwiftUI
 
 struct Errors {
     static let savingDataError: String = "Saving data error"
-
 }
 
 struct UI {
@@ -43,27 +42,42 @@ struct UI {
         static let video_message: String = "video-message"
         static let audio_message: String = "audio-message"
         static let eye_slash_fill: String = "eye.slash.fill"
+        static let incognito: String = "incognito"
+        static let emoji: String = "emoji"
     }
     
     enum Strings {
         static let empty_chapter_text: String = "Сегодня записей нет"
         static let dear_diary: String = "Дорогой дневник,"
         static let draft: String = "Черновик"
-        static let mood_chart_title: String = "График настроя"
-        static let mood_chart_text: String = "Показывает общее настроение Ваших воспоминаний. Это помогает остледить уровень эмоций"
-        static let words_top_title: String = "Топ 10 слов"
-        static let words_top_text: String = "Это может помочь Вам лучше отслеживать ваши чувства и переживания"
-        static let emoji_top: String = "Топ Emoji"
         
+        static let privacy_mode_title: String = "Режим приватности"
+        static let privacy_mode_text: String = "Скроет записи от посторонних глаз, например, в вагоне метро."
+        
+        static let mood_chart_title: String = "График настроя"
+        static let mood_chart_text: String = "Показывает общее настроение ваших воспоминаний. Это помогает остледить уровень эмоций."
+        static let mood_chart_empty_text: String = "Данных пока нет"
+        
+        static let words_top_title: String = "Топ 10 слов"
+        static let words_top_text: String = "Статистика часто используемых Вами слов может помочь лучше отслеживать ваши чувства и переживания."
+        static let words_top_empty: [String] = ["Введите", "дневник", "каждый", "день", "узнавайте", "себя", "лучше", "собирайте", "статистику", "о себе"]
+        
+        static let emoji_top: String = "Топ Emoji"
+    
         static let stats_description_title: String = "Цветок воспоминаний"
         static let stats_description_text: String = "Ведите дневник каждый день и ваш цветок будет расти. Память улучшаться. Ум станет острее. Ежедневные записи укрепляют нейроны нашего мозга и питают цветок."
         static let stats_description_btn_text: String = "Запомню"
     }
     
     enum Alearts {
-        static let alert_title: String = "Доступ к библиотеке фотографий"
-        static let message_text: String = "Пожалуйста, предоставьте доступ в настройках, чтобы продолжить"
-        static let primaryBtn_text: String = "Отменить"
-        static let secondaryBtn_text: String = "Настройки"
+        static let php_alert_title: String = "Доступ к библиотеке фотографий"
+        static let php_message_text: String = "Пожалуйста, предоставьте доступ в настройках, чтобы продолжить"
+        static let php_primaryBtn_text: String = "Отменить"
+        static let php_secondaryBtn_text: String = "Настройки"
+        
+        static let micro_alert_title: String = "Доступ к микрофону"
+        static let micro_message_text: String = "Пожалуйста, предоставьте доступ в настройках, чтобы продолжить"
+        static let micro_primaryBtn_text: String = "Отменить"
+        static let micro_secondaryBtn_text: String = "Настройки"
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import Combine
+//import Combine
 
 struct AutosizingTextField: UIViewRepresentable {
     @Binding var text: String
@@ -17,7 +17,6 @@ struct AutosizingTextField: UIViewRepresentable {
     var hint : String = UI.Strings.dear_diary
     var drafts : String = UI.Strings.draft
     
-    var opened : ()->()
     var send : ()->()
     var media : ()->()
 
@@ -114,6 +113,7 @@ struct AutosizingTextField: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UITextView, context: Context) {
+//        print("текстTF: \(text)")
         DispatchQueue.main.async {
             // ClearAll_Button
             if context.coordinator.parent.text.isEmpty {
@@ -149,6 +149,8 @@ struct AutosizingTextField: UIViewRepresentable {
             } else {
                 uiView.resignFirstResponder()
             }
+            
+            
         }
     }
     
@@ -194,10 +196,6 @@ struct AutosizingTextField: UIViewRepresentable {
                 parent.send()
                 handleClearAll()
             }
-        }
-        
-        @objc func closeKeyboard() {
-            parent.opened()
         }
         
         func textViewDidBeginEditing(_ textView: UITextView) {

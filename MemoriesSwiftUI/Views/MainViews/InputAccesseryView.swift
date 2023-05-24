@@ -7,27 +7,35 @@
 
 import SwiftUI
 import PhotosUI
-import AVKit
+//import AVKit 
 
 struct InputAccesseryView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @EnvironmentObject var chapterViewModel: ChapterVM
+    
     @ObservedObject var itemViewModel: ItemVM
-    @ObservedObject var chapterViewModel: ChapterVM
-    @ObservedObject var cameraModel: CameraVM
     @ObservedObject var audioRecorder: AudioRecorderVM
     @ObservedObject var audioPlayerVM: AudioPlayerVM
     
-    @State var showCameraView: Bool = false
-    @State var isRecording: Bool = false
-    @State var showImagePicker: Bool = false
-    @State var showImagePickerInTF: Bool = false
-
-    @State var showAlert: Bool = false
-
-    @State private var message: String = ""
-    
     @Binding var isKeyboardPresented: Bool
-    @State var containerHeight : CGFloat = 0
+
+    @State private var showCameraView: Bool = false
+    @State private var showImagePicker: Bool = false
+    @State private var showImagePickerInTF: Bool = false
+    @State private var showPHPAlert: Bool = false
+    @State private var showMicroAlert: Bool = false
+
+    @State private var isRecording: Bool = false
+
+    
+    var message: Binding<String> {
+        Binding<String>(
+            get: { chapterViewModel.message },
+            set: { chapterViewModel.message = $0 }
+        )
+    }
+    
+    @State private var containerHeight : CGFloat = 0
 
     @State private var selectedItems: [UIImage] = []
     @State private var selectionsvideo = [URL]()
@@ -35,18 +43,12 @@ struct InputAccesseryView: View {
     
     var chapter: ChapterMO
     
-    init(chapter: ChapterMO, audioPlayer: AudioPlayerVM, chapterVM: ChapterVM,
-//         message: Binding<String>,
-         isKeyboardPresented: Binding<Bool>) {
-        self.itemViewModel = ItemVM(chapter: chapter)
-        self.audioRecorder = AudioRecorderVM(itemModel: ItemVM(chapter: chapter))
+    init(chapter: ChapterMO, audioPlayer: AudioPlayerVM, chapterVM: ChapterVM, isKeyboardPresented: Binding<Bool>) {
+        self.itemViewModel = ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapter)
+        self.audioRecorder = AudioRecorderVM(itemModel: ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapter))
         self.audioPlayerVM = audioPlayer
-        self.cameraModel = CameraVM()
         self.chapter = chapter
-//        self._message = message
         self._isKeyboardPresented = isKeyboardPresented
-        self.chapterViewModel = chapterVM
-        itemViewModel.fetchItems()
     }
     
     var body: some View {
@@ -84,10 +86,12 @@ struct InputAccesseryView: View {
                         .transition(.opacity)
                     }
                     
-                    AutosizingTextField(text: $message, containerHeight: $containerHeight, isFirstResponder: isKeyboardPresented, opened: {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    }, send: {
-                        self.addItem()
+                    AutosizingTextField(text: message, containerHeight: $containerHeight, isFirstResponder: isKeyboardPresented, send: {
+                        if chapterViewModel.isEditingMessage == true {
+                            self.editItem()
+                        } else {
+                            self.addItem()
+                        }
                     }, media: {
                         PHPhotoLibrary.requestAuthorization { status in
                             switch status {
@@ -95,7 +99,7 @@ struct InputAccesseryView: View {
                                 self.showImagePickerInTF.toggle()
                                 break
                             case .denied, .restricted, .notDetermined:
-                                self.showAlert.toggle()
+                                self.showPHPAlert.toggle()
                                 break
                             @unknown default:
                                 break
@@ -112,6 +116,15 @@ struct InputAccesseryView: View {
                             isKeyboardPresented = true
                         }
                     }
+//                    .onAppear {
+//                        // Создаем таймер и устанавливаем интервал обновления в 1 секунду
+//                        Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { timer in
+//                            // Обновляем значение currentTime
+////                            print("текст1: \(message.wrappedValue)")
+//                            print("текст2: \(chapterViewModel.message)")
+
+//                        }
+//                    }
                 }.opacity(isRecording ? 0 : 1)
                 
                 if !isKeyboardPresented {
@@ -140,9 +153,7 @@ struct InputAccesseryView: View {
             if let audioRecorder = audioRecorder.audioRecorder, audioRecorder.isRecording {
                 TimelineView(.periodic(from: .now, by: 1)) { _ in
                     Text("-\(DateComponentsFormatter.positional.string(from: audioRecorder.currentTime) ?? "0:00")")
-                        .font(.bodyText(15))
-                        .foregroundColor(.c7)
-                        .frame(width: 50)
+                        .memoryRecordingDurationStyle()
                 }
             }
             Circle()
@@ -159,7 +170,7 @@ struct InputAccesseryView: View {
                     self.showImagePicker.toggle()
                     break
                 case .denied, .restricted, .notDetermined:
-                    self.showAlert.toggle()
+                    self.showPHPAlert.toggle()
                     break
                 @unknown default:
                     break
@@ -175,11 +186,11 @@ struct InputAccesseryView: View {
                     .foregroundColor(.c3)
             }
         }
-        .alert(isPresented: $showAlert) {
-            Alert(title: Text(UI.Alearts.alert_title),
-                  message: Text(UI.Alearts.message_text),
-                  primaryButton: .default(Text(UI.Alearts.primaryBtn_text)),
-                  secondaryButton: .default(Text(UI.Alearts.secondaryBtn_text), action: {
+        .alert(isPresented: $showPHPAlert) {
+            Alert(title: Text(UI.Alearts.php_alert_title),
+                  message: Text(UI.Alearts.php_message_text),
+                  primaryButton: .default(Text(UI.Alearts.php_primaryBtn_text)),
+                  secondaryButton: .default(Text(UI.Alearts.php_secondaryBtn_text), action: {
                         guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
                               UIApplication.shared.open(settingsURL)
                   }))
@@ -203,13 +214,34 @@ struct InputAccesseryView: View {
                     .foregroundColor(isRecording ? .c5 : .cW)
             }
         }
+        .alert(isPresented: $showMicroAlert) {
+            Alert(title: Text(UI.Alearts.micro_alert_title),
+                  message: Text(UI.Alearts.micro_message_text),
+                  primaryButton: .default(Text(UI.Alearts.micro_primaryBtn_text)),
+                  secondaryButton: .default(Text(UI.Alearts.micro_secondaryBtn_text), action: {
+                        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
+                              UIApplication.shared.open(settingsURL)
+                  }))
+        }
         .transition(.scale)
+        .onTapGesture {
+            AVAudioSession.sharedInstance().requestRecordPermission { granted in
+                DispatchQueue.main.async { }
+            }
+        }
         .onLongPressGesture(minimumDuration: 0.5) {
-            if !audioRecorder.isRecording {
-                withAnimation {
-                    self.isRecording = true
+            switch AVAudioSession.sharedInstance().recordPermission {
+            case .granted:
+                if !audioRecorder.isRecording {
+                    withAnimation {
+                        self.isRecording = true
+                    }
+                    startRecording()
                 }
-                startRecording()
+            case .denied, .undetermined:
+                self.showMicroAlert.toggle()
+            @unknown default:
+                break
             }
          }
          .simultaneousGesture(
@@ -225,8 +257,14 @@ struct InputAccesseryView: View {
          )
     }
     
+    private func editItem() {
+        chapterViewModel.editItem(itemVM: itemViewModel, text: message.wrappedValue)
+    }
+    
     private func addItem() {
         chapterViewModel.addChapter()
+        
+        let currentMessage = message.wrappedValue
         
         if !selectedItems.isEmpty {
             for selectedItem in selectedItems {
@@ -236,12 +274,12 @@ struct InputAccesseryView: View {
             }
         }
         
-        if !message.isEmpty && selectedImagesData.isEmpty {
-            itemViewModel.addItemParagraph(chapter: chapter, text: message)
-        } else if !message.isEmpty && !selectedImagesData.isEmpty  {
-            itemViewModel.addItemParagraphAndMedia(chapter: chapter, attachments: selectedImagesData, text: message)
+        if !currentMessage.isEmpty && selectedImagesData.isEmpty {
+            itemViewModel.addItemParagraph(chapter: chapter, text: currentMessage)
+        } else if !currentMessage.isEmpty && !selectedImagesData.isEmpty  {
+            itemViewModel.addItemParagraphAndMedia(chapter: chapter, attachments: selectedImagesData, text: currentMessage)
         } else {
-            itemViewModel.addItemMedia(chapter: chapter, attachments: selectedImagesData, type: "photo")
+            itemViewModel.addItemMedia(chapter: chapter, attachments: selectedImagesData, type: ItemType.photo.rawValue)
         }
         
         let generator = UIImpactFeedbackGenerator(style: .medium)
@@ -249,7 +287,7 @@ struct InputAccesseryView: View {
         
         selectedItems.removeAll()
         selectedImagesData.removeAll()
-        message = ""
+        message.wrappedValue = ""
     }
     
     func startRecording() {
@@ -271,6 +309,7 @@ struct InputAccesseryView: View {
         audioRecorder.stopRecording(chapter: chapter)
     }
 }
+
 
 
 

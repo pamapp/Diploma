@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Combine
+//import Combine
 
 // MARK: - UIView Extensions -
 
@@ -54,6 +54,10 @@ extension View {
         self.modifier(MemoryTime())
     }
     
+    public func memoryRecordingDurationStyle() -> some View {
+        self.modifier(MemoryRecordingDuration())
+    }
+    
     public func chapterYearStyle() -> some View {
         self.modifier(ChapterYear())
     }
@@ -70,9 +74,14 @@ extension View {
         self.modifier(StatsSubtitle())
     }
     
+    public func chartEmptyTextStyle() -> some View {
+        self.modifier(ChartEmptyText())
+    }
+    
     public func wordTagStyle(color: Color) -> some View {
         self.modifier(WordTag(color: color))
     }
+    
     
     // MARK: Shadows Modifiers
     
@@ -101,21 +110,21 @@ extension View {
 
     // MARK: Keyboard Publisher & Modifiers
     
-    var keyboardPublisher: AnyPublisher<Bool, Never> {
-        Publishers
-            .Merge (
-                NotificationCenter
-                    .default
-                    .publisher(for: UIResponder.keyboardWillShowNotification)
-                    .map { _ in true },
-                NotificationCenter
-                    .default
-                    .publisher(for: UIResponder.keyboardWillHideNotification)
-                    .map { _ in false }
-            )
-            .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
-            .eraseToAnyPublisher()
-    }
+//    var keyboardPublisher: AnyPublisher<Bool, Never> {
+//        Publishers
+//            .Merge (
+//                NotificationCenter
+//                    .default
+//                    .publisher(for: UIResponder.keyboardWillShowNotification)
+//                    .map { _ in true },
+//                NotificationCenter
+//                    .default
+//                    .publisher(for: UIResponder.keyboardWillHideNotification)
+//                    .map { _ in false }
+//            )
+//            .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
+//            .eraseToAnyPublisher()
+//    }
     
     func keyboardToolbar<ToolbarView>(view: @escaping () -> ToolbarView) -> some View where ToolbarView: View {
         modifier(KeyboardToolbar(toolbar: view))

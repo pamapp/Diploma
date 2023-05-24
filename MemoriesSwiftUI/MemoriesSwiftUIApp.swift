@@ -7,29 +7,88 @@
 
 import SwiftUI
 
+let quickActionSettings = QuickActionSettings()
+var shortcutItemToProcess: UIApplicationShortcutItem?
+
 @main
 struct MemoriesSwiftUIApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    let persistenceController = PersistenceController.shared
+    @Environment(\.scenePhase) var phase
     
+    private var chapterVM = ChapterVM(moc: PersistenceController.shared.viewContext)
+
     var body: some Scene {
         WindowGroup {
-            ContentView(chapterViewModel: .init(moc: persistenceController.container.viewContext))
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            ContentView()
                 .preferredColorScheme(.light)
-                .onAppear {
+                .environmentObject(chapterVM)
+                .environmentObject(quickActionSettings)
+                .onAppear {                
                     UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
                     AppDelegate.orientationLock = .portrait
                 }
         }
+        .onChange(of: phase) { (newPhase) in
+            switch newPhase {
+            case .active :
+                guard let name = shortcutItemToProcess?.userInfo?["name"] as? String else {
+                    return
+                }
+                switch name {
+                case "Private_mode":
+                    quickActionSettings.enablePrivateMode()
+                default:
+                    print("default ")
+                }
+            case .inactive:
+                print("App is inactive")
+            case .background:
+                print("App in Background")
+                addQuickActions()
+            @unknown default:
+                print("default")
+            }
+        }
+    }
+    
+    func addQuickActions() {
+        var privateMode: [String: NSSecureCoding] {
+            return ["name" : "Private_mode" as NSSecureCoding]
+        }
+
+        UIApplication.shared.shortcutItems = [
+            UIApplicationShortcutItem(type: "Private_mode", localizedTitle: "Приватный режим", localizedSubtitle: "", icon: UIApplicationShortcutIcon(systemImageName: UI.Icons.eye_slash_fill), userInfo: privateMode),
+        ]
     }
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-        
-    static var orientationLock = UIInterfaceOrientationMask.all //By default you want all your views to rotate freely
+       
+    // MARK: - Device Orientation
+    
+    static var orientationLock = UIInterfaceOrientationMask.all
 
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         return AppDelegate.orientationLock
     }
+    
+    // MARK: - Quick actions
+    
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        if let shortcutItem = options.shortcutItem {
+            shortcutItemToProcess = shortcutItem
+        }
+
+        let sceneConfiguration = UISceneConfiguration(name: "Custom Configuration", sessionRole: connectingSceneSession.role)
+        sceneConfiguration.delegateClass = CustomSceneDelegate.self
+
+        return sceneConfiguration
+    }
+    
+//    // MARK: - NavigationBar
+//    
+//    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+//        UINavigationBar.appearance().backgroundColor = UIColor(Color.cW)
+//        return true
+//    }
 }

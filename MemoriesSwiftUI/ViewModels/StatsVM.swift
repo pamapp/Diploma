@@ -95,13 +95,12 @@ struct WordCount {
             }
             return true
         }
-
+        
         words_only = tempArr.stringByRemovingEmoji().unicodeScalars
             .filter { !$0.properties.isEmojiPresentation }
             .reduce("") { $0 + String($1) }.components(separatedBy: CharacterSet.alphanumerics.inverted)
-
+        
         emoji_only = Array(tempArr.stringByRemovingWords()).map(String.init)
-
     }
 
     func countWords() -> [String: Int] {

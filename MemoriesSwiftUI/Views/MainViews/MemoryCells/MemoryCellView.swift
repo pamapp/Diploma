@@ -17,7 +17,7 @@ struct MemoryEmptyCellView: View {
             
             VStack {
                 Text(UI.Strings.empty_chapter_text)
-                    .font(.memoryTextBase())
+                    .font(.memoryTextImage(18))
                     .foregroundColor(.c7)
             }
             Spacer()
@@ -26,7 +26,9 @@ struct MemoryEmptyCellView: View {
 }
 
 struct MemoryCellView: View {
+    @EnvironmentObject var quickActionSettings: QuickActionSettings
     @ObservedObject var audioPlayer: AudioPlayerVM
+    
     @State private var sliderValue: Double = 0.0
     @State private var isDragging = false
     @State private var isSwipeable = false
@@ -67,47 +69,41 @@ struct MemoryCellView: View {
                     .foregroundColor(memory.safeSentimentColor)
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    if memory.safeType == "photo" {
-                        if memory.mediaAlbum?.attachmentsArray.count == 1 {
-                            CollageLayoutOne(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
-                        } else if memory.mediaAlbum?.attachmentsArray.count == 2 {
-                            CollageLayoutTwo(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
-                        } else {
-                            CollageLayoutThree(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
-                        }
-                    }
-
-                    if memory.safeType == "text" {
+                    switch memory.safeType {
+                    case ItemType.photo.rawValue:
+                        CollageLayoutView(images: memory.mediaAlbum?.attachmentsArray ?? [],
+                                          width: cellWidth)
+                        .environmentObject(quickActionSettings)
+                    case ItemType.text.rawValue:
                         memory.safeText.textWithHashtags(color: .c6)
                             .memoryTextBaseStyle()
-                    }
-                    
-                    if memory.safeType == "audio" {
-                        MemoryVoiceView()
-                    }
-                    
-                    if memory.safeType == "textWithPhoto" {
-                        if memory.mediaAlbum?.attachmentsArray.count == 1 {
-                            CollageLayoutOne(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
-                        } else if memory.mediaAlbum?.attachmentsArray.count == 2 {
-                            CollageLayoutTwo(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
-                        } else {
-                            CollageLayoutThree(images: memory.mediaAlbum?.attachmentsArray ?? [], width: cellWidth)
-                        }
+                            .blur(radius: quickActionSettings.isPrivateModeEnabled ? 4.5 : 0)
                         
+                    case ItemType.audio.rawValue:
+                        MemoryVoiceView()
+                        
+                    case ItemType.textWithPhoto.rawValue:
+                        CollageLayoutView(images: memory.mediaAlbum?.attachmentsArray ?? [],
+                                          width: cellWidth)
+                        .environmentObject(quickActionSettings)
+
                         memory.safeText.textWithHashtags(color: .c6)
                             .memoryTextImageStyle()
+                            .blur(radius: quickActionSettings.isPrivateModeEnabled ? 4.5 : 0)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.c8)
                             )
+                    default:
+                        EmptyView()
                     }
-                    
+
                     HStack {
                         Text(memory.safeTimestampContent.getFormattedDateString(format: "HH:mm"))
                             .memoryTimeStyle()
                         Spacer()
-                        if memory.type == "audio" {
+                        
+                        if memory.type == ItemType.audio.rawValue {
                             if audioPlayer.audioPlayer != nil {
                                 Text("-\(DateComponentsFormatter.positional.string(from: (audioPlayer.audioPlayer!.duration - audioPlayer.audioPlayer!.currentTime) ) ?? "0:00")")
                                     .memoryAudioTimeStyle()
@@ -136,60 +132,66 @@ struct MemoryCellView: View {
                 Rectangle()
                     .foregroundColor(.c8)
                     .frame(width: 2)
+                
                 Spacer()
                 
-                GeometryReader { geo in
-                    HStack {
-                        Button(action: {
-                            withAnimation {
-                                self.edit()
-                            }
+                if memory.type != ItemType.audio.rawValue && memory.type != ItemType.photo.rawValue && memory.isEditable {
+                    GeometryReader { geo in
+                        HStack {
+                            editBtnView
+                                .frame(width: geo.size.width / 2, height: geo.size.height)
+                            Spacer()
+                            deleteBtnView
+                                .frame(width: geo.size.width / 2, height: geo.size.height)
                             
-                        }, label: {
-                            Image(UI.Icons.edit)
-                                .foregroundColor(.c6)
-                        })
-                        .frame(width: geo.size.width / 2, height: geo.size.height)
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            withAnimation {
-                                self.delete()
-                            }
-                        }, label: {
-                            Image(UI.Icons.trash)
-                                .foregroundColor(.c5)
-                        })
-                        .frame(width: geo.size.width / 2, height: geo.size.height)
+                        }
+                    }
+                } else {
+                    GeometryReader { geo in
+                        HStack {
+                            deleteBtnView
+                                .frame(width: geo.size.width, height: geo.size.height)
+                        }
                     }
                 }
             }
         }, itemHeight: cellHeight, endSwipeAction: $isSwipeable)
     }
     
-    
-    @ViewBuilder
     func MemoryVoiceView() -> some View {
-        HStack {
-            Button {
-                if audioPlayer.isPlaying {
-                    // Pause
-                    audioPlayer.pausePlayback()
-                } else {
-                    // Play
-                    audioPlayer.startPlayback(recording: (memory.mediaAlbum?.attachmentsArray.first)!)
-
-//                    audioPlayer.resumePlayback()
+        var isPlayingThisRecording: Bool {
+            audioPlayer.currentlyPlaying?.id == memory.mediaAlbum?.attachmentsArray.first?.id
+        }
+        
+        return HStack {
+            ZStack {
+                Button {
+                    if let _ = audioPlayer.audioPlayer, let _ = audioPlayer.currentlyPlaying {
+                        if audioPlayer.isPlaying {
+                            // Pause
+                            audioPlayer.pausePlayback()
+                        } else {
+                            // Play
+                            audioPlayer.resumePlayback()
+                        }
+                    }
+                } label: {
+                    Image(audioPlayer.isPlaying ? UI.Buttons.pause_audio : UI.Buttons.play_audio)
                 }
-            } label: {
-                Image(audioPlayer.isPlaying ? UI.Buttons.pause_audio : UI.Buttons.play_audio)
+                
+                Button {
+                    audioPlayer.startPlayback(recording: (memory.mediaAlbum?.attachmentsArray.first)!)
+                } label: {
+                    Image(UI.Buttons.play_audio)
+                }
+                .opacity(audioPlayer.currentlyPlaying != nil ? 0 : 1)
+                
             }
 
             Slider(value: $sliderValue, in: 0...((audioPlayer.currentlyPlaying != nil) ? audioPlayer.audioPlayer!.duration : 0)) { dragging in
                 print("Editing the slider: \(dragging)")
                 isDragging = dragging
-                if !dragging {
+                if !dragging && audioPlayer.currentlyPlaying != nil {
                     audioPlayer.audioPlayer!.currentTime = sliderValue
                 }
             }
@@ -212,5 +214,30 @@ struct MemoryCellView: View {
             print("Failed to get the duration for recording on the list: Recording")
             return nil
         }
+    }
+    
+    var editBtnView: some View {
+        Button(action: {
+            withAnimation {
+                isSwipeable.toggle()
+                self.edit()
+            }
+            
+        }, label: {
+            Image(UI.Icons.edit)
+                .foregroundColor(.c6)
+        })
+    }
+    
+    var deleteBtnView: some View {
+        Button(action: {
+            withAnimation {
+                isSwipeable = false
+                self.delete()
+            }
+        }, label: {
+            Image(UI.Icons.trash)
+                .foregroundColor(.c5)
+        })
     }
 }

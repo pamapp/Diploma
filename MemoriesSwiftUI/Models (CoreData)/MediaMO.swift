@@ -14,7 +14,9 @@ public class MediaMO: NSManagedObject {
     @NSManaged public var date: Date?
     @NSManaged public var data: Data?
     @NSManaged public var album: MediaAlbumMO?
-    
+}
+
+extension MediaMO {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<MediaMO> {
         return NSFetchRequest<MediaMO>(entityName: "MediaMO")
     }

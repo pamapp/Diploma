@@ -12,7 +12,9 @@ struct ContentView: View {
     
     // MARK: - Variables
     
-    @ObservedObject var chapterViewModel: ChapterVM
+    @EnvironmentObject var quickActionSettings: QuickActionSettings
+    @EnvironmentObject var chapterViewModel: ChapterVM
+    
     @ObservedObject var audioPlayer = AudioPlayerVM()
     
     @State private var scrollToBottom = false
@@ -23,6 +25,8 @@ struct ContentView: View {
     @State private var isStatsPresented = false
     @State private var isKeyboardPresented = true
     
+    @State private var isLoadingPresented = true
+
     @State private var wholeSize: CGSize = .zero
     @State private var scrollViewSize: CGSize = .zero
     @State private var searchText: String = ""
@@ -31,24 +35,9 @@ struct ContentView: View {
     
     private let hieght: CGFloat = UI.screen_height / 2
     
-    private let spaceName = "scroll"
+    private let spaceName = "main_scroll"
     
     var chapter: ChapterMO?
-    
-    var searchResult: [ChapterMO] {
-        if searchText.isEmpty {
-            return chapterViewModel.chapters
-        } else {
-            return chapterViewModel.chapters.filter { chapter in
-                chapter.itemsArray.contains { item in
-
-                    item.safeText.localizedCaseInsensitiveContains(searchText)
-                    || item.safeText.localizedCaseInsensitiveContains(searchText)
-                }
-            }
-
-        }
-    }
     
     // MARK: - View Body
     
@@ -60,87 +49,78 @@ struct ContentView: View {
                     ScrollViewReader { proxy in
                         ScrollView(showsIndicators: false) {
                             ChildSizeReader(size: $scrollViewSize) {
-                                VStack {
-                                    Spacer(minLength: 16)
-                                    HStack(alignment: .center) {
-                                        Text("2023")
-                                            .chapterYearStyle()
+                                ZStack {
+                                    VStack {
+                                        Spacer(minLength: 16)
+                                        HStack(alignment: .center) {
+                                            Text("2023")
+                                                .chapterYearStyle()
+                                        }
+                                        
+                                        ForEach(searchText == "" ? chapterViewModel.chapters : chapterViewModel.searchResult, id: \.self) { chapter in
+                                            ChapterCellView(chapter: chapter,
+                                                            searchText: searchText,
+                                                            isKeyboardPresented: $isKeyboardPresented)
+                                            .environmentObject(chapterViewModel)
+                                            .environmentObject(quickActionSettings)
+
+                                            Spacer(minLength: UI.chapters_spaces)
+                                        }
+                                        
+                                        //когда их мало, не работает
+                                        Rectangle()
+                                            .fill(Color.clear)
+                                            .frame(height: isSearchPresented ? 0 : 54)
+                                            .id(bottomID)
                                     }
-                                    
-                                    ForEach(searchResult, id: \.self) { chapter in
-                                        ChapterCellView(chapter: chapter,
-                                                        searchText: searchText,
-//                                                        message: $message,
-                                                        isKeyboardPresented: $isKeyboardPresented)
-                                        Spacer(minLength: UI.chapters_spaces)
-                                    }
-                                    
-                                    //когда их мало, не работает
-                                    Rectangle()
-                                        .fill(Color.clear)
-                                        .frame(height: isSearchPresented ? 0 : 54)
-                                        .id(bottomID)
-                                }
-                                .background(
-                                    GeometryReader { proxy in
-                                        Color.clear.preference(
-                                            key: ViewOffsetKey.self,
-                                            value: -1 * proxy.frame(in: .named(spaceName)).origin.y
-                                        )
-                                    }
-                                )
-                                .onPreferenceChange(
-                                    ViewOffsetKey.self,
-                                    perform: { value in
-                                        if value >= scrollViewSize.height - wholeSize.height - UIScreen.main.bounds.height * 3 {
-                                            withAnimation {
-                                                isFloatingBtnPresented = false
-                                            }
-                                        } else {
-                                            withAnimation {
-                                                isFloatingBtnPresented = true
+                                    .background(
+                                        GeometryReader { proxy in
+                                            Color.clear.preference(
+                                                key: ViewOffsetKey.self,
+                                                value: -1 * proxy.frame(in: .named(spaceName)).origin.y
+                                            )
+                                        }
+                                    )
+                                    .onPreferenceChange(
+                                        ViewOffsetKey.self,
+                                        perform: { value in
+                                            if value >= scrollViewSize.height - wholeSize.height - UIScreen.main.bounds.height * 3 {
+                                                withAnimation {
+                                                    isFloatingBtnPresented = false
+                                                }
+                                            } else {
+                                                withAnimation {
+                                                    isFloatingBtnPresented = true
+                                                }
                                             }
                                         }
-                                    }
-                                )
+                                    )
+                                }
                             }
                         }
                         .coordinateSpace(name: spaceName)
                         .onChange(of: chapterViewModel.chapters.last?.safeContainsNumber) {newValue in
-                            withAnimation(.easeOut(duration: 0.2)) {
+                            withAnimation(.linear(duration: 0.1)) {
                                 proxy.scrollTo(bottomID, anchor: .bottom)
                             }
                             chapterViewModel.getConsecutiveDays()
                         }
                         .onChange(of: isKeyboardPresented) { newValue in
-//                            if !isSearchPresented {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    withAnimation(.linear(duration: 0.1)) {
-                                        proxy.scrollTo(bottomID, anchor: .bottom)
-                                    }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation(.linear(duration: 0.1)) {
+                                    proxy.scrollTo(bottomID, anchor: .bottom)
                                 }
-//                            }
+                            }
                         }
                         .onChange(of: isSearchPresented) { newValue in
-//                            if isSearchPresented == false {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    withAnimation(.linear(duration: 0.1)) {
-                                        proxy.scrollTo(bottomID, anchor: .bottom)
-                                    }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                withAnimation(.linear(duration: 0.1)) {
+                                    proxy.scrollTo(bottomID, anchor: .bottom)
                                 }
-//                            }
-                        }
-                        .onChange(of: isSearchKeyboardPresented) { newValue in
-//                            if isSearchPresented == false {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    withAnimation(.linear(duration: 0.1)) {
-                                        proxy.scrollTo(bottomID, anchor: .bottom)
-                                    }
-                                }
-//                            }
+                            }
                         }
                         .onChange(of: scrollToBottom) { newValue in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                 withAnimation(.linear(duration: 0.1)) {
                                     proxy.scrollTo(bottomID, anchor: .bottom)
                                 }
@@ -148,8 +128,8 @@ struct ContentView: View {
                         }
                         .onAppear {
                             if isKeyboardPresented == true {
-                                withAnimation {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation(.linear(duration: 0.1)) {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
                                         proxy.scrollTo(bottomID, anchor: .bottom)
                                     }
                                 }
@@ -162,7 +142,6 @@ struct ContentView: View {
                         }
                     }
                 }
-                .searchable(text: $searchText, isPresented: $isSearchPresented, keyboard: $isSearchKeyboardPresented)
                 .background(Color.cW)
                 .keyboardToolbar(view: {
                     VStack(spacing: 0) {
@@ -185,11 +164,12 @@ struct ContentView: View {
                             }
                             
                             InputAccesseryView (
-                                chapter: chapterViewModel.getCurrentChapter(),
+                                chapter: chapterViewModel.currentChapter,
                                 audioPlayer: audioPlayer,
                                 chapterVM: chapterViewModel,
                                 isKeyboardPresented: $isKeyboardPresented
                             )
+                            .environmentObject(chapterViewModel)
                             .transition(.opacity)
                             .shadowInputControl()
                             .background(
@@ -197,28 +177,34 @@ struct ContentView: View {
                                     .edgesIgnoringSafeArea(.bottom)
                                     .padding(.top, 10)
                             )
-//                            .animation(.linear(duration: 0.2))
                         }
                     }
                 })
+                .searchable(text: $searchText,
+                            isPresented: $isSearchPresented,
+                            keyboard: $isSearchKeyboardPresented,
+                            chapterViewModel: chapterViewModel)
             }
             .navigationBarItems(
                 leading:
                     navLeadingBtn
-                        .fullScreenCover(isPresented: $isStatsPresented) {
-                            GeometryReader{ proxy in
-                                let topEdge = proxy.safeAreaInsets.top
-                                StatsView(chapterModel: chapterViewModel, topEdge: topEdge)
-                                    .ignoresSafeArea(.all,edges: .top)
-                            }
+                    .fullScreenCover(isPresented: $isStatsPresented) {
+                        GeometryReader{ proxy in
+                            let topEdge = proxy.safeAreaInsets.top
+                            StatsView(chapterModel: chapterViewModel, topEdge: topEdge)
+                                .ignoresSafeArea(.all,edges: .top)
+                                .environmentObject(quickActionSettings)
                         }
+                    }
                 ,trailing:
                     navTrailingBtn
             )
-//            .navigationBarHidden(isSearchPresented ? true : false)
             .navigationBarTitle("Май", displayMode: .inline)
             .onAppear {
-                chapterViewModel.addChapter()
+                if chapterViewModel.shouldAddNewChapter() {
+                    chapterViewModel.addChapter()
+                }
+                chapterViewModel.getConsecutiveDays()
             }
         }
     }
@@ -244,13 +230,8 @@ struct ContentView: View {
             }
             self.isStatsPresented.toggle()
         }) {
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundColor(Color.cW)
-                .frame(width: 50, height: 50)
-                .overlay(
-                    Image(chapterViewModel.getStatusImage())
-                )
-                .padding(.bottom, 10)
+            Image(chapterViewModel.getStatusImage())
+                .padding(.bottom, 14)
         }
     }
     
@@ -277,24 +258,3 @@ struct ContentView: View {
     }
 }
 
-
-struct ChildSizeReader<Content: View>: View {
-    @Binding var size: CGSize
-    let content: () -> Content
-    
-    var body: some View {
-        ZStack {
-            content().background(
-                GeometryReader { proxy in
-                    Color.clear.preference(
-                        key: SizePreferenceKey.self,
-                        value: proxy.size
-                    )
-                }
-            )
-        }
-        .onPreferenceChange(SizePreferenceKey.self) { preferences in
-            self.size = preferences
-        }
-    }
-}

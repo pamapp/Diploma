@@ -12,7 +12,9 @@ import CoreData
 public class MediaAlbumMO: NSManagedObject {
     @NSManaged public var item: ItemMO?
     @NSManaged public var attachments: NSSet?
-    
+}
+
+extension MediaAlbumMO {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<MediaAlbumMO> {
         return NSFetchRequest<MediaAlbumMO>(entityName: "MediaAlbumMO")
     }

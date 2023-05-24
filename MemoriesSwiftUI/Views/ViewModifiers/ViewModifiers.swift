@@ -74,6 +74,15 @@ struct MemoryAudioTime: ViewModifier {
     }
 }
 
+struct MemoryRecordingDuration: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.bodyText(15))
+            .foregroundColor(.c7)
+            .frame(width: 50)
+    }
+}
+
 struct ChapterDate: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -100,7 +109,6 @@ struct StatsTitle: ViewModifier {
             .foregroundColor(.c1)
             .font(.headline(21.6))
             .padding(.vertical, 8)
-            .padding(.horizontal, 16)
     }
 }
 
@@ -141,23 +149,16 @@ struct WordTag: ViewModifier {
     }
 }
 
-struct OffsetModifier: ViewModifier {
-    @Binding var offset : CGFloat
-    
+struct ChartEmptyText: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .overlay(
-                GeometryReader{ proxy -> Color in
-                    let minY = proxy.frame(in: .named("SCROLL")).minY
-                    DispatchQueue.main.async {
-                        self.offset = minY
-                    }
-                    return Color.clear
-                }
-                ,alignment: .top
-            )
+            .font(.subscription(12.5))
+            .foregroundColor(.c7)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
     }
 }
+
 
 // MARK: - ToolBar Modifiers -
 
@@ -180,5 +181,25 @@ struct KeyboardToolbar<ToolbarView: View>: ViewModifier {
             toolbarView
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+// MARK: - Offset Modifiers -
+
+struct OffsetModifier: ViewModifier {
+    @Binding var offset : CGFloat
+    
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                GeometryReader{ proxy -> Color in
+                    let minY = proxy.frame(in: .named("SCROLL")).minY
+                    DispatchQueue.main.async {
+                        self.offset = minY
+                    }
+                    return Color.clear
+                }
+                ,alignment: .top
+            )
     }
 }

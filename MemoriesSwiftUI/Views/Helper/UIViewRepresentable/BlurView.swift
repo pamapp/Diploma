@@ -15,7 +15,11 @@ struct BlurView: UIViewRepresentable {
         return CustomIntensityVisualEffectView(effect: UIBlurEffect(style: style), intensity: intensity)
     }
     
-    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {}
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
+        if let customIntensityVisualEffectView = uiView as? CustomIntensityVisualEffectView {
+            customIntensityVisualEffectView.setIntensity(intensity)
+        }
+    }
 }
 
 final class CustomIntensityVisualEffectView: UIVisualEffectView {
@@ -39,6 +43,15 @@ final class CustomIntensityVisualEffectView: UIVisualEffectView {
             self.effect = theEffect
         }
         animator?.fractionComplete = customIntensity
+    }
+    
+    func setIntensity(_ intensity: CGFloat) {
+        animator?.stopAnimation(true)
+        effect = nil
+        animator = UIViewPropertyAnimator(duration: 1, curve: .linear) { [unowned self] in
+            self.effect = theEffect
+        }
+        animator?.fractionComplete = intensity
     }
 
     private let theEffect: UIVisualEffect

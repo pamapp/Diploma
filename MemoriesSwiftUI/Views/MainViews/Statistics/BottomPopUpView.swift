@@ -65,7 +65,6 @@ struct BottomPopUpView: View {
                                 GeometryReader { proxy in
                                     Color.clear
                                         .onAppear {
-                                           print(proxy.size)
                                             maxHeight = proxy.size.height
                                         }
                                 }

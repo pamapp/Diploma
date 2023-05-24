@@ -82,7 +82,6 @@ struct SearchBar: UIViewRepresentable {
             keyboard = true
         }
         func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-//            text = ""
             keyboard = false
         }
         func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {

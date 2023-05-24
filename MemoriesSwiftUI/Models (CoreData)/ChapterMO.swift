@@ -59,6 +59,6 @@ extension ChapterMO {
     @NSManaged public func removeFromItems(_ values: NSSet)
 }
 
-extension ChapterMO : Identifiable {
+extension ChapterMO: Identifiable {
     
 }
