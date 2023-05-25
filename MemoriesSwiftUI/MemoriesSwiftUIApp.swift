@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-let quickActionSettings = QuickActionSettings()
+let quickActionSettings = QuickActionVM()
 var shortcutItemToProcess: UIApplicationShortcutItem?
 
 @main

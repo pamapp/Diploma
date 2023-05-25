@@ -12,7 +12,6 @@ import Combine
 import AVFoundation
 
 class AudioPlayerVM: NSObject, ObservableObject, AVAudioPlayerDelegate {
-
     @Published var currentlyPlaying: MediaMO?
     @Published var isPlaying: Bool = false
     

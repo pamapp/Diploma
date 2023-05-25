@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CollageLayoutView: View {
-    @EnvironmentObject var quickActionSettings: QuickActionSettings
+    @EnvironmentObject var quickActionSettings: QuickActionVM
 
     var images: [MediaMO] = []
     var width: CGFloat = 0

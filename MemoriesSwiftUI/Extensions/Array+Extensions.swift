@@ -8,7 +8,7 @@
 import Foundation
 
 extension Array where Element == String {
-    func seporateElements() -> String {
+    func separateElements() -> String {
         var res = ""
         for string in self {
             res = res + " " + string

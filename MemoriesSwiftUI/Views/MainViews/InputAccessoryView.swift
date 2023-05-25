@@ -1,5 +1,5 @@
 //
-//  InputAccesseryView.swift
+//  InputAccessoryView.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 18.02.2023.
@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 //import AVKit 
 
-struct InputAccesseryView: View {
+struct InputAccessoryView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject var chapterViewModel: ChapterVM
     

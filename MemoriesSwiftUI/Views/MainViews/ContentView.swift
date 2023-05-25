@@ -12,7 +12,7 @@ struct ContentView: View {
     
     // MARK: - Variables
     
-    @EnvironmentObject var quickActionSettings: QuickActionSettings
+    @EnvironmentObject var quickActionSettings: QuickActionVM
     @EnvironmentObject var chapterViewModel: ChapterVM
     
     @ObservedObject var audioPlayer = AudioPlayerVM()
@@ -163,7 +163,7 @@ struct ContentView: View {
                                 }
                             }
                             
-                            InputAccesseryView (
+                            InputAccessoryView (
                                 chapter: chapterViewModel.currentChapter,
                                 audioPlayer: audioPlayer,
                                 chapterVM: chapterViewModel,

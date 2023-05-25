@@ -19,16 +19,14 @@ enum ItemType: String {
 }
 
 class ItemVM: ObservableObject {
-    private let controller :  NSFetchedResultsController<ItemMO>
-
-    var chapterVM: ChapterVM
-    var chapter: ChapterMO
-    
     @Published var alert: Bool = false
     @Published var alertMessage: String = ""
-    
     @Published var items: [ItemMO] = []
     @Published var sentiment: String = ""
+    
+    private let controller :  NSFetchedResultsController<ItemMO>
+    private var chapterVM: ChapterVM
+    private var chapter: ChapterMO
     
     init(moc: NSManagedObjectContext, chapter: ChapterMO) {
         let sortDescriptors = [NSSortDescriptor(keyPath: \ItemMO.timestamp, ascending: true)]
@@ -40,11 +38,11 @@ class ItemVM: ObservableObject {
         fetchItems()
     }
     
-    func fetchItems() {
+    private func fetchItems() {
         items = chapter.itemsArray
     }
     
-    func save() {
+    private func save() {
         do {
             try controller.managedObjectContext.save()
             alert = false

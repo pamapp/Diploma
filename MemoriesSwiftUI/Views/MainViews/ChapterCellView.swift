@@ -11,7 +11,7 @@ struct ChapterCellView: View {
     let persistenceController = PersistenceController.shared
 
     @EnvironmentObject var chapterViewModel: ChapterVM
-    @EnvironmentObject var quickActionSettings: QuickActionSettings
+    @EnvironmentObject var quickActionSettings: QuickActionVM
 
     @ObservedObject var itemViewModel: ItemVM
     @Binding var isKeyboardPresented: Bool

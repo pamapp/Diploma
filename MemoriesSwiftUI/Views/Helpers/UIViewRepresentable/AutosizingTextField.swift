@@ -222,7 +222,7 @@ struct AutosizingTextField: UIViewRepresentable {
             parent.text = textView.text
             parent.containerHeight = textView.contentSize.height
             
-            textView.attributedText = textView.text.resolveHashTags(color: UIColor(.c6))
+            textView.attributedText = textView.text.resolveHashtags(color: UIColor(.c6))
         }
         
         func textViewDidEndEditing(_ textView: UITextView) {

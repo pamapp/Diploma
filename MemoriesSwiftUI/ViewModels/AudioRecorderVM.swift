@@ -12,13 +12,12 @@ import AVFoundation
 import CoreData
 
 class AudioRecorderVM: NSObject, ObservableObject {
-    var audioRecorder: AVAudioRecorder?
-    
     @Published private var recordingName = "Recording"
     @Published private var recordingDate = Date()
     @Published private var recordingURL: URL?
     @Published var isRecording = false
     
+    var audioRecorder: AVAudioRecorder?
     var itemModel: ItemVM
 
     init(itemModel: ItemVM) {

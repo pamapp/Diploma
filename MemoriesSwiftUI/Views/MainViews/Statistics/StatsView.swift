@@ -15,7 +15,7 @@ enum Tab: String {
 
 struct StatsView: View {
     @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var quickActionSettings: QuickActionSettings
+    @EnvironmentObject var quickActionSettings: QuickActionVM
 
     @ObservedObject var chapterViewModel: ChapterVM
     @ObservedObject var statsViewModel: StatsVM
@@ -44,7 +44,7 @@ struct StatsView: View {
                         StatusView(topEge: topEdge, offset: $offset, maxHeight: maxHeight)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .frame(height: getHeaderheight(), alignment: .bottom)
+                            .frame(height: getHeaderHeight(), alignment: .bottom)
                             .background(
                                 Color.c4,
                                 in: RoundedCorner(radius: getCornerRadius(), corners: [.bottomRight, .bottomLeft])
@@ -321,7 +321,7 @@ extension StatsView {
         return offset < 0 ? opacity : 1
     }
     
-    private func getHeaderheight() -> CGFloat{
+    private func getHeaderHeight() -> CGFloat{
         let topHeight = maxHeight + offset
         return topHeight > (40 + topEdge) ? topHeight : (40 + topEdge)
     }

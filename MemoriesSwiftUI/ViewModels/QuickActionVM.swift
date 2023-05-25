@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class QuickActionSettings: ObservableObject {
+class QuickActionVM: ObservableObject {
     @Published var isPrivateModeEnabled = false
 
     func enablePrivateMode() {

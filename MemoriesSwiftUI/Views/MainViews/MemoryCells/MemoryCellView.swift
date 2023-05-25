@@ -26,7 +26,7 @@ struct MemoryEmptyCellView: View {
 }
 
 struct MemoryCellView: View {
-    @EnvironmentObject var quickActionSettings: QuickActionSettings
+    @EnvironmentObject var quickActionSettings: QuickActionVM
     @ObservedObject var audioPlayer: AudioPlayerVM
     
     @State private var sliderValue: Double = 0.0

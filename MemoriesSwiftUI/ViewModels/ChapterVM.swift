@@ -9,23 +9,23 @@ import Foundation
 import CoreData
 
 class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate {
-    private let controller : NSFetchedResultsController<ChapterMO>
-    private var searchText: String = ""
-    public var alert = false
-    public var alertMessage = ""
-    
     @Published var message: String = ""
     @Published var statusValue: Int = 0
     @Published var searchResult: [ChapterMO] = []
     @Published var isEditingMessage: Bool = false
-    var edittingItem: ItemMO
 
+    private let controller : NSFetchedResultsController<ChapterMO>
+    private var searchText: String = ""
     private var fetchedChapters: [ChapterMO] {
         guard let fetchedObjects = controller.fetchedObjects else { return [] }
         return fetchedObjects
     }
     
-    public var currentChapter: ChapterMO {
+    public var alert = false
+    public var alertMessage = ""
+    
+    var edittingItem: ItemMO
+    var currentChapter: ChapterMO {
         if !fetchedChapters.isEmpty {
             return fetchedChapters.last!
         }
@@ -60,7 +60,7 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         addChapter()
     }
     
-    func saveContext() {
+    private func saveContext() {
         do {
             try controller.managedObjectContext.save()
             alert = false
@@ -83,11 +83,11 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         }
     }
     
-    func startEdit() {
+    private func startEdit() {
         self.isEditingMessage = true
     }
     
-    func endEdit() {
+    private func endEdit() {
         self.isEditingMessage = false
     }
 

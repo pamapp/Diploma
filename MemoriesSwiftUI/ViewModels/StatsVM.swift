@@ -58,7 +58,7 @@ class StatsVM: ObservableObject {
                 tempArr.append(item.text ?? "")
             }
         }
-        return WordCount(words: tempArr.seporateElements())
+        return WordCount(words: tempArr.separateElements())
     }
 }
 
@@ -138,6 +138,6 @@ struct WordCount {
         for item in words_only {
             tempArr.append(item)
         }
-        return WordCount(words: tempArr.seporateElements())
+        return WordCount(words: tempArr.separateElements())
     }
 }

@@ -14,24 +14,6 @@ extension UIView {
     func addSubviews(_ subviews: UIView...) { subviews.forEach { addSubview($0) } }
 }
 
-extension UIView {
-    func zoomIn(duration: TimeInterval = 0.2) {
-        self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
-        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
-            self.transform = CGAffineTransform.identity
-        }) { (animationCompleted: Bool) -> Void in
-        }
-    }
-
-    func zoomOut(duration: TimeInterval = 0.2) {
-        self.transform = CGAffineTransform.identity
-        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
-            self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
-        }) { (animationCompleted: Bool) -> Void in
-        }
-    }
-}
-
 // MARK: - View Extensions -
 
 extension View {
@@ -152,45 +134,27 @@ extension View {
     }
 }
 
+
 extension View {
     public func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape( RoundedCorner(radius: radius, corners: corners) )
     }
 }
 
-struct RoundedCorner: Shape {
-
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
-    }
-}
-
-struct DottedLine: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: 0, y: 0))
-        path.addLine(to: CGPoint(x: rect.width, y: rect.height))
-        return path
-    }
-}
-
-struct LineShape: Shape {
-    var yValues: [Double]
-
-    func path(in rect: CGRect) -> Path {
-        let xIncrement = (rect.width / (CGFloat(yValues.count) - 1))
-        var path = Path()
-        path.move(to: CGPoint(x: 0.0,
-                              y: yValues[0] * Double(rect.height)))
-        for i in 1..<yValues.count {
-            let pt = CGPoint(x: (Double(i) * Double(xIncrement)),
-                             y: (yValues[i] * Double(rect.height)))
-            path.addLine(to: pt)
+extension UIView {
+    func zoomIn(duration: TimeInterval = 0.2) {
+        self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
+            self.transform = CGAffineTransform.identity
+        }) { (animationCompleted: Bool) -> Void in
         }
-        return path
+    }
+
+    func zoomOut(duration: TimeInterval = 0.2) {
+        self.transform = CGAffineTransform.identity
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
+            self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
+        }) { (animationCompleted: Bool) -> Void in
+        }
     }
 }

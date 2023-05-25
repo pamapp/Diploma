@@ -30,7 +30,7 @@ extension String {
         return words
     }
 
-    public func resolveHashTags(color: UIColor) -> NSAttributedString {
+    public func resolveHashtags(color: UIColor) -> NSAttributedString {
         var length: Int = 0
         let text: String = self
         let words: [String] = text.separate(withChar: " ")
