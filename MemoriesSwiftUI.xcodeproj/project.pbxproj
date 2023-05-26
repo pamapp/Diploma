@@ -25,7 +25,6 @@
 		912B14612A029B760081ED84 /* Int+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912B145E2A029B760081ED84 /* Int+Extensions.swift */; };
 		912B14632A02C2530081ED84 /* AudioRecorderVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912B14622A02C2530081ED84 /* AudioRecorderVM.swift */; };
 		912B14672A02C2690081ED84 /* AudioPlayerVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912B14662A02C2690081ED84 /* AudioPlayerVM.swift */; };
-		913272A82A155E2400D573EC /* ChildSizeReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913272A72A155E2400D573EC /* ChildSizeReader.swift */; };
 		913272AA2A16648100D573EC /* QuickActionVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913272A92A16648100D573EC /* QuickActionVM.swift */; };
 		91769A7129A4F0F00087E769 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91769A7029A4F0F00087E769 /* String+Extensions.swift */; };
 		91769A7329A6362B0087E769 /* AutosizingTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91769A7229A6362B0087E769 /* AutosizingTextField.swift */; };
@@ -96,7 +95,6 @@
 		912B145E2A029B760081ED84 /* Int+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+Extensions.swift"; sourceTree = "<group>"; };
 		912B14622A02C2530081ED84 /* AudioRecorderVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderVM.swift; sourceTree = "<group>"; };
 		912B14662A02C2690081ED84 /* AudioPlayerVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerVM.swift; sourceTree = "<group>"; };
-		913272A72A155E2400D573EC /* ChildSizeReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildSizeReader.swift; sourceTree = "<group>"; };
 		913272A92A16648100D573EC /* QuickActionVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionVM.swift; sourceTree = "<group>"; };
 		91769A7029A4F0F00087E769 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		91769A7229A6362B0087E769 /* AutosizingTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutosizingTextField.swift; sourceTree = "<group>"; };
@@ -358,7 +356,6 @@
 			children = (
 				91E2ACE32A0951D00043BE42 /* Сonstants.swift */,
 				91E2ACEA2A0E70A50043BE42 /* PreferenceKeys.swift */,
-				913272A72A155E2400D573EC /* ChildSizeReader.swift */,
 				918F9B922A1E8C9F006F4973 /* Shapes.swift */,
 				912BBD3129F959DE003BFD65 /* UIViewRepresentable */,
 			);
@@ -532,7 +529,6 @@
 				91CCE4D729A0E61C005C6441 /* MemoriesSwiftUIApp.swift in Sources */,
 				91B380BB29A11A41003163AB /* ItemVM.swift in Sources */,
 				913272AA2A16648100D573EC /* QuickActionVM.swift in Sources */,
-				913272A82A155E2400D573EC /* ChildSizeReader.swift in Sources */,
 				912B145B2A012D500081ED84 /* Character+Extensions.swift in Sources */,
 				912B14672A02C2690081ED84 /* AudioPlayerVM.swift in Sources */,
 				91B380B329A1124C003163AB /* ChapterMO.swift in Sources */,

@@ -84,11 +84,4 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         return sceneConfiguration
     }
-    
-//    // MARK: - NavigationBar
-//    
-//    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-//        UINavigationBar.appearance().backgroundColor = UIColor(Color.cW)
-//        return true
-//    }
 }
