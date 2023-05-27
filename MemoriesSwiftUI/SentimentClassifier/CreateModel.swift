@@ -4,7 +4,7 @@
 //
 //  Created by Alina Potapova on 24.05.2023.
 //
-//
+
 //import NaturalLanguage
 //import Foundation
 //import CreateML
