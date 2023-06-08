@@ -125,16 +125,12 @@ class ChaptersTests: XCTestCase {
     }
 
     func testDeleteEmpty() {
-        // Test case: Empty chapter is from the same day
-        
         chapterVM.addChapter()
         chapterVM.chapters.first?.date = Date()
         chapterVM.deleteEmpty()
         
         XCTAssertFalse(chapterVM.chapters.isEmpty, "Should delete empty chapter")
-        
-        // Test case: Delete non-empty chapters
-        
+
         let chapter = chapterVM.chapters[0]
         let item = ItemMO(context: coreDataStack.mainContext)
         item.text = "Test Item"
@@ -147,10 +143,13 @@ class ChaptersTests: XCTestCase {
     }
 
     func testDeleteChapter() {
-        // Test case: Delete a chapter
-        
         chapterVM.addChapter()
         chapterVM.deleteChapter(chapterVM.chapters[0])
         XCTAssertTrue(chapterVM.chapters.isEmpty, "Should delete the specified chapter")
+    }
+    
+    func testStreakLevel() {
+        let _ = "Топ пример пример пример топ слов топ топ топ слов"
+//        itemVM.addItemParagraph(chapter: chapterVM.currentChapter, text: string)
     }
 }

@@ -113,7 +113,6 @@ struct AutosizingTextField: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UITextView, context: Context) {
-//        print("текстTF: \(text)")
         DispatchQueue.main.async {
             // ClearAll_Button
             if context.coordinator.parent.text.isEmpty {
@@ -149,8 +148,6 @@ struct AutosizingTextField: UIViewRepresentable {
             } else {
                 uiView.resignFirstResponder()
             }
-            
-            
         }
     }
     

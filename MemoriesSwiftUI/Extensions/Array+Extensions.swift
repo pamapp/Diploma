@@ -9,10 +9,27 @@ import Foundation
 
 extension Array where Element == String {
     func separateElements() -> String {
-        var res = ""
+        var stringBuilder = StringBuilder()
         for string in self {
-            res = res + " " + string
+            stringBuilder.append(string)
+            stringBuilder.append(" ")
         }
-        return res
+        return stringBuilder.toString()
+    }
+}
+
+class StringBuilder {
+    private var strings: [String]
+
+    init() {
+        strings = []
+    }
+
+    func append(_ string: String) {
+        strings.append(string)
+    }
+
+    func toString() -> String {
+        return strings.joined()
     }
 }

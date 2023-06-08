@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9107ADA529C7548D0030A3C7 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9107ADA429C7548D0030A3C7 /* CameraView.swift */; };
 		9107ADA829CDF4CE0030A3C7 /* MemoryCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9107ADA729CDF4CE0030A3C7 /* MemoryCellView.swift */; };
 		9107ADE529CF16BF0030A3C7 /* MediaAlbumMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9107ADE429CF16BF0030A3C7 /* MediaAlbumMO.swift */; };
 		912B144F2A002DF60081ED84 /* SentimentClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 912B144E2A002DF60081ED84 /* SentimentClassifier.mlmodel */; };
@@ -58,6 +57,7 @@
 		91CCE4F729A0E61E005C6441 /* MemoriesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCE4F629A0E61E005C6441 /* MemoriesTests.swift */; };
 		91CCE4F929A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCE4F829A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift */; };
 		91CCE50929A0E7B4005C6441 /* InputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCE50829A0E7B4005C6441 /* InputAccessoryView.swift */; };
+		91CDDA562A24D5C3001EAE9A /* StatsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CDDA552A24D5C3001EAE9A /* StatsTests.swift */; };
 		91E2ACE22A0569B40043BE42 /* LineChartProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E2ACE12A0569B40043BE42 /* LineChartProvider.swift */; };
 		91E2ACE42A0951D00043BE42 /* Сonstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E2ACE32A0951D00043BE42 /* Сonstants.swift */; };
 		91E2ACE62A0D0D750043BE42 /* SwipeItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E2ACE52A0D0D750043BE42 /* SwipeItemView.swift */; };
@@ -85,7 +85,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9107ADA429C7548D0030A3C7 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		9107ADA729CDF4CE0030A3C7 /* MemoryCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryCellView.swift; sourceTree = "<group>"; };
 		9107ADE429CF16BF0030A3C7 /* MediaAlbumMO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaAlbumMO.swift; sourceTree = "<group>"; };
 		912B144E2A002DF60081ED84 /* SentimentClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = SentimentClassifier.mlmodel; sourceTree = "<group>"; };
@@ -132,6 +131,7 @@
 		91CCE4F629A0E61E005C6441 /* MemoriesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoriesTests.swift; sourceTree = "<group>"; };
 		91CCE4F829A0E61E005C6441 /* MemoriesSwiftUIUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoriesSwiftUIUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		91CCE50829A0E7B4005C6441 /* InputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccessoryView.swift; sourceTree = "<group>"; };
+		91CDDA552A24D5C3001EAE9A /* StatsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsTests.swift; sourceTree = "<group>"; };
 		91E2ACE12A0569B40043BE42 /* LineChartProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineChartProvider.swift; sourceTree = "<group>"; };
 		91E2ACE32A0951D00043BE42 /* Сonstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Сonstants.swift"; sourceTree = "<group>"; };
 		91E2ACE52A0D0D750043BE42 /* SwipeItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeItemView.swift; sourceTree = "<group>"; };
@@ -169,9 +169,10 @@
 		9107ADA329C754590030A3C7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				91E2ACE92A0E70270043BE42 /* Helpers */,
-				91E2ACDE2A0414FD0043BE42 /* ViewModifiers */,
 				9107ADA629C7560E0030A3C7 /* MainViews */,
+				912BBD3129F959DE003BFD65 /* UIViewRepresentable */,
+				91E2ACDE2A0414FD0043BE42 /* ViewModifiers */,
+				91E2ACE92A0E70270043BE42 /* Helpers */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -195,7 +196,6 @@
 				91769A7229A6362B0087E769 /* AutosizingTextField.swift */,
 				91769A7B29AFA0B90087E769 /* ImagePicker.swift */,
 				91E2ACE72A0E6FEB0043BE42 /* SearchBar.swift */,
-				9107ADA429C7548D0030A3C7 /* CameraView.swift */,
 			);
 			path = UIViewRepresentable;
 			sourceTree = "<group>";
@@ -319,6 +319,7 @@
 			children = (
 				91CCE4EC29A0E61E005C6441 /* ChaptersTests.swift */,
 				918F9B8A2A1CFEB6006F4973 /* ItemsTests.swift */,
+				91CDDA552A24D5C3001EAE9A /* StatsTests.swift */,
 				918F9B852A1CD8C1006F4973 /* CoreDataStack.swift */,
 			);
 			path = MemoriesUnitTests;
@@ -357,7 +358,6 @@
 				91E2ACE32A0951D00043BE42 /* Сonstants.swift */,
 				91E2ACEA2A0E70A50043BE42 /* PreferenceKeys.swift */,
 				918F9B922A1E8C9F006F4973 /* Shapes.swift */,
-				912BBD3129F959DE003BFD65 /* UIViewRepresentable */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -517,7 +517,6 @@
 				91E2ACE42A0951D00043BE42 /* Сonstants.swift in Sources */,
 				9107ADE529CF16BF0030A3C7 /* MediaAlbumMO.swift in Sources */,
 				91CCE4D929A0E61C005C6441 /* ContentView.swift in Sources */,
-				9107ADA529C7548D0030A3C7 /* CameraView.swift in Sources */,
 				91769A7329A6362B0087E769 /* AutosizingTextField.swift in Sources */,
 				917D171529E6C586009B9E8A /* BlurView.swift in Sources */,
 				91CCE50929A0E7B4005C6441 /* InputAccessoryView.swift in Sources */,
@@ -548,6 +547,7 @@
 				912B145C2A012D500081ED84 /* Character+Extensions.swift in Sources */,
 				918F9B882A1CE092006F4973 /* CoreDataStack.swift in Sources */,
 				912B14602A029B760081ED84 /* Int+Extensions.swift in Sources */,
+				91CDDA562A24D5C3001EAE9A /* StatsTests.swift in Sources */,
 				918F9B892A1CE094006F4973 /* ChaptersTests.swift in Sources */,
 				912B14502A002DF60081ED84 /* SentimentClassifier.mlmodel in Sources */,
 			);

@@ -7,7 +7,6 @@
 
 import SwiftUI
 import PhotosUI
-//import AVKit 
 
 struct InputAccessoryView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -230,19 +229,19 @@ struct InputAccessoryView: View {
             }
         }
         .onLongPressGesture(minimumDuration: 0.5) {
-            switch AVAudioSession.sharedInstance().recordPermission {
-            case .granted:
+//            switch AVAudioSession.sharedInstance().recordPermission {
+//            case .granted:
                 if !audioRecorder.isRecording {
                     withAnimation {
                         self.isRecording = true
                     }
                     startRecording()
                 }
-            case .denied, .undetermined:
-                self.showMicroAlert.toggle()
-            @unknown default:
-                break
-            }
+//            case .denied, .undetermined:
+//                self.showMicroAlert.toggle()
+//            @unknown default:
+//                break
+//            }
          }
          .simultaneousGesture(
              DragGesture(minimumDistance: 0)

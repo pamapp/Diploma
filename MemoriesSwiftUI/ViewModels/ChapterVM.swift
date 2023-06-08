@@ -74,7 +74,6 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         return fetchedChapters
     }
 
-    
     func changeMessage(chapter: ChapterMO, itemText: String) {
         if let foundItem = chapter.itemsArray.first(where: { $0.safeText == itemText }) {
             self.startEdit()
@@ -126,11 +125,9 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
             chapter.id = UUID()
             chapter.date = Date()
             saveContext()
-            
-            getConsecutiveDays()
         }
-
-        getConsecutiveDays()
+        
+//        getConsecutiveDays()
     }
     
     func shouldAddNewChapter() -> Bool {
@@ -147,20 +144,13 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
     }
     
     func deleteLast() {
-        defer {
-            getConsecutiveDays()
-        }
-
         guard let lastChapter = fetchedChapters.last else { return }
         controller.managedObjectContext.delete(lastChapter)
         saveContext()
+//        getConsecutiveDays()
     }
 
     func deleteAll() {
-        defer {
-            getConsecutiveDays()
-        }
-
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: ChapterMO.fetchRequest())
         do {
             try controller.managedObjectContext.execute(deleteRequest)
@@ -168,13 +158,10 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
             print("Failed to delete chapters: \(error)")
         }
         saveContext()
+//        getConsecutiveDays()
     }
 
     func deleteEmpty() {
-        defer {
-            getConsecutiveDays()
-        }
-
         for chapter in fetchedChapters {
             if chapter.itemsArray.isEmpty && !chapter.safeDateContent.isToday {
                 controller.managedObjectContext.delete(chapter)
@@ -184,10 +171,6 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
     }
 
     func deleteChapter(_ chapter: ChapterMO) {
-        defer {
-            getConsecutiveDays()
-        }
-
         controller.managedObjectContext.delete(chapter)
         saveContext()
         
@@ -207,37 +190,27 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
                     }
                     continue
                 }
-//                print("======")
-//                print(lastDate)
-//                print(currentDate)
-//                print(lastDate!.getDaysNum(currentDate))
-
-                if chapter != chapters.last {
-                    if lastDate!.getDaysNum(currentDate) == 1 {
-                        lastDate = currentDate
-                        if streak < 7 {
-                            streak += 1
-                        }
-                    } else {
-                        if lastDate!.getDaysNum(currentDate) > 2 {
-                            if streak - lastDate!.getDaysNum(currentDate) >= 0 {
-                                streak -= lastDate!.getDaysNum(currentDate)
+                
+                if lastDate!.getDaysNum(currentDate) == 1 {
+                    lastDate = currentDate
+                    if streak < 7 {
+                        streak += 1
+                    }
+                } else {
+                    if lastDate!.getDaysNum(currentDate) > 2 {
+                        if streak - lastDate!.getDaysNum(currentDate) >= 0 {
+                            streak -= lastDate!.getDaysNum(currentDate)
+                        } else {
+                            if chapter.itemsArray.isEmpty {
+                                streak = -1
                             } else {
                                 streak = 0
                             }
                         }
-                        lastDate = currentDate
                     }
-                    //доделай
-                } else if chapter == chapters.last && !chapter.itemsArray.isEmpty {
-//                    if chapter.itemsArray.isEmpty && streak == 0 {
-//                        streak = -1
-//                    } else {
-                        streak += 1
-//                    }
+                    lastDate = currentDate
                 }
             }
-//            print(streak)
         }
         statusValue = streak
     }

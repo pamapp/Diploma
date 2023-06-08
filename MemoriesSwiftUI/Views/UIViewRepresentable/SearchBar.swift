@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+                                                    
 struct SearchBar: UIViewRepresentable {
     @Binding var text: String
     @Binding var isFirstResponder: Bool
@@ -20,6 +20,8 @@ struct SearchBar: UIViewRepresentable {
         searchBar.showsCancelButton = true
         searchBar.tintColor = UIColor(Color.c2)
         searchBar.delegate = context.coordinator
+        
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).title = "Отмена"
         
         let attributes = [
             NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)
