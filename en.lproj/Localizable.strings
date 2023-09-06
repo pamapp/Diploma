@@ -1,0 +1,37 @@
+/* 
+  Localizable.strings
+  MemoriesSwiftUI
+
+  Created by Alina Potapova on 31.08.2023.
+  
+*/
+
+"There are no notes today" = "There are no notes today";
+"Dear diary," = "Dear diary,";
+"Drafts" = "Drafts";
+"Privacy mode" = "Privacy mode";
+"Mood chart" = "Mood chart";
+"There is no data yet" = "There is no data yet";
+"Top 10 words" = "Top 10 words";
+"Top Emoji" = "Top Emoji";
+"Got it" = "Got it";
+"Microphone access" = "Microphone access";
+"Access to the photo library" = "Access to the photo library";
+"Cancel" = "Cancel";
+"Settings" = "Settings";
+"Flower of memories" = "Flower of memories";
+"Keep" = "Keep";
+"diary" = "diary";
+"every" = "every";
+"day" = "day";
+"find" = "find";
+"yourself" = "yourself";
+"collect" = "collect";
+"statistics" = "statistics";
+"about" = "about";
+"yourself" = "yourself";
+"This will hide the recordings from prying eyes, for example, in public transport." = "This will hide the recordings from prying eyes, for example, in public transport.";
+"Shows the general mood of your memories. It helps to track the level of emotions." = "Shows the general mood of your memories. It helps to track the level of emotions.";
+"Please grant access in the settings to continue" = "Please grant access in the settings to continue";
+"Frequently used words statistics will help you better track your feelings and experiences." = "Frequently used words statistics will help you better track your feelings and experiences.";
+"Keep a diary every day and your flower will grow. Memory will improve. The mind will become sharper. Daily recordings strengthen the neurons of our brain and nourish the flower." = "Keep a diary every day and your flower will grow. Memory will improve. The mind will become sharper. Daily recordings strengthen the neurons of our brain and nourish the flower.";

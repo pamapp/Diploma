@@ -46,6 +46,21 @@ extension MediaMO {
         get { data ?? Data() }
         set { data = newValue }
     }
+    
+    public var safeImageURL: URL {
+        let fileName = UUID().uuidString
+        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName).appendingPathExtension("jpg")
+        
+        if let data = self.data {
+            do {
+                try data.write(to: fileURL)
+            } catch {
+                print("Ошибка записи данных изображения в файл: \(error.localizedDescription)")
+            }
+        }
+        
+        return fileURL
+    }
 }
 
 extension MediaMO: Identifiable {

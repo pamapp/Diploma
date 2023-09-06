@@ -11,6 +11,11 @@ import SwiftUI
 
 extension String {
     
+    public func localized() -> String {
+        let string = NSLocalizedString(self, comment: self)
+        return string
+    }
+    
     // MARK: String Modifications (for hashtags)
     
     public func separate(withChar char : String) -> [String] {

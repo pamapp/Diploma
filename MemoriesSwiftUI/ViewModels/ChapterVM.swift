@@ -126,8 +126,6 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
             chapter.date = Date()
             saveContext()
         }
-        
-//        getConsecutiveDays()
     }
     
     func shouldAddNewChapter() -> Bool {
@@ -147,7 +145,6 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         guard let lastChapter = fetchedChapters.last else { return }
         controller.managedObjectContext.delete(lastChapter)
         saveContext()
-//        getConsecutiveDays()
     }
 
     func deleteAll() {
@@ -158,7 +155,6 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
             print("Failed to delete chapters: \(error)")
         }
         saveContext()
-//        getConsecutiveDays()
     }
 
     func deleteEmpty() {

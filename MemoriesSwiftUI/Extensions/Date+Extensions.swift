@@ -15,7 +15,7 @@ extension Date {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = format
         dateFormatter.timeZone = TimeZone.current
-        dateFormatter.locale = Locale(identifier: "ru_RU")
+//        dateFormatter.locale = Locale(identifier: "ru_RU")
         return dateFormatter.string(from: self).capitalized 
     }
 }

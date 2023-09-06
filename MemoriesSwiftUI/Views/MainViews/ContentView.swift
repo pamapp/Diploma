@@ -21,12 +21,12 @@ struct ContentView: View {
     @State private var isFloatingBtnPresented = false
     @State private var isSearchPresented = false
     @State private var isSearchKeyboardPresented = false
-
+    
     @State private var isStatsPresented = false
     @State private var isKeyboardPresented = true
     
     @State private var isLoadingPresented = true
-
+    
     @State private var wholeSize: CGSize = .zero
     @State private var scrollViewSize: CGSize = .zero
     @State private var searchText: String = ""
@@ -56,7 +56,7 @@ struct ContentView: View {
                                             Text("2023")
                                                 .chapterYearStyle()
                                         }
-                                        
+
                                         ForEach(searchText == "" ? chapterViewModel.chapters : chapterViewModel.searchResult, id: \.self) { chapter in
                                             ChapterCellView(chapter: chapter,
                                                             searchText: searchText,
@@ -66,7 +66,7 @@ struct ContentView: View {
 
                                             Spacer(minLength: UI.chapters_spaces)
                                         }
-                                        
+
                                         //когда их мало, не работает
                                         Rectangle()
                                             .fill(Color.clear)
@@ -155,14 +155,14 @@ struct ContentView: View {
                                         Image(UI.Buttons.scroll_to_bottom)
                                             .font(.system(size: 25))
                                             .foregroundColor(.black)
-                                        
+
                                     })
                                     .transition(.scale)
                                     .padding(.trailing, 26)
                                     .padding(.bottom, 26)
                                 }
                             }
-                            
+
                             InputAccessoryView (
                                 chapter: chapterViewModel.currentChapter,
                                 audioPlayer: audioPlayer,
@@ -208,21 +208,21 @@ struct ContentView: View {
             }
         }
     }
-    
+
     private func endEditing() {
         UIApplication.shared.endEditing()
         withAnimation(.easeInOut) {
             isKeyboardPresented = false
         }
     }
-    
+
     private func beginEditing() {
         UIApplication.shared.beginEditing()
         withAnimation(.easeInOut) {
             isKeyboardPresented = true
         }
     }
-    
+
     private var navLeadingBtn: some View {
         Button(action: {
             DispatchQueue.main.async {
@@ -234,7 +234,7 @@ struct ContentView: View {
                 .padding(.bottom, 14)
         }
     }
-    
+
     private var navTrailingBtn: some View {
         Button(action: {
             if isSearchPresented {

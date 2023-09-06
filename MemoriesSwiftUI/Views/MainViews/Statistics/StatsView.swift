@@ -93,14 +93,14 @@ struct StatsView: View {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color.c8)
                         }
-                    Text(UI.Strings.privacy_mode_title)
+                    Text(UI.Strings.privacy_mode_title.localized())
                         .font(.title(17))
                 }
             }
             .tint(.c2)
             
             HStack {
-                Text(UI.Strings.privacy_mode_text)
+                Text(UI.Strings.privacy_mode_text.localized())
                     .statsSubTitleStyle()
                 Spacer()
             }
@@ -142,7 +142,7 @@ struct StatsView: View {
                     VStack {
                         Spacer()
                         
-                        Text(UI.Strings.mood_chart_empty_text)
+                        Text(UI.Strings.mood_chart_empty_text.localized())
                             .chartEmptyTextStyle()
                     }
                 }
@@ -235,7 +235,7 @@ struct StatsView: View {
     func TopEmojiView(title: String, sequence: Array<Dictionary<String, Int>.Element>.SubSequence) -> some View {
         VStack(spacing: 24) {
             HStack {
-                Text(title)
+                Text(title.localized())
                     .statsTitleStyle()
                 Spacer()
             }
@@ -343,12 +343,12 @@ extension StatsView {
     private func sectionHeaderItem(title: String, subtitle: String) -> some View {
         VStack(spacing: 8) {
             HStack {
-                Text(title)
+                Text(title.localized())
                     .statsTitleStyle()
                 Spacer()
             }
             HStack {
-                Text(subtitle)
+                Text(subtitle.localized())
                     .statsSubTitleStyle()
                 Spacer()
             }
@@ -357,7 +357,7 @@ extension StatsView {
     
     private func wordItem(key: String, value: Int) -> some View {
         HStack {
-            Text(("\(key)").capitalized)
+            Text(("\(key)").localized().capitalized)
                 .wordTagStyle(color: value != 0 ? .c1 : .c7)
                 .lineLimit(1)
             if value != 0 {

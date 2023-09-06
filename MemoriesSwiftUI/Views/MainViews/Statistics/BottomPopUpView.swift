@@ -36,10 +36,10 @@ struct BottomPopUpView: View {
                                     .imageInPopUpStyle(w: geo.size.width - 32)
                                 
                                 VStack(spacing: 8) {
-                                    Text(UI.Strings.stats_description_title)
+                                    Text(UI.Strings.stats_description_title.localized())
                                         .statsPopUpTitleStyle()
                                     
-                                    Text(UI.Strings.stats_description_text)
+                                    Text(UI.Strings.stats_description_text.localized())
                                         .statsPopUpTextStyle()
                                 }.padding(.bottom, 48)
                                 
@@ -51,7 +51,7 @@ struct BottomPopUpView: View {
                                     RoundedRectangle(cornerRadius: 16)
                                         .foregroundColor(.c3)
                                         .overlay(
-                                            Text(UI.Strings.stats_description_btn_text)
+                                            Text(UI.Strings.stats_description_btn_text.localized())
                                                 .foregroundColor(.cW)
                                                 .font(.title(17))
                                         )

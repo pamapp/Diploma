@@ -115,15 +115,6 @@ struct InputAccessoryView: View {
                             isKeyboardPresented = true
                         }
                     }
-//                    .onAppear {
-//                        // Создаем таймер и устанавливаем интервал обновления в 1 секунду
-//                        Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { timer in
-//                            // Обновляем значение currentTime
-////                            print("текст1: \(message.wrappedValue)")
-//                            print("текст2: \(chapterViewModel.message)")
-
-//                        }
-//                    }
                 }.opacity(isRecording ? 0 : 1)
                 
                 if !isKeyboardPresented {
@@ -147,7 +138,7 @@ struct InputAccessoryView: View {
         }
     }
     
-    var recordingDuration: some View {
+    private var recordingDuration: some View {
         HStack(spacing: 8) {
             if let audioRecorder = audioRecorder.audioRecorder, audioRecorder.isRecording {
                 TimelineView(.periodic(from: .now, by: 1)) { _ in
@@ -161,7 +152,7 @@ struct InputAccessoryView: View {
         }.padding(.leading, 16)
     }
     
-    var attachmentBtnView: some View {
+    private var attachmentBtnView: some View {
         Button {
             PHPhotoLibrary.requestAuthorization { status in
                 switch status {
@@ -186,10 +177,10 @@ struct InputAccessoryView: View {
             }
         }
         .alert(isPresented: $showPHPAlert) {
-            Alert(title: Text(UI.Alearts.php_alert_title),
-                  message: Text(UI.Alearts.php_message_text),
-                  primaryButton: .default(Text(UI.Alearts.php_primaryBtn_text)),
-                  secondaryButton: .default(Text(UI.Alearts.php_secondaryBtn_text), action: {
+            Alert(title: Text(UI.Alearts.php_alert_title.localized()),
+                  message: Text(UI.Alearts.php_message_text.localized()),
+                  primaryButton: .default(Text(UI.Alearts.php_primaryBtn_text.localized())),
+                  secondaryButton: .default(Text(UI.Alearts.php_secondaryBtn_text.localized()), action: {
                         guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
                               UIApplication.shared.open(settingsURL)
                   }))
@@ -201,7 +192,7 @@ struct InputAccessoryView: View {
         .opacity(isRecording ? 0 : 1)
     }
     
-    var audioBtnView: some View {
+    private var audioBtnView: some View {
         HStack(spacing: 0) {
             Rectangle()
                 .frame(width: 2, height: 44)
@@ -214,10 +205,10 @@ struct InputAccessoryView: View {
             }
         }
         .alert(isPresented: $showMicroAlert) {
-            Alert(title: Text(UI.Alearts.micro_alert_title),
-                  message: Text(UI.Alearts.micro_message_text),
-                  primaryButton: .default(Text(UI.Alearts.micro_primaryBtn_text)),
-                  secondaryButton: .default(Text(UI.Alearts.micro_secondaryBtn_text), action: {
+            Alert(title: Text(UI.Alearts.micro_alert_title.localized()),
+                  message: Text(UI.Alearts.micro_message_text.localized()),
+                  primaryButton: .default(Text(UI.Alearts.micro_primaryBtn_text.localized())),
+                  secondaryButton: .default(Text(UI.Alearts.micro_secondaryBtn_text.localized()), action: {
                         guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
                               UIApplication.shared.open(settingsURL)
                   }))

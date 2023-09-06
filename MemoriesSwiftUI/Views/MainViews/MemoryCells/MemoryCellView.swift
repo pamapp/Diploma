@@ -16,7 +16,7 @@ struct MemoryEmptyCellView: View {
                 .foregroundColor(.c8)
             
             VStack {
-                Text(UI.Strings.empty_chapter_text)
+                Text(UI.Strings.empty_chapter_text.localized())
                     .font(.memoryTextImage(18))
                     .foregroundColor(.c7)
             }
@@ -59,6 +59,10 @@ struct MemoryCellView: View {
         UISlider.appearance().minimumTrackTintColor = UIColor(.c3)
         UISlider.appearance().maximumTrackTintColor = UIColor(.c4)
         UISlider.appearance().setThumbImage(thumbImage, for: .normal)
+        
+//        print(memory.text)
+//        print(memory.text?.data(using: .utf8))
+//        print("-------------")
     }
 
     var body: some View {
@@ -216,7 +220,7 @@ struct MemoryCellView: View {
         }
     }
     
-    var editBtnView: some View {
+    private var editBtnView: some View {
         Button(action: {
             withAnimation {
                 isSwipeable.toggle()
@@ -229,7 +233,7 @@ struct MemoryCellView: View {
         })
     }
     
-    var deleteBtnView: some View {
+    private var deleteBtnView: some View {
         Button(action: {
             withAnimation {
                 isSwipeable = false

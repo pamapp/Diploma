@@ -7,15 +7,14 @@
 
 import Foundation
 import SwiftUI
-//import Combine
 
 struct AutosizingTextField: UIViewRepresentable {
     @Binding var text: String
     @Binding var containerHeight: CGFloat
     var isFirstResponder: Bool = false
     
-    var hint : String = UI.Strings.dear_diary
-    var drafts : String = UI.Strings.draft
+    var hint : String = UI.Strings.dear_diary.localized()
+    var drafts : String = UI.Strings.draft.localized()
     
     var send : ()->()
     var media : ()->()

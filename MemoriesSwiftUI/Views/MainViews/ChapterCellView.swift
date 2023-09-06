@@ -23,6 +23,7 @@ struct ChapterCellView: View {
     
     var searchResult: [ItemMO] {
         if searchText.isEmpty {
+            print("+++++++++++++++")
             return itemViewModel.items
         } else {
             return itemViewModel.items.filter {
