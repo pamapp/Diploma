@@ -115,7 +115,7 @@
 		91A07A782AABB73200E4540C /* FileManager+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Extensions.swift"; sourceTree = "<group>"; };
 		91A07A7A2AABBD6600E4540C /* MediaVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaVM.swift; sourceTree = "<group>"; };
 		91B04C0829DDF9CA003B29AB /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
-		91B380AB29A0FA90003163AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		91B380AB29A0FA90003163AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		91B380AC29A10280003163AB /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		91B380B229A1124C003163AB /* ChapterMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChapterMO.swift; sourceTree = "<group>"; };
 		91B380B829A118ED003163AB /* ChapterVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChapterVM.swift; sourceTree = "<group>"; };
@@ -176,24 +176,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9107ADA329C754590030A3C7 /* Views */ = {
+		9107ADA329C754590030A3C7 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				9107ADA629C7560E0030A3C7 /* MainViews */,
-				912BBD3129F959DE003BFD65 /* UIViewRepresentable */,
 				91E2ACDE2A0414FD0043BE42 /* ViewModifiers */,
+				912BBD3129F959DE003BFD65 /* UIViewRepresentable */,
 				91E2ACE92A0E70270043BE42 /* Helpers */,
+				9107ADA629C7560E0030A3C7 /* MainViews */,
 			);
-			path = Views;
+			path = Core;
 			sourceTree = "<group>";
 		};
 		9107ADA629C7560E0030A3C7 /* MainViews */ = {
 			isa = PBXGroup;
 			children = (
 				91CCE4D829A0E61C005C6441 /* ContentView.swift */,
-				91B380BC29A120D7003163AB /* ChapterCellView.swift */,
 				91CCE50829A0E7B4005C6441 /* InputAccessoryView.swift */,
-				917D171929E6CBD4009B9E8A /* MemoryCells */,
+				91B72C682AD471B00035ADFE /* Chapter */,
+				917D171929E6CBD4009B9E8A /* Memory */,
 				91E2ACE02A0569960043BE42 /* Statistics */,
 			);
 			path = MainViews;
@@ -210,7 +210,7 @@
 			path = UIViewRepresentable;
 			sourceTree = "<group>";
 		};
-		91769A7829ACD5E10087E769 /* ViewModels */ = {
+		91769A7829ACD5E10087E769 /* Services */ = {
 			isa = PBXGroup;
 			children = (
 				91B380B829A118ED003163AB /* ChapterVM.swift */,
@@ -222,27 +222,16 @@
 				913272A92A16648100D573EC /* QuickActionVM.swift */,
 				9158CD232ACE0056003720D5 /* PopUpVM.swift */,
 			);
-			path = ViewModels;
+			path = Services;
 			sourceTree = "<group>";
 		};
-		917D171929E6CBD4009B9E8A /* MemoryCells */ = {
+		917D171929E6CBD4009B9E8A /* Memory */ = {
 			isa = PBXGroup;
 			children = (
-				9107ADA729CDF4CE0030A3C7 /* MemoryCellView.swift */,
-				91E2ACE52A0D0D750043BE42 /* SwipeItemView.swift */,
-				917D171729E6C5EB009B9E8A /* CollageLayoutView.swift */,
+				91B72C6C2AD472270035ADFE /* ViewModels */,
+				91B72C6B2AD472230035ADFE /* Views */,
 			);
-			path = MemoryCells;
-			sourceTree = "<group>";
-		};
-		918F9B8E2A1E6393006F4973 /* CoreData */ = {
-			isa = PBXGroup;
-			children = (
-				91F6F46229B508CC00DCF329 /* MemoriesSwiftUI.xcdatamodeld */,
-				91CCE4DF29A0E61D005C6441 /* Persistence.swift */,
-				91B380AF29A10CCA003163AB /* Models (CoreData) */,
-			);
-			path = CoreData;
+			path = Memory;
 			sourceTree = "<group>";
 		};
 		918F9B8F2A1E63F9006F4973 /* SentimentClassifier */ = {
@@ -272,15 +261,75 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		91B380AF29A10CCA003163AB /* Models (CoreData) */ = {
+		91B380AF29A10CCA003163AB /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				91B380B229A1124C003163AB /* ChapterMO.swift */,
 				91A07A762AAA15D300E4540C /* ItemMO.swift */,
 				91BEF96829B0B94600FE68C6 /* MediaMO.swift */,
 				9107ADE429CF16BF0030A3C7 /* MediaAlbumMO.swift */,
+				91CCE4DF29A0E61D005C6441 /* Persistence.swift */,
+				91F6F46229B508CC00DCF329 /* MemoriesSwiftUI.xcdatamodeld */,
 			);
-			path = "Models (CoreData)";
+			path = Models;
+			sourceTree = "<group>";
+		};
+		91B72C682AD471B00035ADFE /* Chapter */ = {
+			isa = PBXGroup;
+			children = (
+				91B72C6A2AD471F30035ADFE /* ViewModels */,
+				91B72C692AD471EE0035ADFE /* Views */,
+			);
+			path = Chapter;
+			sourceTree = "<group>";
+		};
+		91B72C692AD471EE0035ADFE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				91B380BC29A120D7003163AB /* ChapterCellView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		91B72C6A2AD471F30035ADFE /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		91B72C6B2AD472230035ADFE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9107ADA729CDF4CE0030A3C7 /* MemoryCellView.swift */,
+				917D171729E6C5EB009B9E8A /* CollageLayoutView.swift */,
+				91E2ACE52A0D0D750043BE42 /* SwipeItemView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		91B72C6C2AD472270035ADFE /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		91B72C6D2AD472370035ADFE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				91B04C0829DDF9CA003B29AB /* StatsView.swift */,
+				91E2ACE12A0569B40043BE42 /* LineChartProvider.swift */,
+				91E2ACEC2A0E9EC10043BE42 /* BottomPopUpView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		91B72C6E2AD472420035ADFE /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		91CCE4CA29A0E61C005C6441 = {
@@ -307,14 +356,14 @@
 		91CCE4D529A0E61C005C6441 /* MemoriesSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
-				91B380AB29A0FA90003163AB /* Info.plist */,
-				91CCE4DA29A0E61D005C6441 /* Assets.xcassets */,
 				91CCE4D629A0E61C005C6441 /* MemoriesSwiftUIApp.swift */,
 				918F9B8F2A1E63F9006F4973 /* SentimentClassifier */,
-				918F9B8E2A1E6393006F4973 /* CoreData */,
-				91769A7829ACD5E10087E769 /* ViewModels */,
-				9107ADA329C754590030A3C7 /* Views */,
 				91B380AE29A10C15003163AB /* Extensions */,
+				91B380AF29A10CCA003163AB /* Models */,
+				91769A7829ACD5E10087E769 /* Services */,
+				9107ADA329C754590030A3C7 /* Core */,
+				91CCE4DA29A0E61D005C6441 /* Assets.xcassets */,
+				91B380AB29A0FA90003163AB /* Info.plist */,
 				91CCE4DC29A0E61D005C6441 /* Preview Content */,
 			);
 			path = MemoriesSwiftUI;
@@ -359,9 +408,8 @@
 		91E2ACE02A0569960043BE42 /* Statistics */ = {
 			isa = PBXGroup;
 			children = (
-				91B04C0829DDF9CA003B29AB /* StatsView.swift */,
-				91E2ACE12A0569B40043BE42 /* LineChartProvider.swift */,
-				91E2ACEC2A0E9EC10043BE42 /* BottomPopUpView.swift */,
+				91B72C6E2AD472420035ADFE /* ViewModels */,
+				91B72C6D2AD472370035ADFE /* Views */,
 			);
 			path = Statistics;
 			sourceTree = "<group>";

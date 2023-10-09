@@ -19,8 +19,7 @@ struct ChapterCellView: View {
     @ObservedObject var itemViewModel: ItemVM
     
     @Binding var isKeyboardPresented: Bool
-    @Binding var scrollToMemoryIndex: UUID? // Добавьте это состояние
-
+    @Binding var scrollToMemoryIndex: UUID?
     
     private var chapterDate: String
     private var chapterNum: Int
