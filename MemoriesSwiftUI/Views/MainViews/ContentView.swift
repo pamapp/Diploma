@@ -13,32 +13,35 @@ struct ContentView: View {
     // MARK: - Variables
     
     @EnvironmentObject var quickActionSettings: QuickActionVM
+    @EnvironmentObject var popUp: PopUpVM
     @EnvironmentObject var chapterViewModel: ChapterVM
     
-    @ObservedObject var audioPlayer = AudioPlayerVM()
+    @StateObject var audioPlayer = AudioPlayerVM()
     
     @State private var scrollToBottom = false
     @State private var isFloatingBtnPresented = false
     @State private var isSearchPresented = false
     @State private var isSearchKeyboardPresented = false
-    
+    @State private var isChapterAdded = false
+
     @State private var isStatsPresented = false
     @State private var isKeyboardPresented = true
-    
     @State private var isLoadingPresented = true
     
-    @State private var wholeSize: CGSize = .zero
+//    @State private var disableKeyboard = false
+    
     @State private var scrollViewSize: CGSize = .zero
     @State private var searchText: String = ""
-    
+        
     @Namespace var bottomID
     
     private let hieght: CGFloat = UI.screen_height / 2
-    
     private let spaceName = "main_scroll"
     
     var chapter: ChapterMO?
     
+    @State private var scrollToMemoryIndex: UUID? = nil // Добавьте это состояние
+
     // MARK: - View Body
     
     var body: some View {
@@ -49,134 +52,91 @@ struct ContentView: View {
                     ScrollViewReader { proxy in
                         ScrollView(showsIndicators: false) {
                             ChildSizeReader(size: $scrollViewSize) {
-                                ZStack {
-                                    VStack {
-                                        Spacer(minLength: 16)
-                                        HStack(alignment: .center) {
-                                            Text("2023")
-                                                .chapterYearStyle()
-                                        }
-
-                                        ForEach(searchText == "" ? chapterViewModel.chapters : chapterViewModel.searchResult, id: \.self) { chapter in
-                                            ChapterCellView(chapter: chapter,
-                                                            searchText: searchText,
-                                                            isKeyboardPresented: $isKeyboardPresented)
-                                            .environmentObject(chapterViewModel)
-                                            .environmentObject(quickActionSettings)
-
-                                            Spacer(minLength: UI.chapters_spaces)
-                                        }
-
-                                        //когда их мало, не работает
-                                        Rectangle()
-                                            .fill(Color.clear)
-                                            .frame(height: isSearchPresented ? 0 : 54)
-                                            .id(bottomID)
+                                LazyVStack(spacing: 0) {
+                                    Spacer(minLength: 16)
+                                    HStack(alignment: .center) {
+                                        Text("2023")
+                                            .chapterYearStyle()
                                     }
-                                    .background(
-                                        GeometryReader { proxy in
-                                            Color.clear.preference(
-                                                key: ViewOffsetKey.self,
-                                                value: -1 * proxy.frame(in: .named(spaceName)).origin.y
-                                            )
-                                        }
-                                    )
-                                    .onPreferenceChange(
-                                        ViewOffsetKey.self,
-                                        perform: { value in
-                                            if value >= scrollViewSize.height - wholeSize.height - UIScreen.main.bounds.height * 3 {
-                                                withAnimation {
-                                                    isFloatingBtnPresented = false
-                                                }
-                                            } else {
-                                                withAnimation {
-                                                    isFloatingBtnPresented = true
-                                                }
-                                            }
-                                        }
-                                    )
+                                    
+                                    ForEach(searchText == "" ? chapterViewModel.chapters : chapterViewModel.searchResult, id: \.self) { chapter in
+                                        ChapterCellView(chapter: chapter,
+                                                        searchText: searchText,
+                                                        audioPlayer: audioPlayer,
+                                                        isKeyboardPresented: $isKeyboardPresented,
+                                                        scrollToMemoryIndex: $scrollToMemoryIndex
+                                        )
+                                        Spacer(minLength: UI.chapters_spaces)
+                                    }
+                                    
+                                    Rectangle()
+                                        .fill(Color.clear)
+                                        .frame(height: isSearchPresented ? 0 : (isKeyboardPresented ? 50 : 85))
+                                        .id(bottomID)
+                                }
+                                .modifier(FlipModifier())
+                                .modifier(FloatingButtonModifier(isFloatingBtnPresented: $isFloatingBtnPresented, spaceName: spaceName))
+                            }
+                        }
+                        .disabled(chapterViewModel.isEditingMode)
+                        .coordinateSpace(name: spaceName)
+                        .modifier(FlipModifier())
+                        .onChange(of: chapterViewModel.isEditingMode) { newValue in
+//                            disableKeyboard.toggle()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                withAnimation(.linear(duration: 0.1)) {
+                                    proxy.scrollTo(scrollToMemoryIndex, anchor: .center)
                                 }
                             }
                         }
-                        .coordinateSpace(name: spaceName)
-                        .onChange(of: chapterViewModel.chapters.last?.safeContainsNumber) {newValue in
-                            withAnimation(.linear(duration: 0.1)) {
+                        .onChange(of: chapterViewModel.chapters.last?.safeContainsNumber) { newValue in
+                            if isChapterAdded {
                                 proxy.scrollTo(bottomID, anchor: .bottom)
+                                isChapterAdded = false
                             }
                             chapterViewModel.getConsecutiveDays()
                         }
-                        .onChange(of: isKeyboardPresented) { newValue in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                withAnimation(.linear(duration: 0.1)) {
-                                    proxy.scrollTo(bottomID, anchor: .bottom)
-                                }
-                            }
-                        }
-                        .onChange(of: isSearchPresented) { newValue in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                withAnimation(.linear(duration: 0.1)) {
-                                    proxy.scrollTo(bottomID, anchor: .bottom)
-                                }
-                            }
-                        }
                         .onChange(of: scrollToBottom) { newValue in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                withAnimation(.linear(duration: 0.1)) {
-                                    proxy.scrollTo(bottomID, anchor: .bottom)
-                                }
-                            }
-                        }
-                        .onAppear {
-                            if isKeyboardPresented == true {
-                                withAnimation(.linear(duration: 0.1)) {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                            if chapterViewModel.isEditingMode == false {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                    withAnimation(.linear(duration: 0.1)) {
                                         proxy.scrollTo(bottomID, anchor: .bottom)
                                     }
                                 }
-                            } else {
-                                proxy.scrollTo(bottomID, anchor: .bottom)
                             }
                         }
+//                        .onChange(of: isKeyboardPresented) { newValue in
+//                            if chapterViewModel.isEditingMode == false {
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+//                                    withAnimation(.linear(duration: 0.1)) {
+//                                        proxy.scrollTo(bottomID, anchor: .bottom)
+//                                    }
+//                                }
+//                            }
+//                        }
+                        //.scrollToBottomOnChanges($scrollToBottom, isEditingMode: chapterViewModel.isEditingMode, proxy: proxy, bottomID: bottomID)
+                        //.scrollToBottomOnChanges($isKeyboardPresented, isEditingMode: chapterViewModel.isEditingMode, proxy: proxy, bottomID: bottomID)
                         .onTapGesture {
                             self.endEditing()
                         }
+                        .edgesIgnoringSafeArea(isKeyboardPresented ? .top : .bottom)
+//                        .ignoresSafeArea(disableKeyboard ? .keyboard : [])
                     }
                 }
+//                .ignoresSafeArea(disableKeyboard ? .keyboard : [])
                 .background(Color.cW)
                 .keyboardToolbar(view: {
                     VStack(spacing: 0) {
                         if !isSearchPresented {
-                            if isFloatingBtnPresented {
-                                HStack {
-                                    Spacer()
-                                    Button(action: {
-                                        scrollToBottom.toggle()
-                                    }, label: {
-                                        Image(UI.Buttons.scroll_to_bottom)
-                                            .font(.system(size: 25))
-                                            .foregroundColor(.black)
-
-                                    })
-                                    .transition(.scale)
-                                    .padding(.trailing, 26)
-                                    .padding(.bottom, 26)
-                                }
-                            }
-
                             InputAccessoryView (
                                 chapter: chapterViewModel.currentChapter,
                                 audioPlayer: audioPlayer,
-                                chapterVM: chapterViewModel,
-                                isKeyboardPresented: $isKeyboardPresented
+                                isKeyboardPresented: $isKeyboardPresented,
+                                isFloatingBtnPresented: $isFloatingBtnPresented,
+                                isChapterAdded: $isChapterAdded,
+                                scrollToBottom: $scrollToBottom
                             )
-                            .environmentObject(chapterViewModel)
                             .transition(.opacity)
-                            .shadowInputControl()
-                            .background(
-                                BlurView(style: .extraLight, intensity: 0.1)
-                                    .edgesIgnoringSafeArea(.bottom)
-                                    .padding(.top, 10)
-                            )
                         }
                     }
                 })
@@ -189,17 +149,18 @@ struct ContentView: View {
                 leading:
                     navLeadingBtn
                     .fullScreenCover(isPresented: $isStatsPresented) {
-                        GeometryReader{ proxy in
+                        GeometryReader { proxy in
                             let topEdge = proxy.safeAreaInsets.top
                             StatsView(chapterModel: chapterViewModel, topEdge: topEdge)
-                                .ignoresSafeArea(.all,edges: .top)
-                                .environmentObject(quickActionSettings)
+                                .ignoresSafeArea(.all, edges: .top)
                         }
                     }
                 ,trailing:
                     navTrailingBtn
             )
-            .navigationBarTitle("Май", displayMode: .inline)
+            .navigationBarTitle(Date().getFormattedDateString("LLLL"), displayMode: .inline)
+            .toolbarBackground(Color.cW, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .onAppear {
                 if chapterViewModel.shouldAddNewChapter() {
                     chapterViewModel.addChapter()
@@ -207,12 +168,15 @@ struct ContentView: View {
                 chapterViewModel.getConsecutiveDays()
             }
         }
+        .modifier(PopUpModifier(popUpVM: popUp, type: ""))
     }
 
     private func endEditing() {
-        UIApplication.shared.endEditing()
-        withAnimation(.easeInOut) {
-            isKeyboardPresented = false
+        if chapterViewModel.isEditingMode == false {
+            UIApplication.shared.endEditing()
+            withAnimation(.easeInOut) {
+                isKeyboardPresented = false
+            }
         }
     }
 
@@ -278,3 +242,12 @@ struct ChildSizeReader<Content: View>: View {
         }
     }
 }
+
+
+
+//
+//                            ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapterViewModel.currentChapter).addItemMedia(chapter: chapterViewModel.currentChapter, attachments: [UIImage(named: "image") ?? UIImage()], type: .photo)
+//                            ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapterViewModel.currentChapter).addItemParagraphAndMedia(chapter: chapterViewModel.currentChapter, attachments: [UIImage(named: "image") ?? UIImage()], text: "Some staff that doesn't have any reasons to be rigth here, but it quite long to check spaces in scroll view, so LET IT BE!")
+//                            ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapterViewModel.currentChapter).addItemParagraph(chapter: chapterViewModel.currentChapter, text: "В английском языке существует понятие спеллинг - произнесение слова по буквам, потому что иногда хуй проссышь, как именно пишется данное слово. Скажем, light и lite произносятся одинаково, но пишутся по-разному. Поэтому с появлением телефонной связи и раций военные начали придумывать более или менее универсальный алфавит, чтобы произносить буквы заранее определенными словами.")
+//                            ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapterViewModel.currentChapter).addMultipleItemsAndMedia(chapter: chapterViewModel.currentChapter, image: UIImage(named: "image") ?? UIImage(), type: .photo, count: 50)
+//                            chapterViewModel.deleteAll()

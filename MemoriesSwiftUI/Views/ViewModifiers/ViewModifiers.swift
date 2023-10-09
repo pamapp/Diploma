@@ -32,23 +32,28 @@ struct ShadowFloating: ViewModifier {
     }
 }
 
+
 // MARK: - Text Modifiers -
 
 struct MemoryTextBase: ViewModifier {
+    var editingMode: Bool
+    
     func body(content: Content) -> some View {
         content
             .font(.memoryTextBase())
-            .foregroundColor(.c1)
+            .foregroundColor(!editingMode ? .c1 : .c7)
             .textSelection(.enabled)
             .fixedSize(horizontal: false, vertical: true)
     }
 }
 
 struct MemoryTextImage: ViewModifier {
+    var editingMode: Bool
+    
     func body(content: Content) -> some View {
         content
             .font(.memoryTextImage())
-            .foregroundColor(.c1)
+            .foregroundColor(!editingMode ? .c1 : .c7)
             .textSelection(.enabled)
             .padding(.leading, 8)
             .padding(.trailing, 16)
@@ -184,6 +189,7 @@ struct KeyboardToolbar<ToolbarView: View>: ViewModifier {
     }
 }
 
+
 // MARK: - Offset Modifiers -
 
 struct OffsetModifier: ViewModifier {
@@ -201,5 +207,63 @@ struct OffsetModifier: ViewModifier {
                 }
                 ,alignment: .top
             )
+    }
+}
+
+
+// MARK: - ContentView Modifiers -
+
+struct FlipModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .rotationEffect(Angle(degrees: 180))
+            .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+    }
+}
+
+struct FloatingButtonModifier: ViewModifier {
+    @Binding var isFloatingBtnPresented: Bool
+    let spaceName: String
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                GeometryReader { proxy in
+                    Color.clear.preference(
+                        key: ViewOffsetKey.self,
+                        value: -1 * proxy.frame(in: .named(spaceName)).origin.y
+                    )
+                }
+            )
+            .onPreferenceChange(
+                ViewOffsetKey.self,
+                perform: { value in
+                    setFloatingBtnPresented(value >= UIScreen.main.bounds.height * 2)
+                }
+            )
+    }
+    
+    private func setFloatingBtnPresented(_ value: Bool) {
+        DispatchQueue.global(qos: .background).async {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.isFloatingBtnPresented = value
+                }
+            }
+        }
+    }
+}
+
+struct PopUpModifier: ViewModifier {
+    @ObservedObject var popUpVM: PopUpVM
+    var type: String
+    
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+            BottomPopUpView(popUpVM: popUpVM, type: type)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .edgesIgnoringSafeArea(.all)
+        }
     }
 }

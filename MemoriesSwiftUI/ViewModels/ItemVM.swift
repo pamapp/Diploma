@@ -24,7 +24,7 @@ class ItemVM: ObservableObject {
     @Published var items: [ItemMO] = []
     @Published var sentiment: String = ""
     
-    private let controller :  NSFetchedResultsController<ItemMO>
+    private let controller: NSFetchedResultsController<ItemMO>
     private var chapterVM: ChapterVM
     private var chapter: ChapterMO
     
@@ -67,26 +67,35 @@ class ItemVM: ObservableObject {
         setMemorySentiment(item)
     }
     
-    func addItemMedia(chapter: ChapterMO, attachments: [Data], type: String) {
+    func addItemMedia(chapter: ChapterMO, id: String, attachment: String, type: ItemType) {
+        let item = ItemMO(context: controller.managedObjectContext)
+        let mediaVM = MediaVM(moc: controller.managedObjectContext, item: item)
+        
+        mediaVM.addRecord(item: item, id: id, url: attachment)
+        
+        item.id = UUID()
+        item.timestamp = Date()
+        item.type = type.rawValue
+        item.sentiment = "neutral"
+        item.chapter = chapter
+        
+        chapter.addToItems(item)
+        save()
+        fetchItems()
+    }
+    
+    func addItemMedia(chapter: ChapterMO, attachments: [UIImage], type: ItemType) {
         if !attachments.isEmpty && attachments.count <= 3 {
             let item = ItemMO(context: controller.managedObjectContext)
-            let mediaAlbum = MediaAlbumMO(context: controller.managedObjectContext)
-            
-            mediaAlbum.item = item
+            let mediaVM = MediaVM(moc: controller.managedObjectContext, item: item)
             
             for attachment in attachments {
-                let media = MediaMO(context: controller.managedObjectContext)
-                media.id = UUID()
-                media.date = Date()
-                media.data = attachment
-                media.album = mediaAlbum
-                mediaAlbum.addToAttachments(media)
+                mediaVM.addImage(item: item, image: attachment)
             }
             
             item.id = UUID()
             item.timestamp = Date()
-            item.mediaAlbum = mediaAlbum
-            item.type = type
+            item.type = type.rawValue
             item.sentiment = "neutral"
             item.chapter = chapter
             
@@ -100,26 +109,17 @@ class ItemVM: ObservableObject {
     }
     
     
-    func addItemParagraphAndMedia(chapter: ChapterMO, attachments: [Data], text: String) {
+    func addItemParagraphAndMedia(chapter: ChapterMO, attachments: [UIImage], text: String) {
         if !attachments.isEmpty && attachments.count <= 3 {
             let item = ItemMO(context: controller.managedObjectContext)
-            let mediaAlbum = MediaAlbumMO(context: controller.managedObjectContext)
-            
-            mediaAlbum.item = item
-            
+            let mediaVM = MediaVM(moc: controller.managedObjectContext, item: item)
             
             for attachment in attachments {
-                let media = MediaMO(context: controller.managedObjectContext)
-                media.id = UUID()
-                media.date = Date()
-                media.data = attachment
-                media.album = mediaAlbum
-                mediaAlbum.addToAttachments(media)
+                mediaVM.addImage(item: item, image: attachment)
             }
             
             item.id = UUID()
             item.timestamp = Date()
-            item.mediaAlbum = mediaAlbum
             item.type = ItemType.textWithPhoto.rawValue
             item.text = text
             item.sentiment = ""
@@ -154,6 +154,17 @@ class ItemVM: ObservableObject {
         }
     }
     
+    func getMemorySentiment(_ item: ItemMO) -> Color {
+        switch item.sentiment {
+        case "positive":
+            return .c3
+        case "negative":
+            return .c5
+        default:
+            return .c4
+        }
+    }
+    
     func editItem(_ item: ItemMO, text: String) {
         if item.isEditable {
             item.text = text
@@ -171,6 +182,12 @@ class ItemVM: ObservableObject {
     }
     
     func deleteItem(_ item: ItemMO) {
+        let mediaVM = MediaVM(moc: controller.managedObjectContext, item: item)
+        
+        for attachment in item.mediaArray {
+            mediaVM.deleteMedia(attachment, type: item.safeType)
+        }
+        
         controller.managedObjectContext.delete(item)
         save()
         fetchItems()
@@ -179,4 +196,47 @@ class ItemVM: ObservableObject {
             chapterVM.deleteChapter(chapter)
         }
     }
+    
+    func addMultipleItemsAndMedia(chapter: ChapterMO, image: UIImage, type: ItemType, count: Int) {
+        guard count > 0 else { return }
+
+        controller.managedObjectContext.perform {
+            for _ in 1...count {
+                let item = ItemMO(context: self.controller.managedObjectContext)
+                let mediaVM = MediaVM(moc: self.controller.managedObjectContext, item: item)
+                
+                for _ in 1...3 {
+                    mediaVM.addImage(item: item, image: image)
+                }
+                
+                item.id = UUID()
+                item.timestamp = Date()
+                item.type = type.rawValue
+                item.sentiment = "neutral"
+                item.chapter = chapter
+                
+                chapter.addToItems(item)
+            }
+            
+            self.save()
+            self.fetchItems()
+        }
+    }
+    
+//    func addItemArray(chapter: ChapterMO, id: String, attachment: String, type: ItemType) {
+//        let item = ItemMO(context: controller.managedObjectContext)
+//        let mediaVM = MediaVM(moc: controller.managedObjectContext, item: item)
+//        
+//        mediaVM.addRecord(item: item, id: id, url: attachment)
+//        
+//        item.id = UUID()
+//        item.timestamp = Date()
+//        item.type = type.rawValue
+//        item.sentiment = "neutral"
+//        item.chapter = chapter
+//        
+//        chapter.addToItems(item)
+//        save()
+//        fetchItems()
+//    }
 }

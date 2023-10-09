@@ -27,11 +27,18 @@ struct MemoryEmptyCellView: View {
 
 struct MemoryCellView: View {
     @EnvironmentObject var quickActionSettings: QuickActionVM
+    @EnvironmentObject var popUp: PopUpVM
+    @EnvironmentObject var chapterViewModel: ChapterVM
+
     @ObservedObject var audioPlayer: AudioPlayerVM
     
     @State private var sliderValue: Double = 0.0
     @State private var isDragging = false
+    
+    //added
     @State private var isSwipeable = false
+    @State private var deleteSwipeAction = false
+
     
     @State var cellHeight: CGFloat = 0
     @State var cellWidth: CGFloat = UIScreen.main.bounds.width - 32
@@ -49,20 +56,16 @@ struct MemoryCellView: View {
         GridItem(.flexible())
     ]
     
-    init(memory: ItemMO, delete: @escaping ()->(), edit: @escaping ()->()) {
+    init(memory: ItemMO, audioPlayer: AudioPlayerVM, delete: @escaping ()->(), edit: @escaping ()->()) {
         self.memory = memory
-        self.audioPlayer = AudioPlayerVM()
+        self.audioPlayer = audioPlayer
         self.delete = delete
         self.edit = edit
         
-        let thumbImage : UIImage = UIImage(named: UI.Icons.drower)!        
+        let thumbImage : UIImage = UIImage(named: UI.Icons.drower)!
         UISlider.appearance().minimumTrackTintColor = UIColor(.c3)
         UISlider.appearance().maximumTrackTintColor = UIColor(.c4)
         UISlider.appearance().setThumbImage(thumbImage, for: .normal)
-        
-//        print(memory.text)
-//        print(memory.text?.data(using: .utf8))
-//        print("-------------")
     }
 
     var body: some View {
@@ -70,29 +73,27 @@ struct MemoryCellView: View {
             HStack(spacing: 14) {
                 RoundedRectangle(cornerRadius: 20)
                     .frame(width: 2.3)
-                    .foregroundColor(memory.safeSentimentColor)
+                    .foregroundColor(chapterViewModel.getEditingStatus(memory: memory) ? .c8 : memory.safeSentimentColor)
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    switch memory.safeType {
+                    switch memory.type {
                     case ItemType.photo.rawValue:
-                        CollageLayoutView(images: memory.mediaAlbum?.attachmentsArray ?? [],
+                        CollageLayoutView(images: memory.mediaArray,
                                           width: cellWidth)
-                        .environmentObject(quickActionSettings)
                     case ItemType.text.rawValue:
                         memory.safeText.textWithHashtags(color: .c6)
-                            .memoryTextBaseStyle()
+                            .memoryTextBaseStyle(editingMode: chapterViewModel.getEditingStatus(memory: memory))
                             .blur(radius: quickActionSettings.isPrivateModeEnabled ? 4.5 : 0)
                         
                     case ItemType.audio.rawValue:
                         MemoryVoiceView()
                         
                     case ItemType.textWithPhoto.rawValue:
-                        CollageLayoutView(images: memory.mediaAlbum?.attachmentsArray ?? [],
+                        CollageLayoutView(images: memory.mediaArray,
                                           width: cellWidth)
-                        .environmentObject(quickActionSettings)
 
                         memory.safeText.textWithHashtags(color: .c6)
-                            .memoryTextImageStyle()
+                            .memoryTextImageStyle(editingMode: chapterViewModel.getEditingStatus(memory: memory))
                             .blur(radius: quickActionSettings.isPrivateModeEnabled ? 4.5 : 0)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
@@ -103,16 +104,17 @@ struct MemoryCellView: View {
                     }
 
                     HStack {
-                        Text(memory.safeTimestampContent.getFormattedDateString(format: "HH:mm"))
+                        Text(memory.safeTimestampContent.getFormattedDateString("HH:mm"))
                             .memoryTimeStyle()
                         Spacer()
                         
                         if memory.type == ItemType.audio.rawValue {
-                            if audioPlayer.audioPlayer != nil {
+                            if (audioPlayer.currentlyPlaying?.id == memory.mediaArray.first?.id) {
                                 Text("-\(DateComponentsFormatter.positional.string(from: (audioPlayer.audioPlayer!.duration - audioPlayer.audioPlayer!.currentTime) ) ?? "0:00")")
                                     .memoryAudioTimeStyle()
                             } else {
-                                if let recordingData = memory.mediaAlbum?.attachmentsArray.first?.data, let duration = getDuration(of: recordingData) {
+                                if let recording = memory.mediaArray.first,
+                                   let duration = getDuration(of: recording) {
                                     Text(DateComponentsFormatter.positional.string(from: duration) ?? "0:00")
                                         .memoryAudioTimeStyle()
                                 }
@@ -127,6 +129,10 @@ struct MemoryCellView: View {
                                 let height = proxy.size.height
                                 self.cellHeight = height
                             }
+                            .onChange(of: memory.safeText) { _ in
+                               let height = proxy.size.height
+                               self.cellHeight = height
+                           }
                     }
                 )
             }
@@ -147,14 +153,21 @@ struct MemoryCellView: View {
                             Spacer()
                             deleteBtnView
                                 .frame(width: geo.size.width / 2, height: geo.size.height)
-                            
                         }
                     }
                 } else {
                     GeometryReader { geo in
                         HStack {
-                            deleteBtnView
-                                .frame(width: geo.size.width, height: geo.size.height)
+                            if memory.type == ItemType.text.rawValue || memory.type == ItemType.textWithPhoto.rawValue {
+                                blockedEditBtnView
+                                    .frame(width: geo.size.width / 2, height: geo.size.height)
+                                Spacer()
+                                deleteBtnView
+                                    .frame(width: geo.size.width / 2, height: geo.size.height)
+                            } else {
+                                deleteBtnView
+                                    .frame(width: geo.size.width, height: geo.size.height)
+                            }
                         }
                     }
                 }
@@ -164,38 +177,35 @@ struct MemoryCellView: View {
     
     func MemoryVoiceView() -> some View {
         var isPlayingThisRecording: Bool {
-            audioPlayer.currentlyPlaying?.id == memory.mediaAlbum?.attachmentsArray.first?.id
+            audioPlayer.currentlyPlaying?.id == memory.mediaArray.first?.id
+        }
+        
+        var isChangeBtn: Bool {
+            isPlayingThisRecording && audioPlayer.isPlaying
         }
         
         return HStack {
-            ZStack {
-                Button {
-                    if let _ = audioPlayer.audioPlayer, let _ = audioPlayer.currentlyPlaying {
+            Button {
+                if audioPlayer.currentlyPlaying != nil {
+                    if isPlayingThisRecording {
                         if audioPlayer.isPlaying {
-                            // Pause
                             audioPlayer.pausePlayback()
                         } else {
-                            // Play
                             audioPlayer.resumePlayback()
                         }
+                    } else {
+                        audioPlayer.startPlayback(recording: memory.mediaArray.first!)
                     }
-                } label: {
-                    Image(audioPlayer.isPlaying ? UI.Buttons.pause_audio : UI.Buttons.play_audio)
+                } else {
+                    audioPlayer.startPlayback(recording: memory.mediaArray.first!)
                 }
-                
-                Button {
-                    audioPlayer.startPlayback(recording: (memory.mediaAlbum?.attachmentsArray.first)!)
-                } label: {
-                    Image(UI.Buttons.play_audio)
-                }
-                .opacity(audioPlayer.currentlyPlaying != nil ? 0 : 1)
-                
+            } label: {
+                Image(isChangeBtn ? UI.Buttons.pause_audio : UI.Buttons.play_audio)
             }
-
-            Slider(value: $sliderValue, in: 0...((audioPlayer.currentlyPlaying != nil) ? audioPlayer.audioPlayer!.duration : 0)) { dragging in
-                print("Editing the slider: \(dragging)")
+            
+            Slider(value: $sliderValue, in: 0...((audioPlayer.currentlyPlaying != nil && isPlayingThisRecording) ? audioPlayer.audioPlayer!.duration : 0)) { dragging in
                 isDragging = dragging
-                if !dragging && audioPlayer.currentlyPlaying != nil {
+                if !dragging && audioPlayer.currentlyPlaying != nil && isPlayingThisRecording {
                     audioPlayer.audioPlayer!.currentTime = sliderValue
                 }
             }
@@ -205,39 +215,61 @@ struct MemoryCellView: View {
         .onAppear {
             sliderValue = 0
         }
+        .onChange(of: audioPlayer.currentlyPlaying) { newValue in
+            sliderValue = 0
+        }
         .onReceive(timer) { _ in
-            guard let player = audioPlayer.audioPlayer, !isDragging else { return }
+            guard let player = audioPlayer.audioPlayer, !isDragging && isPlayingThisRecording else { return }
             sliderValue = player.currentTime
         }
     }
     
-    func getDuration(of recordingData: Data) -> TimeInterval? {
+    func getDuration(of recording: MediaMO) -> TimeInterval? {
         do {
-            return try AVAudioPlayer(data: recordingData).duration
+            return try AVAudioPlayer(contentsOf: recording.safeAudioURL).duration
         } catch {
-            print("Failed to get the duration for recording on the list: Recording")
+            print(error.localizedDescription)
             return nil
+        }
+    }
+   
+    private var blockedEditBtnView: some View {
+        Button(action: {
+            withAnimation {
+                isSwipeable = true
+                popUp.enablePopUp()
+            }
+        }, label: {
+            Image(UI.Icons.edit_locked)
+        }).onChange(of: popUp.isVisible) { newValue in
+            isSwipeable = false
         }
     }
     
     private var editBtnView: some View {
         Button(action: {
             withAnimation {
-                isSwipeable.toggle()
+                isSwipeable = true
                 self.edit()
             }
-            
         }, label: {
             Image(UI.Icons.edit)
                 .foregroundColor(.c6)
-        })
+        }).onChange(of: chapterViewModel.isEditingMode) { newValue in
+            isSwipeable = false
+        }
     }
     
     private var deleteBtnView: some View {
         Button(action: {
             withAnimation {
+                deleteSwipeAction.toggle()
                 isSwipeable = false
-                self.delete()
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation {
+                   self.delete()
+                }
             }
         }, label: {
             Image(UI.Icons.trash)

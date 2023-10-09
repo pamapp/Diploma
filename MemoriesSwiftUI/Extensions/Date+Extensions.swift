@@ -11,12 +11,11 @@ extension Date {
     
     // MARK: Formatting the date into the desired string format
     
-    func getFormattedDateString(format: String) -> String {
+    func getFormattedDateString(_ format: String) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = format
         dateFormatter.timeZone = TimeZone.current
-//        dateFormatter.locale = Locale(identifier: "ru_RU")
-        return dateFormatter.string(from: self).capitalized 
+        return dateFormatter.string(from: self).capitalized
     }
 }
 

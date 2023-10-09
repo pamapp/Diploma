@@ -16,7 +16,7 @@ public class ItemMO: NSManagedObject {
     @NSManaged public var text: String?
     @NSManaged public var type: String?
     @NSManaged public var sentiment: String?
-    @NSManaged public var mediaAlbum: MediaAlbumMO?
+    @NSManaged public var attachments: NSSet?
     @NSManaged public var chapter: ChapterMO?
 }
 
@@ -61,6 +61,11 @@ extension ItemMO {
         set { type = newValue }
     }
     
+    public var safeSentiment: String {
+        get { sentiment ?? String() }
+        set { sentiment = newValue }
+    }
+    
     public var safeSentimentColor: Color {
         switch sentiment {
         case "positive":
@@ -91,8 +96,29 @@ extension ItemMO {
         return timeInterval <= twentyFourHoursInSeconds
     }
     
+    public var mediaArray: [MediaMO] {
+        let itemsSet = attachments as? Set<MediaMO> ?? []
+        
+        return itemsSet.sorted {
+            $0.safeDate < $1.safeDate
+        }
+    }
+    
+}
+
+extension ItemMO {
+    @objc(addAttachmentsObject:)
+    @NSManaged public func addToAttachments(_ value: MediaMO)
+
+    @objc(removeAttachmentsObject:)
+    @NSManaged public func removeFromAttachments(_ value: MediaMO)
+
+    @objc(addAttachments:)
+    @NSManaged public func addToAttachments(_ values: NSSet)
+
+    @objc(removeAttachments:)
+    @NSManaged public func removeFromAttachments(_ values: NSSet)
 }
 
 extension ItemMO: Identifiable {
 }
-

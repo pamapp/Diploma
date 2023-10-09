@@ -7,13 +7,14 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 @objc(MediaMO)
 public class MediaMO: NSManagedObject {
-    @NSManaged public var id: UUID?
+    @NSManaged public var id: String?
     @NSManaged public var date: Date?
-    @NSManaged public var data: Data?
-    @NSManaged public var album: MediaAlbumMO?
+    @NSManaged public var url: String?
+    @NSManaged public var item: ItemMO?
 }
 
 extension MediaMO {
@@ -37,29 +38,40 @@ extension MediaMO {
         )
     }
     
-    public var safeDateContent: Date {
+    public var safeID: String {
+        get { id ?? UUID().uuidString }
+        set { id = newValue }
+    }
+    
+    public var safeDate: Date {
         get { date ?? Date() }
         set { date = newValue }
     }
     
-    public var safeDataContent: Data {
-        get { data ?? Data() }
-        set { data = newValue }
+    public var safeURL: String {
+        get { url ?? String() }
+        set { url = newValue }
     }
     
     public var safeImageURL: URL {
-        let fileName = UUID().uuidString
-        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName).appendingPathExtension("jpg")
-        
-        if let data = self.data {
-            do {
-                try data.write(to: fileURL)
-            } catch {
-                print("Ошибка записи данных изображения в файл: \(error.localizedDescription)")
-            }
+        FileManager().retrieveURL(with: safeID)!
+    }
+    
+    public var safeAudioURL: URL {
+        FileManager().retrieveAudioURL(with: safeID)!
+    }
+    
+    public var safeDateString: String {
+        safeDate.toString(dateFormat: "dd-MM-YY_'at'_HH:mm:ss")
+    }
+    
+    public var uiImage: UIImage {
+        if !safeID.isEmpty,
+           let image = FileManager().retrieveImage(with: safeID) {
+            return image
+        } else {
+            return UIImage(systemName: "photo")!
         }
-        
-        return fileURL
     }
 }
 

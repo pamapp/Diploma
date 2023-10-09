@@ -13,6 +13,7 @@ struct SwipeItem<Content: View, Right: View>: View {
     var itemHeight: CGFloat = 0
     
     @Binding var endSwipeAction: Bool
+
     @State var hoffset: CGFloat = 0
     @State var anchor: CGFloat = 0
 
@@ -21,7 +22,6 @@ struct SwipeItem<Content: View, Right: View>: View {
     var swipeThreshold: CGFloat { screenWidth / 15 }
 
     @State var rightPast = false
-    @State var leftPast = false
     
     init(@ViewBuilder content: @escaping () -> Content,
          @ViewBuilder right: @escaping () -> Right,
@@ -40,7 +40,7 @@ struct SwipeItem<Content: View, Right: View>: View {
                     let translation = value.translation.width
                     
                     if translation < 0 {
-                        if abs(translation) > UIScreen.main.bounds.width / 5 {
+                        if abs(translation) > UIScreen.main.bounds.width / 10 {
                             hoffset = anchor + translation
                         }
                     } else {
@@ -68,14 +68,6 @@ struct SwipeItem<Content: View, Right: View>: View {
                 withAnimation {
                     if rightPast {
                         anchor = -anchorWidth
-                        
-                        DispatchQueue.main.async {
-                            if endSwipeAction {
-                                withAnimation {
-                                    anchor = 0
-                                }
-                            }
-                        }
                     } else {
                         anchor = 0
                     }
@@ -94,6 +86,7 @@ struct SwipeItem<Content: View, Right: View>: View {
                 right()
                     .frame(width: anchorWidth)
                     .zIndex(1)
+                    .background(Color.cW)
                     .clipped()
             }
         }
@@ -102,6 +95,13 @@ struct SwipeItem<Content: View, Right: View>: View {
         .contentShape(Rectangle())
         .gesture(drag)
         .clipped()
+        .onChange(of: endSwipeAction) { newValue in
+            withAnimation {
+                anchor = 0
+                hoffset = anchor
+            }
+        }
+        .disabled(endSwipeAction)
     }
 }
 

@@ -55,7 +55,7 @@ class ChaptersTests: XCTestCase {
         chapter.addToItems(item)
         
         chapterVM.changeMessage(chapter: chapter, itemText: "Test Item")
-        XCTAssertTrue(chapterVM.isEditingMessage, "isEditingMessage should be true")
+        XCTAssertTrue(chapterVM.isEditingMode, "isEditingMessage should be true")
         XCTAssertEqual(chapterVM.message, "Test Item", "Message should be 'Test Item'")
         XCTAssertEqual(chapterVM.edittingItem, item, "edittingItem should be the selected item")
     }
@@ -74,7 +74,7 @@ class ChaptersTests: XCTestCase {
         chapterVM.editItem(itemVM: itemVM, text: "Updated Item")
         
         XCTAssertEqual(item.safeText, "Updated Item", "Item text should be updated")
-        XCTAssertFalse(chapterVM.isEditingMessage, "isEditingMessage should be false")
+        XCTAssertFalse(chapterVM.isEditingMode, "isEditingMessage should be false")
     }
         
     func testSearchAsync() async throws {

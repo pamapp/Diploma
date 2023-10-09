@@ -19,12 +19,12 @@ extension View {
 
     // MARK: Texts Modifiers
     
-    public func memoryTextBaseStyle() -> some View {
-        self.modifier(MemoryTextBase())
+    public func memoryTextBaseStyle(editingMode: Bool) -> some View {
+        self.modifier(MemoryTextBase(editingMode: editingMode))
     }
     
-    public func memoryTextImageStyle() -> some View {
-        self.modifier(MemoryTextImage())
+    public func memoryTextImageStyle(editingMode: Bool) -> some View {
+        self.modifier(MemoryTextImage(editingMode: editingMode))
     }
     
     public func memoryTimeStyle() -> some View {
@@ -157,3 +157,17 @@ extension UIView {
         }
     }
 }
+
+//extension View {
+//    func scrollToBottomOnChanges(_ binding: Binding<Bool>, isEditingMode: Bool, proxy: ScrollViewProxy, bottomID: Namespace.ID, delay: Double = 0.2) -> some View {
+//        self.onChange(of: binding.wrappedValue) { newValue in
+//            if !isEditingMode {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+//                    withAnimation(.linear(duration: 0.1)) {
+//                        proxy.scrollTo(bottomID, anchor: .bottom)
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}

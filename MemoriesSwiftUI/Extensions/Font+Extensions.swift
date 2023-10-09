@@ -19,6 +19,11 @@ extension UIFont {
 
         return UIFont(descriptor: descriptor, size: 0.0)
     }
+    
+    static func title(_ size: CGFloat = 17) -> UIFont {
+        let descriptor = UIFont.systemFont(ofSize: size, weight: .semibold).fontDescriptor
+        return UIFont(descriptor: descriptor, size: 0.0)
+    }
 }
 
 // MARK: - Font Extensions -

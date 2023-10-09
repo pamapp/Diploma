@@ -16,16 +16,26 @@ struct MemoriesSwiftUIApp: App {
     @Environment(\.scenePhase) var phase
     
     private var chapterVM = ChapterVM(moc: PersistenceController.shared.viewContext)
-
+    private var popUpVM = PopUpVM()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(.light)
                 .environmentObject(chapterVM)
                 .environmentObject(quickActionSettings)
-                .onAppear {                
-                    UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-                    AppDelegate.orientationLock = .portrait
+                .environmentObject(popUpVM)
+                .onAppear {
+                    let os = UIDevice.current.userInterfaceIdiom
+                    if os == .phone {
+                        AppDelegate.orientationLock = .portrait
+                    } else if os == .pad || os == .mac {
+                        AppDelegate.orientationLock = .landscape
+                    }
+                    
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                        windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: AppDelegate.orientationLock))
+                    }
                 }
         }
         .onChange(of: phase) { (newPhase) in
@@ -57,7 +67,11 @@ struct MemoriesSwiftUIApp: App {
         }
 
         UIApplication.shared.shortcutItems = [
-            UIApplicationShortcutItem(type: "Private_mode", localizedTitle: "Приватный режим", localizedSubtitle: "", icon: UIApplicationShortcutIcon(systemImageName: UI.Icons.eye_slash_fill), userInfo: privateMode),
+            UIApplicationShortcutItem(type: "Private_mode", 
+                                      localizedTitle: UI.Strings.privacy_mode_title.localized(),
+                                      localizedSubtitle: "",
+                                      icon: UIApplicationShortcutIcon(systemImageName: UI.Icons.eye_slash_fill),
+                                      userInfo: privateMode),
         ]
     }
 }

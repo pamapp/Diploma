@@ -16,13 +16,14 @@ enum Tab: String {
 struct StatsView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var quickActionSettings: QuickActionVM
-
+    @EnvironmentObject var popUpViewModel: PopUpVM
+    
     @ObservedObject var chapterViewModel: ChapterVM
     @ObservedObject var statsViewModel: StatsVM
 
     @State private var currentTab: Tab = .week
     @State private var totalHeight: CGFloat = CGFloat.zero
-    @State private var isPopUpPresented = false
+//    @State private var isPopUpPresented = false
     
     @State var offset : CGFloat = 0
     
@@ -77,12 +78,37 @@ struct StatsView: View {
             }
             .coordinateSpace(name: "stats_scroll")
             
-            BottomPopUpView(isOpen: self.$isPopUpPresented)
+            BottomPopUpView(popUpVM: popUpViewModel, type: "settings")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .edgesIgnoringSafeArea(.all)
         }
     }
-
+    
+    func StatusView(topEge: CGFloat, offset: Binding<CGFloat>, maxHeight: CGFloat) -> some View {
+        VStack(spacing: 16) {
+            HStack {
+                RoundedRectangle(cornerRadius: 24)
+                    .foregroundColor(Color.c8)
+                    .frame(width: 96, height: 96)
+                    .overlay(
+                        Image(chapterViewModel.getStatusImage())
+                            .resizable()
+                            .frame(width: 64, height: 84)
+                    )
+                    .shadowFloating()
+                    .onTapGesture {
+                        withAnimation {
+                            popUpViewModel.enablePopUp()
+//                            self.isPopUpPresented.toggle()
+                        }
+                    }
+            }
+            statusIndicator
+        }
+        .padding(.bottom, 24)
+        .opacity(getOpacity())
+    }
+    
     func PrivateMode() -> some View {
         VStack(spacing: 8) {
             Toggle(isOn: $quickActionSettings.isPrivateModeEnabled) {
@@ -105,30 +131,6 @@ struct StatsView: View {
                 Spacer()
             }
         }
-    }
-    
-    func StatusView(topEge: CGFloat, offset: Binding<CGFloat>, maxHeight: CGFloat) -> some View {
-        VStack(spacing: 16) {
-            HStack {
-                RoundedRectangle(cornerRadius: 24)
-                    .foregroundColor(Color.c8)
-                    .frame(width: 96, height: 96)
-                    .overlay(
-                        Image(chapterViewModel.getStatusImage())
-                            .resizable()
-                            .frame(width: 64, height: 84)
-                    )
-                    .shadowFloating()
-                    .onTapGesture {
-                        withAnimation {
-                            self.isPopUpPresented.toggle()
-                        }
-                    }
-            }
-            statusIndicator
-        }
-        .padding(.bottom, 24)
-        .opacity(getOpacity())
     }
     
     func ChartView(title: String, text: String) -> some View {
@@ -159,6 +161,28 @@ struct StatsView: View {
                     .foregroundColor(Color.cW)
             )
             .frame(height: 178)
+        }
+    }
+    
+    func TopEmojiView(title: String, sequence: Array<Dictionary<String, Int>.Element>.SubSequence) -> some View {
+        VStack(spacing: 24) {
+            HStack {
+                Text(title.localized())
+                    .statsTitleStyle()
+                Spacer()
+            }
+    
+            HStack(alignment: .center) {
+                if sequence.isEmpty {
+                    ForEach(0...4, id: \.self) {_ in
+                        emojiItem(key: UI.Icons.emoji, value: 0)
+                    }
+                } else {
+                    ForEach(sequence, id: \.key) { key, value in
+                        emojiItem(key: key, value: value)
+                    }
+                }
+            }
         }
     }
     
@@ -228,29 +252,6 @@ struct StatsView: View {
                 }
             }
             .frame(height: totalHeight).padding(.trailing, 8)
-        }
-    }
-    
-    @ViewBuilder
-    func TopEmojiView(title: String, sequence: Array<Dictionary<String, Int>.Element>.SubSequence) -> some View {
-        VStack(spacing: 24) {
-            HStack {
-                Text(title.localized())
-                    .statsTitleStyle()
-                Spacer()
-            }
-    
-            HStack(alignment: .center) {
-                if sequence.isEmpty {
-                    ForEach(0...4, id: \.self) {_ in
-                        emojiItem(key: UI.Icons.emoji, value: 0)
-                    }
-                } else {
-                    ForEach(sequence, id: \.key) { key, value in
-                        emojiItem(key: key, value: value)
-                    }
-                }
-            }
         }
     }
 }
@@ -393,6 +394,7 @@ extension StatsView {
         }
         .padding(.vertical, 24)
         .padding(.horizontal, 14.5)
+        .frame(minWidth: 64)
         .background(key == UI.Icons.emoji ? Color.c8 : Color.c13)
         .cornerRadius(100)
         .overlay(Capsule().stroke(.clear, lineWidth: 1))

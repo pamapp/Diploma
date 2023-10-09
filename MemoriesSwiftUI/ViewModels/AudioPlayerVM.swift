@@ -17,38 +17,35 @@ class AudioPlayerVM: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     var audioPlayer: AVAudioPlayer?
     
+    override init() {
+        print("1")
+    }
+    
     func startPlayback(recording: MediaMO) {
-        if let recordingData = recording.data {
-            let playbackSession = AVAudioSession.sharedInstance()
+        stopPlayback()
+        let playbackSession = AVAudioSession.sharedInstance()
+        
+        do {
+            try playbackSession.setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.spokenAudio)
+            try playbackSession.setActive(true)
+            print("Start Recording - Playback session setted")
+        } catch {
+            print("Play Recording - Failed to set up playback session")
+        }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: recording.safeAudioURL)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.delegate = self
+            audioPlayer?.play()
+            isPlaying = true
+            self.currentlyPlaying = recording
             
-            do {
-                try playbackSession.setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.spokenAudio)
-                try playbackSession.setActive(true)
-                print("Start Recording - Playback session setted")
-            } catch {
-                print("Play Recording - Failed to set up playback session")
-            }
-            
-            do {
-                audioPlayer = try AVAudioPlayer(data: recordingData)
-                audioPlayer?.delegate = self
-                audioPlayer?.play()
-                isPlaying = true
-                print("Play Recording - Playing")
-                withAnimation(.spring()) {
-                    currentlyPlaying = recording
-                }
-            } catch {
-                print("Play Recording - Playback failed: - \(error)")
-                withAnimation {
-                    currentlyPlaying = nil
-                }
-            }
-        } else {
-            print("Play Recording - Could not get the recording data")
-            withAnimation {
-                currentlyPlaying = nil
-            }
+            print("Play Recording - Playing")
+        
+        } catch {
+            print("Play Recording - Playback failed: - \(error.localizedDescription)")
+            self.currentlyPlaying = nil
         }
     }
     
@@ -69,22 +66,16 @@ class AudioPlayerVM: NSObject, ObservableObject, AVAudioPlayerDelegate {
             audioPlayer?.stop()
             isPlaying = false
             print("Play Recording - Stopped")
-            withAnimation(.spring()) {
-                self.currentlyPlaying = nil
-            }
-        } else {
-            print("Play Recording - Failed to Stop playing - Coz the recording is not playing")
+            self.currentlyPlaying = nil
         }
     }
-    
+
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
             isPlaying = false
             print("Play Recording - Recoring finished playing")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                withAnimation(.spring()) {
-                    self.currentlyPlaying = nil
-                }
+            DispatchQueue.main.async {
+                self.currentlyPlaying = nil
             }
         }
     }

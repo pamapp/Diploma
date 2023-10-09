@@ -27,6 +27,8 @@ struct UI {
         static let scroll_to_bottom: String = "scroll-to-bottom"
         static let send_inactive: String = "send-inactive"
         static let send_active: String = "send-active"
+        static let submit_inactive: String = "submit-inactive"
+        static let submit_active: String = "submit-active"
     }
     
     enum Icons {
@@ -39,6 +41,7 @@ struct UI {
         static let tag: String = "tag"
         static let trash: String = "trash"
         static let edit: String = "edit"
+        static let edit_locked: String = "edit-locked"
         static let video_message: String = "video-message"
         static let audio_message: String = "audio-message"
         static let eye_slash_fill: String = "eye.slash.fill"
@@ -50,6 +53,8 @@ struct UI {
         static let empty_chapter_text: String = "There are no notes today"
         static let dear_diary: String = "Dear diary,"
         static let draft: String = "Drafts"
+        static let cancel: String = "Cancel"
+
         
         static let privacy_mode_title: String = "Privacy mode"
         static let privacy_mode_text: String = "This will hide the recordings from prying eyes, for example, in public transport."

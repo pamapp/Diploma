@@ -104,10 +104,11 @@ struct CollageLayoutView: View {
 
     private func isPortrait(forOne: Bool) -> Bool {
         if forOne {
-            guard let data = images.first?.safeDataContent as? Data else { return false }
-            return UIImage(data: data)?.size.height ?? 0 > UIImage(data: data)?.size.width ?? 0
+            guard let uiimage = images.first?.uiImage as? UIImage else { return false }
+            return uiimage.size.height > uiimage.size.width
         }
-        let portraitCount = images.filter { UIImage(data: $0.safeDataContent)?.size.height ?? 0 > UIImage(data: $0.safeDataContent)?.size.width ?? 0 }.count
+        
+        let portraitCount = images.filter { $0.uiImage.size.height > $0.uiImage.size.width }.count
         return portraitCount > (images.count - portraitCount)
     }
 }
@@ -136,12 +137,7 @@ struct LazyImage: View {
                 .scaledToFill()
                 .frame(width: w, height: h)
                 .overlay(
-                    ZStack {
-                        BlurView(style: .dark, intensity: hide ? 0.5 : 0)
-                        Image(UI.Icons.incognito)
-                            .foregroundColor(.cW)
-                            .opacity(hide ? 1 : 0)
-                    }
+                    hideView
                 )
                 .clipped()
                 .cornerRadius(8, corners: corners)
@@ -152,6 +148,18 @@ struct LazyImage: View {
                 .onAppear {
                     imageLoader.loadImage(from: url)
                 }
+        }
+    }
+    
+    var hideView: some View {
+        ZStack {
+            if hide {
+                BlurView(style: .dark, intensity: 0.5)
+            }
+
+            Image(UI.Icons.incognito)
+                .foregroundColor(.cW)
+                .opacity(hide ? 1 : 0)
         }
     }
 }

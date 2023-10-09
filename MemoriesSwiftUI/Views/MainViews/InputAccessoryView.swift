@@ -17,6 +17,9 @@ struct InputAccessoryView: View {
     @ObservedObject var audioPlayerVM: AudioPlayerVM
     
     @Binding var isKeyboardPresented: Bool
+    @Binding var isFloatingBtnPresented: Bool
+    @Binding var isChapterAdded: Bool
+    @Binding var scrollToBottom: Bool
 
     @State private var showCameraView: Bool = false
     @State private var showImagePicker: Bool = false
@@ -25,33 +28,38 @@ struct InputAccessoryView: View {
     @State private var showMicroAlert: Bool = false
 
     @State private var isRecording: Bool = false
+    @State private var selectedItems: [UIImage] = []
+    @State private var selectedImagesData: [Data] = []
+    @State private var selectionsVideo = [URL]()
+    @State private var containerHeight : CGFloat = 0
 
-    
     var message: Binding<String> {
-        Binding<String>(
+        Binding(
             get: { chapterViewModel.message },
             set: { chapterViewModel.message = $0 }
         )
     }
     
-    @State private var containerHeight : CGFloat = 0
-
-    @State private var selectedItems: [UIImage] = []
-    @State private var selectionsvideo = [URL]()
-    @State private var selectedImagesData: [Data] = []
-    
     var chapter: ChapterMO
     
-    init(chapter: ChapterMO, audioPlayer: AudioPlayerVM, chapterVM: ChapterVM, isKeyboardPresented: Binding<Bool>) {
+    init(chapter: ChapterMO, audioPlayer: AudioPlayerVM, isKeyboardPresented: Binding<Bool>, isFloatingBtnPresented: Binding<Bool>, isChapterAdded: Binding<Bool>, scrollToBottom: Binding<Bool>) {
         self.itemViewModel = ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapter)
         self.audioRecorder = AudioRecorderVM(itemModel: ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapter))
         self.audioPlayerVM = audioPlayer
         self.chapter = chapter
+        
         self._isKeyboardPresented = isKeyboardPresented
+        self._isFloatingBtnPresented = isFloatingBtnPresented
+        self._isChapterAdded = isChapterAdded
+        self._scrollToBottom = scrollToBottom
     }
     
     var body: some View {
         VStack(spacing: 0) {
+            if isFloatingBtnPresented && !chapterViewModel.isEditingMode {
+                floatingButtonView
+            }
+
             HStack(spacing: 0) {
                 if !isKeyboardPresented {
                     if !isRecording {
@@ -60,71 +68,56 @@ struct InputAccessoryView: View {
                         recordingDuration
                     }
                 }
+                
                 VStack {
                     if !selectedItems.isEmpty && isKeyboardPresented {
-                        HStack(alignment: .bottom, spacing: 20) {
-                            ForEach(selectedItems, id: \.self) { item in
-                                Image(uiImage: item)
-                                    .imageInTFStyle(w: 42, h: 42)
-                                    .overlay(
-                                        Button(action: {
-                                            withAnimation {
-                                                selectedItems.removeAll(where: { $0 == item })
-                                            }
-                                        }, label: {
-                                            Image(UI.Icons.cross_white)
-                                        })
-                                        .offset(x: 18, y: -18)
-                                    )
-                            }
-                            Spacer()
-                        }
-                        .transition(.opacity)
-                        .padding(.top, 28)
-                        .padding(.leading, 16)
-                        .transition(.opacity)
+                        selectedItemsView
                     }
                     
                     AutosizingTextField(text: message, containerHeight: $containerHeight, isFirstResponder: isKeyboardPresented, send: {
-                        if chapterViewModel.isEditingMessage == true {
+                        if chapterViewModel.isEditingMode == true {
                             self.editItem()
                         } else {
                             self.addItem()
                         }
                     }, media: {
-                        PHPhotoLibrary.requestAuthorization { status in
-                            switch status {
-                            case .authorized, .limited:
-                                self.showImagePickerInTF.toggle()
-                                break
-                            case .denied, .restricted, .notDetermined:
-                                self.showPHPAlert.toggle()
-                                break
-                            @unknown default:
-                                break
-                            }
+                        handlePHPPermission(useTFVersion: true)
+                    }, cancel: {
+                        chapterViewModel.endEdit()
+                        withAnimation {
+                            isKeyboardPresented = false
                         }
                     })
                     .padding(.horizontal, 8)
-                    .frame(height: containerHeight <= 150 ? containerHeight : 150)
+                    .frame(height: min(containerHeight, 150))
+                    .animation(.easeInOut(duration: 0.5), value: isKeyboardPresented)
                     .sheet(isPresented: $showImagePickerInTF) {
-                        ImagesPicker(selections: $selectedItems, selectionsVideo: $selectionsvideo, addFunc: {})
+                        ImagesPicker(selections: $selectedItems, selectionsVideo: $selectionsVideo, addFunc: {})
                     }
                     .onTapGesture {
                         withAnimation {
                             isKeyboardPresented = true
                         }
                     }
-                }.opacity(isRecording ? 0 : 1)
+                    .opacity(isRecording ? 0 : 1)
+                }
                 
                 if !isKeyboardPresented {
                     audioBtnView
                 }
             }
             .background(backgroundColor)
-            .animation(.default, value: isKeyboardPresented)
-            .cornerRadius(isKeyboardPresented ? 8 : 16, corners: isKeyboardPresented ? [.topLeft, .topRight] : [.allCorners])
+            .cornerRadius(isKeyboardPresented ? 8 : 16, 
+                          corners: isKeyboardPresented ? [.topLeft, .topRight] : [.allCorners])
             .padding(.horizontal, isKeyboardPresented ? 0 : 16)
+            .animation(.easeInOut(duration: 0.5), value: isKeyboardPresented)
+            .shadowInputControl()
+            .background(
+                BlurView(style: .extraLight, intensity: 0.1)
+                    .edgesIgnoringSafeArea(.bottom)
+                    .padding(.horizontal, 16)
+            )
+            .edgesIgnoringSafeArea(.bottom)
         }
     }
     
@@ -137,35 +130,129 @@ struct InputAccessoryView: View {
             return .c1
         }
     }
-    
-    private var recordingDuration: some View {
-        HStack(spacing: 8) {
-            if let audioRecorder = audioRecorder.audioRecorder, audioRecorder.isRecording {
-                TimelineView(.periodic(from: .now, by: 1)) { _ in
-                    Text("-\(DateComponentsFormatter.positional.string(from: audioRecorder.currentTime) ?? "0:00")")
-                        .memoryRecordingDurationStyle()
-                }
+}
+
+extension InputAccessoryView {
+    private func addItem() {
+        chapterViewModel.addChapter()
+        isChapterAdded = true
+
+        let currentMessage = message.wrappedValue
+        
+        if !currentMessage.isEmpty {
+            if selectedItems.isEmpty {
+                itemViewModel.addItemParagraph(chapter: chapter, text: currentMessage)
+            } else {
+                itemViewModel.addItemParagraphAndMedia(chapter: chapter, attachments: selectedItems, text: currentMessage)
             }
-            Circle()
-                .frame(width: 10)
-                .foregroundColor(.c5)
-        }.padding(.leading, 16)
+        } else if !selectedItems.isEmpty {
+            itemViewModel.addItemMedia(chapter: chapter, attachments: selectedItems, type: ItemType.photo)
+        }
+
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+
+        selectedItems.removeAll()
+        message.wrappedValue = ""
+    }
+    
+    private func editItem() {
+        chapterViewModel.editItem(itemVM: itemViewModel, text: message.wrappedValue)
+    }
+    
+    private func handlePHPPermission(useTFVersion: Bool) {
+        PHPhotoLibrary.requestAuthorization { status in
+            switch status {
+            case .authorized, .limited:
+                if useTFVersion {
+                    self.showImagePickerInTF.toggle()
+                } else {
+                    self.showImagePicker.toggle()
+                }
+            case .denied, .restricted, .notDetermined:
+                self.showPHPAlert.toggle()
+            @unknown default:
+                break
+            }
+        }
+    }
+    
+    private func handleAudioPermission() {
+        switch AVAudioSession.sharedInstance().recordPermission {
+        case .granted:
+            if !audioRecorder.isRecording {
+                withAnimation {
+                    self.isRecording = true
+                }
+                startRecording()
+            }
+        case .denied, .undetermined:
+            self.showMicroAlert.toggle()
+        @unknown default:
+            break
+        }
+    }
+    
+    private func startRecording() {
+        if audioPlayerVM.audioPlayer?.isPlaying ?? false {
+            audioPlayerVM.stopPlayback()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                audioRecorder.startRecording()
+            }
+        } else {
+            audioRecorder.startRecording()
+        }
+    }
+    
+    private func stopRecording() {
+        audioRecorder.stopRecording(chapter: chapter)
+    }
+}
+
+extension InputAccessoryView {
+    private var selectedItemsView: some View {
+        HStack(alignment: .bottom, spacing: 20) {
+            ForEach(selectedItems, id: \.self) { item in
+                Image(uiImage: item)
+                    .imageInTFStyle(w: 42, h: 42)
+                    .overlay(
+                        Button(action: {
+                            withAnimation {
+                                selectedItems.removeAll(where: { $0 == item })
+                            }
+                        }, label: {
+                            Image(UI.Icons.cross_white)
+                        })
+                        .offset(x: 18, y: -18)
+                    )
+            }
+            Spacer()
+        }
+        .transition(.opacity)
+        .padding(.top, 28)
+        .padding(.leading, 16)
+        .transition(.opacity)
+    }
+    
+    private var floatingButtonView: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                self.scrollToBottom.toggle()
+            }, label: {
+                Image(UI.Buttons.scroll_to_bottom)
+                    .font(.system(size: 25))
+                    .foregroundColor(.black)
+            })
+            .transition(.scale)
+            .padding(.trailing, 26)
+            .padding(.bottom, 26)
+        }
     }
     
     private var attachmentBtnView: some View {
         Button {
-            PHPhotoLibrary.requestAuthorization { status in
-                switch status {
-                case .authorized, .limited:
-                    self.showImagePicker.toggle()
-                    break
-                case .denied, .restricted, .notDetermined:
-                    self.showPHPAlert.toggle()
-                    break
-                @unknown default:
-                    break
-                }
-            }
+            handlePHPPermission(useTFVersion: false)
         } label: {
             HStack(spacing: 0) {
                 Image(UI.Icons.attachments)
@@ -187,7 +274,7 @@ struct InputAccessoryView: View {
         }
         .transition(.scale)
         .sheet(isPresented: $showImagePicker) {
-            ImagesPicker(selections: $selectedItems, selectionsVideo: $selectionsvideo, addFunc: withAnimation { addItem })
+            ImagesPicker(selections: $selectedItems, selectionsVideo: $selectionsVideo, addFunc: withAnimation { addItem })
         }
         .opacity(isRecording ? 0 : 1)
     }
@@ -205,13 +292,16 @@ struct InputAccessoryView: View {
             }
         }
         .alert(isPresented: $showMicroAlert) {
-            Alert(title: Text(UI.Alearts.micro_alert_title.localized()),
-                  message: Text(UI.Alearts.micro_message_text.localized()),
-                  primaryButton: .default(Text(UI.Alearts.micro_primaryBtn_text.localized())),
-                  secondaryButton: .default(Text(UI.Alearts.micro_secondaryBtn_text.localized()), action: {
-                        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
-                              UIApplication.shared.open(settingsURL)
-                  }))
+            Alert(
+                title: Text(UI.Alearts.micro_alert_title.localized()),
+                message: Text(UI.Alearts.micro_message_text.localized()),
+                primaryButton: .default(Text(UI.Alearts.micro_primaryBtn_text.localized())),
+                secondaryButton: .default(Text(UI.Alearts.micro_secondaryBtn_text.localized())) {
+                    if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(settingsURL)
+                    }
+                }
+            )
         }
         .transition(.scale)
         .onTapGesture {
@@ -220,87 +310,34 @@ struct InputAccessoryView: View {
             }
         }
         .onLongPressGesture(minimumDuration: 0.5) {
-//            switch AVAudioSession.sharedInstance().recordPermission {
-//            case .granted:
-                if !audioRecorder.isRecording {
+            handleAudioPermission()
+        }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0).onEnded { _ in
+                if audioRecorder.isRecording {
+                    stopRecording()
                     withAnimation {
-                        self.isRecording = true
-                    }
-                    startRecording()
-                }
-//            case .denied, .undetermined:
-//                self.showMicroAlert.toggle()
-//            @unknown default:
-//                break
-//            }
-         }
-         .simultaneousGesture(
-             DragGesture(minimumDistance: 0)
-                .onEnded{ _ in
-                    if audioRecorder.isRecording {
-                        stopRecording()
-                        withAnimation {
-                            self.isRecording = false
-                        }
+                        self.isRecording = false
                     }
                 }
-         )
+            }
+        )
     }
     
-    private func editItem() {
-        chapterViewModel.editItem(itemVM: itemViewModel, text: message.wrappedValue)
-    }
-    
-    private func addItem() {
-        chapterViewModel.addChapter()
-        
-        let currentMessage = message.wrappedValue
-        
-        if !selectedItems.isEmpty {
-            for selectedItem in selectedItems {
-                if let data = selectedItem.jpegData(compressionQuality: 0.8) {
-                    selectedImagesData.append(data)
+    private var recordingDuration: some View {
+        HStack(spacing: 8) {
+            if let audioRecorder = audioRecorder.audioRecorder, audioRecorder.isRecording {
+                TimelineView(.periodic(from: .now, by: 1)) { _ in
+                    Text("-\(DateComponentsFormatter.positional.string(from: audioRecorder.currentTime) ?? "0:00")")
+                        .memoryRecordingDurationStyle()
                 }
             }
-        }
-        
-        if !currentMessage.isEmpty && selectedImagesData.isEmpty {
-            itemViewModel.addItemParagraph(chapter: chapter, text: currentMessage)
-        } else if !currentMessage.isEmpty && !selectedImagesData.isEmpty  {
-            itemViewModel.addItemParagraphAndMedia(chapter: chapter, attachments: selectedImagesData, text: currentMessage)
-        } else {
-            itemViewModel.addItemMedia(chapter: chapter, attachments: selectedImagesData, type: ItemType.photo.rawValue)
-        }
-        
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
-        
-        selectedItems.removeAll()
-        selectedImagesData.removeAll()
-        message.wrappedValue = ""
-    }
-    
-    func startRecording() {
-        if audioPlayerVM.audioPlayer?.isPlaying ?? false {
-            // stop any playing recordings
-            audioPlayerVM.stopPlayback()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                // Start Recording
-                audioRecorder.startRecording()
-            }
-        } else {
-            // Start Recording
-            audioRecorder.startRecording()
-        }
-    }
-    
-    func stopRecording() {
-        // Stop Recording
-        audioRecorder.stopRecording(chapter: chapter)
+            Circle()
+                .frame(width: 10)
+                .foregroundColor(.c5)
+        }.padding(.leading, 16)
     }
 }
-
-
 
 
 

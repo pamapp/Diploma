@@ -12,7 +12,7 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
     @Published var message: String = ""
     @Published var statusValue: Int = 0
     @Published var searchResult: [ChapterMO] = []
-    @Published var isEditingMessage: Bool = false
+    @Published var isEditingMode: Bool = false
 
     private let controller : NSFetchedResultsController<ChapterMO>
     private var searchText: String = ""
@@ -21,11 +21,11 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         return fetchedObjects
     }
     
+    public var edittingItem: ItemMO
     public var alert = false
     public var alertMessage = ""
     
-    var edittingItem: ItemMO
-    var currentChapter: ChapterMO {
+    public var currentChapter: ChapterMO {
         if !fetchedChapters.isEmpty {
             return fetchedChapters.last!
         }
@@ -58,6 +58,17 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         }
         
         addChapter()
+//        getConsecutiveDays()
+        
+//        //вот это возможно плохо
+//        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+//            if self.shouldAddNewChapter() {
+//                DispatchQueue.main.async { [weak self] in
+//                    self?.addChapter()
+//                    self?.getConsecutiveDays()
+//                }
+//            }
+//        }
     }
     
     private func saveContext() {
@@ -74,6 +85,9 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         return fetchedChapters
     }
 
+    func getEditingStatus(memory: ItemMO) -> Bool {
+        edittingItem == memory && isEditingMode
+    }
     func changeMessage(chapter: ChapterMO, itemText: String) {
         if let foundItem = chapter.itemsArray.first(where: { $0.safeText == itemText }) {
             self.startEdit()
@@ -83,11 +97,13 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
     }
     
     private func startEdit() {
-        self.isEditingMessage = true
+        self.isEditingMode = true
     }
     
-    private func endEdit() {
-        self.isEditingMessage = false
+    func endEdit() {
+        self.message = ""
+        self.edittingItem = ItemMO(context: controller.managedObjectContext)
+        self.isEditingMode = false
     }
 
     func editItem(itemVM: ItemVM, text: String) {
@@ -152,7 +168,7 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         do {
             try controller.managedObjectContext.execute(deleteRequest)
         } catch {
-            print("Failed to delete chapters: \(error)")
+            print("Failed to delete chapters: \(error.localizedDescription)")
         }
         saveContext()
     }
@@ -172,7 +188,7 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
         
         getConsecutiveDays()
     }
-
+    
     func getConsecutiveDays() {
         var streak = 0
         var lastDate: Date?
@@ -186,7 +202,7 @@ class ChapterVM: NSObject, ObservableObject, NSFetchedResultsControllerDelegate 
                     }
                     continue
                 }
-                
+
                 if lastDate!.getDaysNum(currentDate) == 1 {
                     lastDate = currentDate
                     if streak < 7 {
