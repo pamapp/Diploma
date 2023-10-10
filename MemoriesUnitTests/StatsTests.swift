@@ -11,7 +11,7 @@ import CoreData
 
 class StatsTests: XCTestCase {
     var chapterVM: ChapterVM!
-    var statsVM: StatsVM!
+    var statsVM: StatisticsVM!
     var itemVM: ItemVM!
     var coreDataStack: CoreDataStack!
     
@@ -20,7 +20,7 @@ class StatsTests: XCTestCase {
         coreDataStack = TestCoreDataStack()
         chapterVM = ChapterVM.init(moc: coreDataStack.mainContext)
         itemVM = ItemVM.init(moc: coreDataStack.mainContext, chapter: chapterVM.currentChapter)
-        statsVM = StatsVM(chapterModel: chapterVM)
+        statsVM = StatisticsVM(chapterModel: chapterVM)
     }
     
     override func tearDown() {

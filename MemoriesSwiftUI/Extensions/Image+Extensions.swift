@@ -21,7 +21,7 @@ extension Image {
                 ZStack {
                     BlurView(style: .dark, intensity: hide ? 0.5 : 0)
                     Image(UI.Icons.incognito)
-                        .foregroundColor(.cW)
+                        .foregroundColor(Color.theme.cW)
                         .opacity(hide ? 1 : 0)
                 }
             )

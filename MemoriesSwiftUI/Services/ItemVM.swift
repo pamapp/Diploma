@@ -157,11 +157,11 @@ class ItemVM: ObservableObject {
     func getMemorySentiment(_ item: ItemMO) -> Color {
         switch item.sentiment {
         case "positive":
-            return .c3
+            return Color.theme.c3
         case "negative":
-            return .c5
+            return Color.theme.c5
         default:
-            return .c4
+            return Color.theme.c4
         }
     }
     

@@ -13,7 +13,7 @@ struct ChapterCellView: View {
     
     @EnvironmentObject var chapterViewModel: ChapterVM
     @EnvironmentObject var quickActionSettings: QuickActionVM
-    @EnvironmentObject var popUp: PopUpVM
+    @EnvironmentObject var popUp: BottomPopUpVM
 
     @ObservedObject var audioPlayer: AudioPlayerVM
     @ObservedObject var itemViewModel: ItemVM
@@ -60,7 +60,7 @@ struct ChapterCellView: View {
                 Spacer()
             }
             .frame(width: cellWidth)
-            .background(Color.c8)
+            .background(Color.theme.c8)
             .cornerRadius(12)
             
             VStack(alignment: .leading, spacing: 16) {

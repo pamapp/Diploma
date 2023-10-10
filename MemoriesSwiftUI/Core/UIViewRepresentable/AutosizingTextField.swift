@@ -34,24 +34,24 @@ struct AutosizingTextField: UIViewRepresentable {
         // - TextView -
     
         view.text = hint
-        view.textColor = UIColor(.c3)
+        view.textColor = UIColor(Color.theme.c3)
         view.backgroundColor = .clear
         view.font = .newYorkFont()
-        view.tintColor = UIColor(.c2)
+        view.tintColor = UIColor(Color.theme.c2)
         view.delegate = context.coordinator
         view.adjustsFontForContentSizeCategory = false
     
         // - ToolBar -
         
         let customInputView = CustomView()
-        customInputView.backgroundColor = UIColor(.cW)
+        customInputView.backgroundColor = UIColor(Color.theme.cW)
         customInputView.autoresizingMask = .flexibleHeight
         
         // - Media Button -
     
         addMediaButton.isEnabled = true
         addMediaButton.setImage(UIImage(named: UI.Icons.attachments), for: .normal)
-        addMediaButton.tintColor = UIColor(.c1)
+        addMediaButton.tintColor = UIColor(Color.theme.c1)
         addMediaButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 20), forImageIn: .normal)
         addMediaButton.addTarget(context.coordinator, action: #selector(context.coordinator.handleMedia), for: .touchUpInside)
         
@@ -59,7 +59,7 @@ struct AutosizingTextField: UIViewRepresentable {
         
         tagButton.isEnabled = true
         tagButton.setImage(UIImage(named: UI.Icons.tag), for: .normal)
-        tagButton.tintColor = UIColor(.c1)
+        tagButton.tintColor = UIColor(Color.theme.c1)
         tagButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 20), forImageIn: .normal)
         tagButton.addTarget(context.coordinator, action: #selector(context.coordinator.handleTag), for: .touchUpInside)
 
@@ -68,8 +68,8 @@ struct AutosizingTextField: UIViewRepresentable {
         cancelButton.isEnabled = true
         
         cancelButton.setTitle(UI.Strings.cancel.localized(), for: .normal)
-        cancelButton.setTitleColor(UIColor(.c1), for: .normal)
-        cancelButton.backgroundColor = UIColor(.c8)
+        cancelButton.setTitleColor(UIColor(Color.theme.c1), for: .normal)
+        cancelButton.backgroundColor = UIColor(Color.theme.c8)
         cancelButton.titleLabel?.font = .title()
         cancelButton.layer.cornerRadius = 8
         cancelButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
@@ -243,7 +243,7 @@ struct AutosizingTextField: UIViewRepresentable {
             parent.text = textView.text
             parent.containerHeight = textView.contentSize.height
             
-            textView.attributedText = textView.text.resolveHashtags(color: UIColor(.c6))
+            textView.attributedText = textView.text.resolveHashtags(color: UIColor(Color.theme.c6))
         }
         
         func textViewDidEndEditing(_ textView: UITextView) {
@@ -256,11 +256,11 @@ struct AutosizingTextField: UIViewRepresentable {
             }
             
             if textView.text == "" {
-                textView.textColor = UIColor(.c3)
+                textView.textColor = UIColor(Color.theme.c3)
                 textView.text = parent.hint
             } else {
 //                withAnimation {
-                textView.textColor = UIColor(.cW)
+                textView.textColor = UIColor(Color.theme.cW)
                 parent.text = textView.text
                 textView.text = parent.drafts
 //                }

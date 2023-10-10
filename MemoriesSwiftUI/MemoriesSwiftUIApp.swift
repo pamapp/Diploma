@@ -16,7 +16,7 @@ struct MemoriesSwiftUIApp: App {
     @Environment(\.scenePhase) var phase
     
     private var chapterVM = ChapterVM(moc: PersistenceController.shared.viewContext)
-    private var popUpVM = PopUpVM()
+    private var popUpVM = BottomPopUpVM()
     
     var body: some Scene {
         WindowGroup {

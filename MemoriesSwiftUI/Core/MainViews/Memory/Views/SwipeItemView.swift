@@ -86,7 +86,7 @@ struct SwipeItem<Content: View, Right: View>: View {
                 right()
                     .frame(width: anchorWidth)
                     .zIndex(1)
-                    .background(Color.cW)
+                    .background(Color.theme.cW)
                     .clipped()
             }
         }

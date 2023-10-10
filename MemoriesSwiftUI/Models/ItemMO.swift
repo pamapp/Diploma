@@ -69,11 +69,11 @@ extension ItemMO {
     public var safeSentimentColor: Color {
         switch sentiment {
         case "positive":
-            return .c3
+            return Color.theme.c3
         case "negative":
-            return .c5
+            return Color.theme.c5
         default:
-            return .c4
+            return Color.theme.c4
         }
     }
     

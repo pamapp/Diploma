@@ -16,9 +16,9 @@ struct SearchBar: UIViewRepresentable {
     func makeUIView(context: Context) -> UISearchBar {
         let searchBar = UISearchBar()
         searchBar.searchBarStyle = .minimal
-        searchBar.backgroundColor = UIColor(Color.cW)
+        searchBar.backgroundColor = UIColor(Color.theme.cW)
         searchBar.showsCancelButton = true
-        searchBar.tintColor = UIColor(Color.c2)
+        searchBar.tintColor = UIColor(Color.theme.c2)
         searchBar.delegate = context.coordinator
         
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).title = "Отмена"

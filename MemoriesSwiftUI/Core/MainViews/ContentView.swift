@@ -13,7 +13,7 @@ struct ContentView: View {
     // MARK: - Variables
     
     @EnvironmentObject var quickActionSettings: QuickActionVM
-    @EnvironmentObject var popUp: PopUpVM
+    @EnvironmentObject var popUp: BottomPopUpVM
     @EnvironmentObject var chapterViewModel: ChapterVM
     
     @StateObject var audioPlayer = AudioPlayerVM()
@@ -124,7 +124,7 @@ struct ContentView: View {
                     }
                 }
 //                .ignoresSafeArea(disableKeyboard ? .keyboard : [])
-                .background(Color.cW)
+                .background(Color.theme.cW)
                 .keyboardToolbar(view: {
                     VStack(spacing: 0) {
                         if !isSearchPresented {
@@ -151,7 +151,7 @@ struct ContentView: View {
                     .fullScreenCover(isPresented: $isStatsPresented) {
                         GeometryReader { proxy in
                             let topEdge = proxy.safeAreaInsets.top
-                            StatsView(chapterModel: chapterViewModel, topEdge: topEdge)
+                            StatisticsView(chapterModel: chapterViewModel, topEdge: topEdge)
                                 .ignoresSafeArea(.all, edges: .top)
                         }
                     }
@@ -159,7 +159,7 @@ struct ContentView: View {
                     navTrailingBtn
             )
             .navigationBarTitle(Date().getFormattedDateString("LLLL"), displayMode: .inline)
-            .toolbarBackground(Color.cW, for: .navigationBar)
+            .toolbarBackground(Color.theme.cW, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .onAppear {
                 if chapterViewModel.shouldAddNewChapter() {

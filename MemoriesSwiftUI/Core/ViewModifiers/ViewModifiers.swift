@@ -12,23 +12,23 @@ import SwiftUI
 struct ShadowMemoryStatic: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .shadow(color: .c8, radius: 20)
-            .shadow(color: .cB.opacity(0.04), radius: 8)
+            .shadow(color: Color.theme.c8, radius: 20)
+            .shadow(color: Color.theme.cB.opacity(0.04), radius: 8)
     }
 }
 
 struct ShadowInputControl: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .shadow(color: .cB.opacity(0.04), radius: 4)
-            .shadow(color: .cB.opacity(0.08), radius: 16, y: -16)
+            .shadow(color: Color.theme.cB.opacity(0.04), radius: 4)
+            .shadow(color: Color.theme.cB.opacity(0.08), radius: 16, y: -16)
     }
 }
 
 struct ShadowFloating: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .shadow(color: .cB.opacity(0.08), radius: 16, y: 8)
+            .shadow(color: Color.theme.cB.opacity(0.08), radius: 16, y: 8)
     }
 }
 
@@ -41,7 +41,7 @@ struct MemoryTextBase: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.memoryTextBase())
-            .foregroundColor(!editingMode ? .c1 : .c7)
+            .foregroundColor(!editingMode ? Color.theme.c1 : Color.theme.c7)
             .textSelection(.enabled)
             .fixedSize(horizontal: false, vertical: true)
     }
@@ -53,7 +53,7 @@ struct MemoryTextImage: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.memoryTextImage())
-            .foregroundColor(!editingMode ? .c1 : .c7)
+            .foregroundColor(!editingMode ? Color.theme.c1 : Color.theme.c7)
             .textSelection(.enabled)
             .padding(.leading, 8)
             .padding(.trailing, 16)
@@ -66,7 +66,7 @@ struct MemoryTime: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.subscription(12.5))
-            .foregroundColor(.c7)
+            .foregroundColor(Color.theme.c7)
             .padding(.trailing, 8)
     }
 }
@@ -75,7 +75,7 @@ struct MemoryAudioTime: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.bodyText(12.5))
-            .foregroundColor(.c2)
+            .foregroundColor(Color.theme.c2)
     }
 }
 
@@ -83,7 +83,7 @@ struct MemoryRecordingDuration: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.bodyText(15))
-            .foregroundColor(.c7)
+            .foregroundColor(Color.theme.c7)
             .frame(width: 50)
     }
 }
@@ -91,7 +91,7 @@ struct MemoryRecordingDuration: ViewModifier {
 struct ChapterDate: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .foregroundColor(.c1)
+            .foregroundColor(Color.theme.c1)
             .font(.headline(21.6))
             .padding(.vertical, 8)
             .padding(.horizontal, 16)
@@ -101,7 +101,7 @@ struct ChapterDate: ViewModifier {
 struct ChapterYear: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .foregroundColor(.c1)
+            .foregroundColor(Color.theme.c1)
             .font(.headline(25.92))
             .padding(.vertical, 8)
             .padding(.horizontal, 32)
@@ -111,7 +111,7 @@ struct ChapterYear: ViewModifier {
 struct StatsTitle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .foregroundColor(.c1)
+            .foregroundColor(Color.theme.c1)
             .font(.headline(21.6))
             .padding(.vertical, 8)
     }
@@ -120,7 +120,7 @@ struct StatsTitle: ViewModifier {
 struct StatsSubtitle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .foregroundColor(.c7)
+            .foregroundColor(Color.theme.c7)
             .font(.bodyText(15))
     }
 }
@@ -128,7 +128,7 @@ struct StatsSubtitle: ViewModifier {
 struct StatsPopUpTitle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .foregroundColor(.cB)
+            .foregroundColor(Color.theme.cB)
             .font(.headline(21.6))
             .padding(.vertical, 8)
     }
@@ -137,7 +137,7 @@ struct StatsPopUpTitle: ViewModifier {
 struct StatsPopUpText: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .foregroundColor(.c1)
+            .foregroundColor(Color.theme.c1)
             .multilineTextAlignment(.center)
             .font(.bodyText(15))
             .fixedSize(horizontal: false, vertical: true)
@@ -158,7 +158,7 @@ struct ChartEmptyText: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.subscription(12.5))
-            .foregroundColor(.c7)
+            .foregroundColor(Color.theme.c7)
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
     }
@@ -255,7 +255,7 @@ struct FloatingButtonModifier: ViewModifier {
 }
 
 struct PopUpModifier: ViewModifier {
-    @ObservedObject var popUpVM: PopUpVM
+    @ObservedObject var popUpVM: BottomPopUpVM
     var type: String
     
     func body(content: Content) -> some View {

@@ -143,7 +143,7 @@ struct LazyImage: View {
                 .cornerRadius(8, corners: corners)
                 .fixedSize(horizontal: true, vertical: true)
         } else {
-            Color.c7
+            Color.theme.c7
                 .frame(width: w, height: h)
                 .onAppear {
                     imageLoader.loadImage(from: url)
@@ -158,7 +158,7 @@ struct LazyImage: View {
             }
 
             Image(UI.Icons.incognito)
-                .foregroundColor(.cW)
+                .foregroundColor(Color.theme.cW)
                 .opacity(hide ? 1 : 0)
         }
     }

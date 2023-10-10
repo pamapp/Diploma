@@ -125,9 +125,9 @@ struct InputAccessoryView: View {
         if isKeyboardPresented && !isRecording {
             return .white
         } else if !isKeyboardPresented && !isRecording {
-            return Color.c2
+            return Color.theme.c2
         } else {
-            return .c1
+            return Color.theme.c1
         }
     }
 }
@@ -257,10 +257,10 @@ extension InputAccessoryView {
             HStack(spacing: 0) {
                 Image(UI.Icons.attachments)
                     .padding(16)
-                    .foregroundColor(.cW)
+                    .foregroundColor(Color.theme.cW)
                 Rectangle()
                     .frame(width: 2, height: 44)
-                    .foregroundColor(.c3)
+                    .foregroundColor(Color.theme.c3)
             }
         }
         .alert(isPresented: $showPHPAlert) {
@@ -283,12 +283,12 @@ extension InputAccessoryView {
         HStack(spacing: 0) {
             Rectangle()
                 .frame(width: 2, height: 44)
-                .foregroundColor(.c3)
+                .foregroundColor(Color.theme.c3)
                 .opacity(isRecording ? 0 : 1)
             ZStack {
                 Image(UI.Icons.audio_message)
                     .padding(16)
-                    .foregroundColor(isRecording ? .c5 : .cW)
+                    .foregroundColor(isRecording ? Color.theme.c5 : Color.theme.cW)
             }
         }
         .alert(isPresented: $showMicroAlert) {
@@ -334,7 +334,7 @@ extension InputAccessoryView {
             }
             Circle()
                 .frame(width: 10)
-                .foregroundColor(.c5)
+                .foregroundColor(Color.theme.c5)
         }.padding(.leading, 16)
     }
 }

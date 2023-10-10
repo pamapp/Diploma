@@ -8,26 +8,9 @@
 import SwiftUI
 import AVFoundation
 
-struct MemoryEmptyCellView: View {
-    var body: some View {
-        HStack(spacing: 14) {
-            RoundedRectangle(cornerRadius: 20)
-                .frame(width: 2)
-                .foregroundColor(.c8)
-            
-            VStack {
-                Text(UI.Strings.empty_chapter_text.localized())
-                    .font(.memoryTextImage(18))
-                    .foregroundColor(.c7)
-            }
-            Spacer()
-        }
-    }
-}
-
 struct MemoryCellView: View {
     @EnvironmentObject var quickActionSettings: QuickActionVM
-    @EnvironmentObject var popUp: PopUpVM
+    @EnvironmentObject var popUp: BottomPopUpVM
     @EnvironmentObject var chapterViewModel: ChapterVM
 
     @ObservedObject var audioPlayer: AudioPlayerVM
@@ -63,8 +46,8 @@ struct MemoryCellView: View {
         self.edit = edit
         
         let thumbImage : UIImage = UIImage(named: UI.Icons.drower)!
-        UISlider.appearance().minimumTrackTintColor = UIColor(.c3)
-        UISlider.appearance().maximumTrackTintColor = UIColor(.c4)
+        UISlider.appearance().minimumTrackTintColor = UIColor(Color.theme.c3)
+        UISlider.appearance().maximumTrackTintColor = UIColor(Color.theme.c4)
         UISlider.appearance().setThumbImage(thumbImage, for: .normal)
     }
 
@@ -73,7 +56,7 @@ struct MemoryCellView: View {
             HStack(spacing: 14) {
                 RoundedRectangle(cornerRadius: 20)
                     .frame(width: 2.3)
-                    .foregroundColor(chapterViewModel.getEditingStatus(memory: memory) ? .c8 : memory.safeSentimentColor)
+                    .foregroundColor(chapterViewModel.getEditingStatus(memory: memory) ? Color.theme.c8 : memory.safeSentimentColor)
                 
                 VStack(alignment: .leading, spacing: 8) {
                     switch memory.type {
@@ -81,7 +64,7 @@ struct MemoryCellView: View {
                         CollageLayoutView(images: memory.mediaArray,
                                           width: cellWidth)
                     case ItemType.text.rawValue:
-                        memory.safeText.textWithHashtags(color: .c6)
+                        memory.safeText.textWithHashtags(color: Color.theme.c6)
                             .memoryTextBaseStyle(editingMode: chapterViewModel.getEditingStatus(memory: memory))
                             .blur(radius: quickActionSettings.isPrivateModeEnabled ? 4.5 : 0)
                         
@@ -92,12 +75,12 @@ struct MemoryCellView: View {
                         CollageLayoutView(images: memory.mediaArray,
                                           width: cellWidth)
 
-                        memory.safeText.textWithHashtags(color: .c6)
+                        memory.safeText.textWithHashtags(color: Color.theme.c6)
                             .memoryTextImageStyle(editingMode: chapterViewModel.getEditingStatus(memory: memory))
                             .blur(radius: quickActionSettings.isPrivateModeEnabled ? 4.5 : 0)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.c8)
+                                    .fill(Color.theme.c8)
                             )
                     default:
                         EmptyView()
@@ -140,7 +123,7 @@ struct MemoryCellView: View {
         right: {
             HStack {
                 Rectangle()
-                    .foregroundColor(.c8)
+                    .foregroundColor(Color.theme.c8)
                     .frame(width: 2)
                 
                 Spacer()
@@ -254,7 +237,7 @@ struct MemoryCellView: View {
             }
         }, label: {
             Image(UI.Icons.edit)
-                .foregroundColor(.c6)
+                .foregroundColor(Color.theme.c6)
         }).onChange(of: chapterViewModel.isEditingMode) { newValue in
             isSwipeable = false
         }
@@ -273,7 +256,24 @@ struct MemoryCellView: View {
             }
         }, label: {
             Image(UI.Icons.trash)
-                .foregroundColor(.c5)
+                .foregroundColor(Color.theme.c5)
         })
+    }
+}
+
+struct MemoryEmptyCellView: View {
+    var body: some View {
+        HStack(spacing: 14) {
+            RoundedRectangle(cornerRadius: 20)
+                .frame(width: 2)
+                .foregroundColor(Color.theme.c8)
+            
+            VStack {
+                Text(UI.Strings.empty_chapter_text.localized())
+                    .font(.memoryTextImage(18))
+                    .foregroundColor(Color.theme.c7)
+            }
+            Spacer()
+        }
     }
 }
