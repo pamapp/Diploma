@@ -1,5 +1,5 @@
 //
-//  StatusDataService.swift
+//  StatusManager.swift
 //  MemoriesSwiftUI
 //
 //  Created by Alina Potapova on 24.10.2023.
@@ -9,9 +9,10 @@ import Foundation
 import CoreData
 
 class StatusManager {
-    static let shared = StatusManager()
     
-    private init() { }
+    // MARK: Public
+    
+    static let shared = StatusManager()
     
     func getStatusMO() -> StatusMO {
         let context = PersistenceController.shared.container.viewContext
@@ -36,6 +37,13 @@ class StatusManager {
     func updateIsChanged(newValue: Bool) {
         let status = self.getStatusMO()
         status.isChanged = newValue
+        try? status.managedObjectContext?.save()
+    }
+    
+    func updateStatus(newValue: Int, newIsChange: Bool) {
+        let status = self.getStatusMO()
+        status.value = Int16(newValue)
+        status.isChanged = newIsChange
         try? status.managedObjectContext?.save()
     }
 }
