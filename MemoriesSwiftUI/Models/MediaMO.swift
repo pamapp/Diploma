@@ -62,7 +62,7 @@ extension MediaMO {
     }
     
     public var safeDateString: String {
-        safeDate.toString(dateFormat: "dd-MM-YY_'at'_HH:mm:ss")
+        safeDate.dateToString("dd-MM-YY_'at'_HH:mm:ss")
     }
     
     public var uiImage: UIImage {
