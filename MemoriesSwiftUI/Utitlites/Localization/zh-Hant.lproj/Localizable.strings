@@ -1,0 +1,74 @@
+/* 
+  Localizable.strings
+  MemoriesSwiftUI
+
+  Created by Alina Potapova on 31.08.2023.
+  
+*/
+
+// MARK: - Главная страница с записями -
+
+"There are no notes today" = "今天还没发帖子";
+"Dear diary," = "亲爱的日记,";
+"Drafts" = "草稿";
+
+// MARK: - Статистика -
+
+"Privacy mode" = "隐私状态";
+"This will hide the recordings from prying eyes, for example, in public transport." = "隐藏一下您的帖子，比如说，在地铁车厢里。";
+
+"Mood chart" = "心情进度表";
+"Shows the general mood of your memories. It helps to track the level of emotions." = "显示您记忆的整体心情。有助于跟踪心情水平。";
+
+"There is no data yet" = "无数据";
+"Top 10 words" = "词语的十排行榜";
+"Top Emoji" = "绘文字的排行榜";
+
+"Frequently used words statistics will help you better track your feelings and experiences." = "对您经常使用的词语进行统计，可以帮助您更好地跟踪自己的感受和体验。";
+
+"Keep" = "保存";
+"diary" = "日记";
+"every" = "每个";
+"day" = "天";
+"find" = "找到";
+"yourself" = "你自己";
+"collect" = "收集";
+"statistics" = "统计数据";
+"about" = "关于";
+"yourself" = "你自己";
+
+//"Ведите" （写）
+//"дневник" （日记）
+//"каждый" （每）
+//"день" （天）
+//（每天写日记 - правильный порядок слов)
+//"узнавайте" (了解）
+//"себя" （自己）
+//"лучше" （更好）
+//(更好地了解自己）
+//"собирайте" (收集）
+//"статистику" （统计)
+//"о себе" （自己）
+//(收集自己的统计）
+
+// MARK: - Предупреждения и разрешения -
+
+"Microphone access" = "访问麦克风";
+"Access to the photo library" = "访问图库";
+"Please grant access in the settings to continue" = "请在设置中允许访问权限以继续";
+
+"Cancel" = "取消";
+"Settings" = "设置";
+
+"Flower of memories" = "记忆的花儿";
+"Keep a diary every day and your flower will grow. Memory will improve. The mind will become sharper. Daily recordings strengthen the neurons of our brain and nourish the flower." = "如果您每天写日记，您的花儿就生成了。记忆力提高。智力提高了。每天写作能又强化我们大脑的神经元，又滋养花儿。";
+"Got it" = "记住";
+
+"No longer editable" = "无法修改";
+"You have 24 hours to edit your memories. When the time is up, the editor is blocked. This helps preserve the original mood and essence of the memory." = "您有 24 小时来编辑您的记忆。时间一到，编辑就会被锁定。这有助于保留记忆的原始情调和精髓。";
+"Well, so :(" = "好呗:(";
+
+
+
+
+

@@ -10,7 +10,7 @@ import SwiftUI
 import AVFoundation
 import CoreData
 
-class AudioRecorderVM: ObservableObject {
+class AudioRecorder: ObservableObject {
     @Published var audioRecorder: AVAudioRecorder?
     @Published var isRecording = false
     @Published var audioURL: URL?

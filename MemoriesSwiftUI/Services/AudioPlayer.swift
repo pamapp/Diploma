@@ -11,15 +11,11 @@ import SwiftUI
 import Combine
 import AVFoundation
 
-class AudioPlayerVM: NSObject, ObservableObject, AVAudioPlayerDelegate {
+class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var currentlyPlaying: MediaMO?
     @Published var isPlaying: Bool = false
     
     var audioPlayer: AVAudioPlayer?
-    
-    override init() {
-        print("1")
-    }
     
     func startPlayback(recording: MediaMO) {
         stopPlayback()

@@ -166,7 +166,7 @@ struct StatisticsView: View {
     func TopEmojiView(title: String, sequence: Array<Dictionary<String, Int>.Element>.SubSequence) -> some View {
         VStack(spacing: 24) {
             HStack {
-                Text(title.localized())
+                Text(title)
                     .statsTitleStyle()
                 Spacer()
             }
