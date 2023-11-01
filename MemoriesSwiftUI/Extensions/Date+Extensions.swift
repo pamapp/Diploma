@@ -7,22 +7,23 @@
 
 import Foundation
 
+// MARK: Date comparison
+
 extension Date {
-    
-    // MARK: Formatting the date into the desired string format
-    
-    func getFormattedDateString(_ format: String) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = format
-        dateFormatter.timeZone = TimeZone.current
-        return dateFormatter.string(from: self).capitalized
+    var isToday: Bool { Calendar.current.isDateInToday(self) }
+    var isYesterday: Bool { Calendar.current.isDateInYesterday(self) }
+    var isThisYear: Bool { self.year == Date().year }
+    var year: Int { Calendar.current.dateComponents([.year], from: self).year! }
+
+    func getDaysNum(_ date: Date) -> Int {
+        return Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: self), to: Calendar.current.startOfDay(for: date)).day ?? 0
     }
 }
 
+
+// MARK: Formatting the audio timer
+
 extension DateComponentsFormatter {
-    
-    // MARK: Formatting the audio timer
-    
     static let positional: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.minute, .second]
@@ -33,28 +34,13 @@ extension DateComponentsFormatter {
 }
 
 
+// MARK: Formatting the date into the desired string format
+
 extension Date {
-    
-    // MARK: Date comparison
-    
-    var isToday: Bool { Calendar.current.isDateInToday(self) }
-    var isThisYear: Bool { self.year == Date().year }
-    var year: Int { Calendar.current.dateComponents([.year], from: self).year! }
-    
-    func isCurrentMinute(_ date: Date = Date()) -> Bool {
-        let calendar = Calendar.current
-        let dateComponents = calendar.dateComponents([.year, .month, .day, .minute], from: date)
-        let selfComponents = calendar.dateComponents([.year, .month, .day, .minute], from: self)
-        return calendar.date(from: selfComponents)! == calendar.date(from: dateComponents)!
-    }
-    
-    func getDaysNum(_ date: Date) -> Int {
-        return Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: self), to: Calendar.current.startOfDay(for: date)).day ?? 0
-    }
-    
-    func toString( dateFormat format  : String ) -> String {
+    func dateToString(_ format: String) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = format
-        return dateFormatter.string(from: self)
+        dateFormatter.timeZone = TimeZone.current
+        return dateFormatter.string(from: self).capitalized
     }
 }
