@@ -89,58 +89,48 @@ extension View {
 
 extension View {
 
-    // MARK: Keyboard Publisher & Modifiers
+    // MARK: Toolbar Modifier
     
-//    var keyboardPublisher: AnyPublisher<Bool, Never> {
-//        Publishers
-//            .Merge (
-//                NotificationCenter
-//                    .default
-//                    .publisher(for: UIResponder.keyboardWillShowNotification)
-//                    .map { _ in true },
-//                NotificationCenter
-//                    .default
-//                    .publisher(for: UIResponder.keyboardWillHideNotification)
-//                    .map { _ in false }
-//            )
-//            .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
-//            .eraseToAnyPublisher()
-//    }
+    func keyboardToolbar<ToolbarView>(isPresented: Binding<Bool>, view: @escaping () -> ToolbarView) -> some View where ToolbarView: View {
+        modifier(KeyboardToolbar(isPresented: isPresented, toolbar: view))
+    }
     
-    func keyboardToolbar<ToolbarView>(view: @escaping () -> ToolbarView) -> some View where ToolbarView: View {
-        modifier(KeyboardToolbar(toolbar: view))
+    // MARK: SearchBar Modifiers
+    
+    func searchable(text: Binding<String>, isPresented: Binding<Bool>, inSearchMode: Binding<Bool>, closeAddView: @escaping () -> ()) -> some View {
+        self.modifier(SearchBar(text: text, isPresented: isPresented, inSearchMode: inSearchMode, closeAddView: closeAddView))
+    }
+    
+    func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content) -> some View {
+
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
+            self
+        }
     }
 }
 
 extension View {
-    func searchable(text: Binding<String>, isPresented: Binding<Bool>, keyboard: Binding<Bool>, chapterViewModel: ChapterVM) -> some View {
-        overlay(
-            Group {
-                if isPresented.wrappedValue {
-                    VStack(spacing: 0) {
-                        HStack(alignment: .top) {
-                            SearchBar(text: text, isFirstResponder: isPresented, keyboard: keyboard, chapterViewModel: chapterViewModel)
-                                .animation(.linear(duration: 0.2), value: 10)
-                        }
-                        Divider()
-                        Spacer()
-                    }
-                } else {
-                    EmptyView()
-                }
-            }
-        )
+    func offsetModifier(_ offset: Binding<CGFloat>) -> some View {
+        self.modifier(OffsetModifier(offset: offset))
     }
-}
-
-
-extension View {
-    public func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+    
+    func paddings(vertical: CGFloat = 8, horizontal: CGFloat = 16) -> some View {
+        self.modifier(PaddingModifier(verticalPadding: vertical, horizontalPadding: horizontal))
+    }
+    
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape( RoundedCorner(radius: radius, corners: corners) )
     }
 }
 
 extension UIView {
+
+    // MARK: Animations Modifiers
+
     func zoomIn(duration: TimeInterval = 0.2) {
         self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
         UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
@@ -157,6 +147,7 @@ extension UIView {
         }
     }
 }
+
 
 //extension View {
 //    func scrollToBottomOnChanges(_ binding: Binding<Bool>, isEditingMode: Bool, proxy: ScrollViewProxy, bottomID: Namespace.ID, delay: Double = 0.2) -> some View {
