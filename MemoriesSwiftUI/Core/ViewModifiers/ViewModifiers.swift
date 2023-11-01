@@ -165,13 +165,15 @@ struct ChartEmptyText: ViewModifier {
 }
 
 
-// MARK: - ToolBar Modifiers -
+// MARK: - ToolBar Modifier -
 
 struct KeyboardToolbar<ToolbarView: View>: ViewModifier {
+    @Binding var isPresented : Bool
     private let toolbarView: ToolbarView
     private var height: CGFloat = 0
     
-    init(@ViewBuilder toolbar: () -> ToolbarView) {
+    init(isPresented: Binding<Bool>, @ViewBuilder toolbar: () -> ToolbarView) {
+        self._isPresented = isPresented
         self.toolbarView = toolbar()
     }
 
@@ -183,14 +185,54 @@ struct KeyboardToolbar<ToolbarView: View>: ViewModifier {
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height - height)
             }
-            toolbarView
+            if !isPresented {
+                toolbarView
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
 
-// MARK: - Offset Modifiers -
+// MARK: - SearchBar Modifier -
+
+struct SearchBar: ViewModifier {
+    @Binding var text : String
+    @Binding var isPresented : Bool
+    @Binding var inSearchMode : Bool
+    var closeAddView: () -> ()
+    
+
+    init(text: Binding<String>, isPresented: Binding<Bool>, inSearchMode: Binding<Bool>, closeAddView: @escaping () -> ()) {
+        self._text = text
+        self._isPresented = isPresented
+        self._inSearchMode = inSearchMode
+        self.closeAddView = closeAddView
+    }
+
+    func body(content: Content) -> some View {
+        ZStack(alignment: .top) {
+            GeometryReader { geometry in
+                VStack {
+                    content
+                }
+                .frame(width: geometry.size.width, height: geometry.size.height)
+            }
+            if isPresented {
+                VStack(spacing: 0) {
+                    HStack(alignment: .center) {
+                        SearchView(searchText: $text, isPresented: $isPresented, inSearchMode: $inSearchMode, closeAddView: closeAddView)
+                            .animation(.linear(duration: 0.2), value: $isPresented.wrappedValue)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+
+// MARK: - Offset Modifier -
 
 struct OffsetModifier: ViewModifier {
     @Binding var offset : CGFloat
@@ -207,6 +249,20 @@ struct OffsetModifier: ViewModifier {
                 }
                 ,alignment: .top
             )
+    }
+}
+
+
+// MARK: - Padding Modifiers -
+
+struct PaddingModifier: ViewModifier {
+    var verticalPadding: CGFloat
+    var horizontalPadding: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.vertical, verticalPadding)
+            .padding(.horizontal, horizontalPadding)
     }
 }
 
@@ -255,13 +311,12 @@ struct FloatingButtonModifier: ViewModifier {
 }
 
 struct PopUpModifier: ViewModifier {
-    @ObservedObject var popUpVM: BottomPopUpVM
     var type: String
     
     func body(content: Content) -> some View {
         ZStack {
             content
-            BottomPopUpView(popUpVM: popUpVM, type: type)
+            BottomPopUpView(type: type)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .edgesIgnoringSafeArea(.all)
         }
