@@ -7,17 +7,27 @@
 
 import SwiftUI
 
-// MARK: - String Extensions -
+// MARK: Localization
 
 extension String {
-    
     public func localized() -> String {
         let string = NSLocalizedString(self, comment: self)
         return string
     }
-    
-    // MARK: String Modifications (for hashtags)
-    
+}
+
+
+// MARK: WordCount
+
+extension String {
+    func stringByRemovingEmoji() -> String { String(self.filter { !$0.isEmoji() }) }
+    func stringByRemovingWords() -> String { String(self.filter { $0.isEmoji() }) }
+}
+
+
+// MARK: Hashtags
+
+extension String {
     public func separate(withChar char : String) -> [String] {
         var word : String = ""
         var words : [String] = [String]()
@@ -34,7 +44,7 @@ extension String {
         words.append(word)
         return words
     }
-
+    
     public func resolveHashtags(color: UIColor) -> NSAttributedString {
         var length: Int = 0
         let text: String = self
@@ -54,7 +64,7 @@ extension String {
         return attrString
     }
     
-    func textWithHashtags(color: Color) -> Text {
+    public func resolveHashtags(color: Color) -> Text {
         let words = self.split(separator: " ")
         var output: Text = Text("")
         
@@ -80,10 +90,4 @@ extension String {
     }
 }
 
-extension String {
-    
-    // MARK: String Modifications (for WordCount)
-    
-    func stringByRemovingEmoji() -> String { String(self.filter { !$0.isEmoji() }) }
-    func stringByRemovingWords() -> String { String(self.filter { $0.isEmoji() }) }
-}
+
