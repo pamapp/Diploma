@@ -21,6 +21,7 @@ enum ItemType: String {
 class ItemDataService: ObservableObject {
     private let persistenceController = PersistenceController.shared
     private let controller: NSFetchedResultsController<ItemMO>
+    
     private var alert: Bool = false
     private var alertMessage: String = ""
     
@@ -36,23 +37,10 @@ class ItemDataService: ObservableObject {
                                               predicate: NSPredicate(format: "chapter = %@", chapter))
         
         self.chapter = chapter
-        self.chapterVM = ChapterDataService()
+        self.chapterVM = ChapterDataService.shared
 
         fetchItems()
-    }
-    
-    private func fetchItems() {
-        items = chapter.itemsArray
-    }
-    
-    private func save() {
-        do {
-            try controller.managedObjectContext.save()
-            alert = false
-        } catch {
-            alert =  true
-            alertMessage = Errors.savingDataError
-        }
+//        print("init ItemDataService")
     }
     
     func addItemParagraph(chapter: ChapterMO, text: String) {
@@ -65,7 +53,7 @@ class ItemDataService: ObservableObject {
         item.chapter = chapter
         
         chapter.addToItems(item)
-        save()
+        saveContext()
         fetchItems()
         setMemorySentiment(item)
     }
@@ -83,7 +71,7 @@ class ItemDataService: ObservableObject {
         item.chapter = chapter
         
         chapter.addToItems(item)
-        save()
+        saveContext()
         fetchItems()
     }
     
@@ -103,14 +91,13 @@ class ItemDataService: ObservableObject {
             item.chapter = chapter
             
             chapter.addToItems(item)
-            save()
+            saveContext()
             fetchItems()
         } else {
             self.alert =  true
             self.alertMessage = "You can't add more than 3 photos"
         }
     }
-    
     
     func addItemParagraphAndMedia(chapter: ChapterMO, attachments: [UIImage], text: String) {
         if !attachments.isEmpty && attachments.count <= 3 {
@@ -129,7 +116,7 @@ class ItemDataService: ObservableObject {
             item.chapter = chapter
             
             chapter.addToItems(item)
-            save()
+            saveContext()
             fetchItems()
             setMemorySentiment(item)
         } else {
@@ -137,50 +124,12 @@ class ItemDataService: ObservableObject {
             self.alertMessage = "You can't add more than 3 photos"
         }
     }
-
-    func setMemorySentiment(_ item: ItemMO) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            do {
-                let mlModel = try SentimentClassifier(configuration: MLModelConfiguration()).model
-                let customModel = try NLModel(mlModel: mlModel)
-                
-                DispatchQueue.main.async {
-                    item.sentiment = customModel.predictedLabel(for: item.safeText) ?? ""
-                    self.save()
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    self.alert =  true
-                    self.alertMessage = "Can't load model"
-                }
-            }
-        }
-    }
-    
-    func getMemorySentiment(_ item: ItemMO) -> Color {
-        switch item.sentiment {
-        case "positive":
-            return Color.theme.c3
-        case "negative":
-            return Color.theme.c5
-        default:
-            return Color.theme.c4
-        }
-    }
-    
-    func editItem(_ item: ItemMO, text: String) {
-        if item.isEditable {
-            item.text = text
-            save()
-            fetchItems()
-        }
-    }
     
     func deleteAll() {
         for item in items {
             controller.managedObjectContext.delete(item)
         }
-        save()
+        saveContext()
         fetchItems()
     }
     
@@ -192,11 +141,61 @@ class ItemDataService: ObservableObject {
         }
         
         controller.managedObjectContext.delete(item)
-        save()
+        saveContext()
         fetchItems()
         
         if chapter.itemsArray.isEmpty && !chapter.safeDateContent.isToday {
             chapterVM.deleteChapter(chapter)
+        }
+    }
+    
+    private func fetchItems() {
+        items = chapter.itemsArray
+    }
+    
+    private func saveContext() {
+        do {
+            try controller.managedObjectContext.save()
+            alert = false
+        } catch {
+            alert =  true
+            alertMessage = Errors.savingDataError
+        }
+    }
+    
+    private func applyChanges() {
+        saveContext()
+        fetchItems()
+    }
+}
+
+extension ItemDataService {
+    func editItem(_ item: ItemMO, text: String) {
+        if item.isEditable {
+            item.text = text
+            saveContext()
+            fetchItems()
+        }
+    }
+}
+
+extension ItemDataService {
+    func setMemorySentiment(_ item: ItemMO) {
+        DispatchQueue.main.async {
+            do {
+                let mlModel = try SentimentClassifier(configuration: MLModelConfiguration()).model
+                let customModel = try NLModel(mlModel: mlModel)
+                
+                DispatchQueue.main.async {
+                    item.sentiment = customModel.predictedLabel(for: item.safeText) ?? ""
+                    self.saveContext()
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.alert =  true
+                    self.alertMessage = "Can't load model"
+                }
+            }
         }
     }
 }

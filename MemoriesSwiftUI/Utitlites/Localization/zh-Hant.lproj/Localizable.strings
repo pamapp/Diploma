@@ -17,6 +17,9 @@
 "Privacy mode" = "隐私状态";
 "This will hide the recordings from prying eyes, for example, in public transport." = "隐藏一下您的帖子，比如说，在地铁车厢里。";
 
+"Login password" = "登录密码";
+"Create a 4-digit password to enter the diary." = "请设置4位的登录日记的密码。";
+
 "Mood chart" = "心情进度表";
 "Shows the general mood of your memories. It helps to track the level of emotions." = "显示您记忆的整体心情。有助于跟踪心情水平。";
 

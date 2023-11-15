@@ -11,10 +11,14 @@ class BottomPopUpVM: ObservableObject {
     @Published var isVisible = false
     
     func enablePopUp() {
-        isVisible = true
+        withAnimation {
+            isVisible = true
+        }
     }
 
     func disablePopUp() {
-        isVisible = false
+        withAnimation {
+            isVisible = false
+        }
     }
 }

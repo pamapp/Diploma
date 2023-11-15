@@ -3,6 +3,16 @@
     {
       "filename" : "submit-inactive.svg",
       "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "submit-inactive-dark.svg",
+      "idiom" : "universal"
     }
   ],
   "info" : {

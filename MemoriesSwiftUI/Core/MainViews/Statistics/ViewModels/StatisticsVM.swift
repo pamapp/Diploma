@@ -7,19 +7,33 @@
 
 import Foundation
 import NaturalLanguage
+import Combine
 
 class StatisticsVM: ObservableObject {
     @Published var popularWords: Array<Dictionary<String, Int>.Element>.SubSequence = []
     @Published var popularEmojies: Array<Dictionary<String, Int>.Element>.SubSequence = []
     @Published var moodDynamics: [StepCount] = []
-    
-    var chapterModel: ChapterVM
+    @Published var statusValue: Int = 0
 
-    init(chapterModel: ChapterVM) {
-        self.chapterModel = chapterModel
+    private let chapterService = ChapterDataService.shared
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        self.addSubscribers()
         updateMoodDynamics()
         updatePopularWords()
         updatePopularEmojies()
+        
+//        print("init StatisticsVM")
+    }
+    
+    func addSubscribers() {
+        chapterService.$statusValue
+            .sink { [weak self] statusValue in
+                self?.statusValue = statusValue
+                print("обновил statusValue")
+            }
+            .store(in: &cancellables)
     }
 
     func updatePopularWords() {
@@ -37,7 +51,7 @@ class StatisticsVM: ObservableObject {
     func updateMoodDynamics() {
         var moodDynamics: [StepCount] = []
         
-        for chapter in chapterModel.chapters {
+        for chapter in chapterService.chapters {
             var itemsCountPerChapter = 0.0
             var itemsSentimentPerChapter = 0.0
             if !chapter.itemsArray.isEmpty {
@@ -53,12 +67,21 @@ class StatisticsVM: ObservableObject {
     
     func getCountStrings() -> WordCount {
         var tempArr : [String] = []
-        for chapter in chapterModel.chapters {
+        for chapter in chapterService.chapters {
             for item in chapter.itemsArray {
                 tempArr.append(item.text ?? "")
             }
         }
         return WordCount(words: tempArr.separateElements())
+    }
+    
+    func getStatusImage() -> String {
+        switch statusValue {
+        case 0...7:
+            return "\(statusValue)"
+        default:
+            return "inactive-long-time"
+        }
     }
 }
 
@@ -98,14 +121,15 @@ struct WordCount {
         
         words_only = tempArr.stringByRemovingEmoji().unicodeScalars
             .filter { !$0.properties.isEmojiPresentation }
-            .reduce("") { $0 + String($1) }.components(separatedBy: CharacterSet.alphanumerics.inverted)
-        
+            .reduce("") { $0 + String($1) }
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+
         emoji_only = Array(tempArr.stringByRemovingWords()).map(String.init)
     }
 
     func countWords() -> [String: Int] {
         return words_only.reduce(into: [:]) { result, word in
-            if word.isEmpty { return }
+            if word.isEmpty || word.isNumber { return }
             result[word.lowercased(), default: 0] += 1
         }
     }

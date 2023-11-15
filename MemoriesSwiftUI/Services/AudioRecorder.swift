@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import AVFoundation
-import CoreData
 
 class AudioRecorder: ObservableObject {
     @Published var audioRecorder: AVAudioRecorder?
@@ -16,10 +15,13 @@ class AudioRecorder: ObservableObject {
     @Published var audioURL: URL?
     @Published var audioID: String = ""
     
-    var itemModel: ItemVM
+    var itemModel: ItemDataService
 
-    init(itemModel: ItemVM) {
+    init(itemModel: ItemDataService) {
         self.itemModel = itemModel
+        
+//        print("init AudioRecorder")
+
     }
     
     func startRecording() {

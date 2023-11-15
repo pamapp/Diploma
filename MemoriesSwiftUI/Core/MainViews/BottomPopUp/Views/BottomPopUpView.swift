@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct BottomPopUpView: View {
-    @ObservedObject var popUpVM: BottomPopUpVM
+    @EnvironmentObject var popUpVM: BottomPopUpVM
     
     @GestureState private var translation: CGFloat = 0
     
     @State private var maxHeight: CGFloat = 0
     
-     var type: String
+    var type: String
     
     private let width: CGFloat = UI.screen_width - 32
     private var offset: CGFloat {
@@ -29,28 +29,24 @@ struct BottomPopUpView: View {
                     .overlay (
                         GeometryReader { geo in
                             VStack(spacing: 16) {
-                                if type == "settings" {
-                                    Image(UI.PopUp.watering_a_flower)
+                                Image(type == "settings" ? UI.PopUp.stats_image : UI.PopUp.editing_image)
                                         .imageInPopUpStyle(w: geo.size.width - 32)
-                                }
                                 
                                 VStack(spacing: 8) {
-                                    Text(UI.Strings.stats_description_title.localized())
+                                    Text(type == "settings" ? UI.PopUp.stats_title : UI.PopUp.editing_title)
                                         .statsPopUpTitleStyle()
                                     
-                                    Text(UI.Strings.stats_description_text.localized())
+                                    Text(type == "settings" ? UI.PopUp.stats_text : UI.PopUp.editing_text)
                                         .statsPopUpTextStyle()
                                 }.padding(.bottom, 48)
                                 
                                 Button(action: {
-                                    withAnimation {
-                                        popUpVM.disablePopUp()
-                                    }
+                                    popUpVM.disablePopUp()
                                 }, label: {
                                     RoundedRectangle(cornerRadius: 16)
                                         .foregroundColor(Color.theme.c3)
                                         .overlay(
-                                            Text(UI.Strings.stats_description_btn_text.localized())
+                                            Text(type == "settings" ? UI.PopUp.stats_btn_text : UI.PopUp.editing_btn_text)
                                                 .foregroundColor(Color.theme.cW)
                                                 .font(.title(17))
                                         )
@@ -58,8 +54,7 @@ struct BottomPopUpView: View {
                                 .frame(height: geo.size.width / 6)
                                 
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 16)
+                            .paddings(vertical: 16, horizontal: 16)
                             .background (
                                 GeometryReader { proxy in
                                     Color.clear
@@ -75,7 +70,6 @@ struct BottomPopUpView: View {
             .cornerRadius(32)
             .frame(height: geometry.size.height - 32, alignment: .bottom)
             .offset(x: geometry.size.width / 2 - width / 2, y: max(self.offset + self.translation, 0))
-            .animation(Animation.interpolatingSpring(mass: 1, stiffness: 300, damping: 20, initialVelocity: 0), value: popUpVM.isVisible)
             .gesture(
                 DragGesture().updating(self.$translation) { value, state, _ in
                     state = value.translation.height
@@ -86,20 +80,22 @@ struct BottomPopUpView: View {
                     guard abs(value.translation.height) > snapDistance else {
                         return
                     }
-                    withAnimation {
+                    
+                    withAnimation(.interactiveSpring) {
                         popUpVM.isVisible = value.translation.height < 0
                     }
                 }
             )
+            .animation(Animation.interpolatingSpring(mass: 1.2, stiffness: 300, damping: 20, initialVelocity: 0), value: popUpVM.isVisible)
         }
         .background {
             if popUpVM.isVisible {
                 Color.theme.cB.opacity(0.25)
                     .edgesIgnoringSafeArea(.all)
                     .onTapGesture {
-                            withAnimation(.easeInOut) {
-                                popUpVM.disablePopUp()
-                            }
+//                        withAnimation {
+                            popUpVM.disablePopUp()
+//                        }
                     }
             }
         }

@@ -78,6 +78,9 @@ extension View {
         self.modifier(ShadowFloating())
     }
     
+    
+    // MARK: PopUp Modifiers
+    
     public func statsPopUpTitleStyle() -> some View {
         self.modifier(StatsPopUpTitle())
     }
@@ -162,3 +165,8 @@ extension UIView {
 //        }
 //    }
 //}
+
+
+extension View {
+    
+}

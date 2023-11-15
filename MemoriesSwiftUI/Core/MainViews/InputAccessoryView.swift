@@ -10,11 +10,12 @@ import PhotosUI
 
 struct InputAccessoryView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @EnvironmentObject var chapterViewModel: ChapterVM
     
-    @ObservedObject var itemViewModel: ItemVM
-    @ObservedObject var audioRecorder: AudioRecorderVM
-    @ObservedObject var audioPlayerVM: AudioPlayerVM
+    let chapterService = ChapterDataService.shared
+    
+    @ObservedObject var itemViewModel: ItemDataService
+    @ObservedObject var audioRecorder: AudioRecorder
+    @ObservedObject var audioPlayerVM: AudioPlayer
     
     @Binding var isKeyboardPresented: Bool
     @Binding var isFloatingBtnPresented: Bool
@@ -33,18 +34,20 @@ struct InputAccessoryView: View {
     @State private var selectionsVideo = [URL]()
     @State private var containerHeight : CGFloat = 0
 
-    var message: Binding<String> {
-        Binding(
-            get: { chapterViewModel.message },
-            set: { chapterViewModel.message = $0 }
-        )
-    }
+//    var message: Binding<String> {
+//        Binding(
+//            get: { chapterService.message },
+//            set: { chapterService.message = $0 }
+//        )
+//    }
+    
+    @State var message: String = ""
     
     var chapter: ChapterMO
     
-    init(chapter: ChapterMO, audioPlayer: AudioPlayerVM, isKeyboardPresented: Binding<Bool>, isFloatingBtnPresented: Binding<Bool>, isChapterAdded: Binding<Bool>, scrollToBottom: Binding<Bool>) {
-        self.itemViewModel = ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapter)
-        self.audioRecorder = AudioRecorderVM(itemModel: ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapter))
+    init(chapter: ChapterMO, audioPlayer: AudioPlayer, isKeyboardPresented: Binding<Bool>, isFloatingBtnPresented: Binding<Bool>, isChapterAdded: Binding<Bool>, scrollToBottom: Binding<Bool>) {
+        self.itemViewModel = ItemDataService(chapter: chapter)
+        self.audioRecorder = AudioRecorder(itemModel: ItemDataService(chapter: chapter))
         self.audioPlayerVM = audioPlayer
         self.chapter = chapter
         
@@ -56,7 +59,7 @@ struct InputAccessoryView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            if isFloatingBtnPresented && !chapterViewModel.isEditingMode {
+            if isFloatingBtnPresented && !chapterService.isEditingMode {
                 floatingButtonView
             }
 
@@ -68,14 +71,14 @@ struct InputAccessoryView: View {
                         recordingDuration
                     }
                 }
-                
+
                 VStack {
                     if !selectedItems.isEmpty && isKeyboardPresented {
                         selectedItemsView
                     }
-                    
-                    AutosizingTextField(text: message, containerHeight: $containerHeight, isFirstResponder: isKeyboardPresented, send: {
-                        if chapterViewModel.isEditingMode == true {
+                                        
+                    AutosizingTextField(text: $message, containerHeight: $containerHeight, isFirstResponder: $isKeyboardPresented, send: {
+                        if chapterService.isEditingMode == true {
                             self.editItem()
                         } else {
                             self.addItem()
@@ -83,13 +86,14 @@ struct InputAccessoryView: View {
                     }, media: {
                         handlePHPPermission(useTFVersion: true)
                     }, cancel: {
-                        chapterViewModel.endEdit()
+                        chapterService.endEdit()
                         withAnimation {
                             isKeyboardPresented = false
                         }
                     })
+                    .frame(height: containerHeight < 150 ? containerHeight : 150)
                     .padding(.horizontal, 8)
-                    .frame(height: min(containerHeight, 150))
+                    .padding(.vertical, isKeyboardPresented ? 20 : 0)
                     .animation(.easeInOut(duration: 0.5), value: isKeyboardPresented)
                     .sheet(isPresented: $showImagePickerInTF) {
                         ImagesPicker(selections: $selectedItems, selectionsVideo: $selectionsVideo, addFunc: {})
@@ -109,11 +113,11 @@ struct InputAccessoryView: View {
             .background(backgroundColor)
             .cornerRadius(isKeyboardPresented ? 8 : 16, 
                           corners: isKeyboardPresented ? [.topLeft, .topRight] : [.allCorners])
-            .padding(.horizontal, isKeyboardPresented ? 0 : 16)
-            .animation(.easeInOut(duration: 0.5), value: isKeyboardPresented)
             .shadowInputControl()
+            .padding(.horizontal, isKeyboardPresented ? 0 : 16)
+//            .shadowInputControl()
             .background(
-                BlurView(style: .extraLight, intensity: 0.1)
+                BlurView(style: .systemChromeMaterial, intensity: 0.1)
                     .edgesIgnoringSafeArea(.bottom)
                     .padding(.horizontal, 16)
             )
@@ -123,7 +127,7 @@ struct InputAccessoryView: View {
     
     private var backgroundColor: Color {
         if isKeyboardPresented && !isRecording {
-            return .white
+            return Color.theme.cW
         } else if !isKeyboardPresented && !isRecording {
             return Color.theme.c2
         } else {
@@ -134,30 +138,33 @@ struct InputAccessoryView: View {
 
 extension InputAccessoryView {
     private func addItem() {
-        chapterViewModel.addChapter()
+        chapterService.addChapterIfNeeded()
         isChapterAdded = true
 
-        let currentMessage = message.wrappedValue
+        let currentMessage = message
         
         if !currentMessage.isEmpty {
             if selectedItems.isEmpty {
-                itemViewModel.addItemParagraph(chapter: chapter, text: currentMessage)
+                itemViewModel.addItemParagraph(chapter: chapter, 
+                                               text: currentMessage)
             } else {
-                itemViewModel.addItemParagraphAndMedia(chapter: chapter, attachments: selectedItems, text: currentMessage)
+                itemViewModel.addItemParagraphAndMedia(chapter: chapter, 
+                                                       attachments: selectedItems,
+                                                       text: currentMessage)
             }
         } else if !selectedItems.isEmpty {
-            itemViewModel.addItemMedia(chapter: chapter, attachments: selectedItems, type: ItemType.photo)
+            itemViewModel.addItemMedia(chapter: chapter, 
+                                       attachments: selectedItems,
+                                       type: ItemType.photo)
         }
-
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
-
+        
+        chapterService.updateStatusValue()
         selectedItems.removeAll()
-        message.wrappedValue = ""
+        message = ""
     }
     
     private func editItem() {
-        chapterViewModel.editItem(itemVM: itemViewModel, text: message.wrappedValue)
+        chapterService.editItem(itemVM: itemViewModel, text: message)
     }
     
     private func handlePHPPermission(useTFVersion: Bool) {
@@ -221,7 +228,7 @@ extension InputAccessoryView {
                                 selectedItems.removeAll(where: { $0 == item })
                             }
                         }, label: {
-                            Image(UI.Icons.cross_white)
+                            Image(UI.Icons.cross)
                         })
                         .offset(x: 18, y: -18)
                     )
@@ -264,10 +271,10 @@ extension InputAccessoryView {
             }
         }
         .alert(isPresented: $showPHPAlert) {
-            Alert(title: Text(UI.Alearts.php_alert_title.localized()),
-                  message: Text(UI.Alearts.php_message_text.localized()),
-                  primaryButton: .default(Text(UI.Alearts.php_primaryBtn_text.localized())),
-                  secondaryButton: .default(Text(UI.Alearts.php_secondaryBtn_text.localized()), action: {
+            Alert(title: Text(UI.Alearts.php_alert_title),
+                  message: Text(UI.Alearts.php_message_text),
+                  primaryButton: .default(Text(UI.Alearts.php_primaryBtn_text)),
+                  secondaryButton: .default(Text(UI.Alearts.php_secondaryBtn_text), action: {
                         guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
                               UIApplication.shared.open(settingsURL)
                   }))
@@ -293,10 +300,10 @@ extension InputAccessoryView {
         }
         .alert(isPresented: $showMicroAlert) {
             Alert(
-                title: Text(UI.Alearts.micro_alert_title.localized()),
-                message: Text(UI.Alearts.micro_message_text.localized()),
-                primaryButton: .default(Text(UI.Alearts.micro_primaryBtn_text.localized())),
-                secondaryButton: .default(Text(UI.Alearts.micro_secondaryBtn_text.localized())) {
+                title: Text(UI.Alearts.micro_alert_title),
+                message: Text(UI.Alearts.micro_message_text),
+                primaryButton: .default(Text(UI.Alearts.micro_primaryBtn_text)),
+                secondaryButton: .default(Text(UI.Alearts.micro_secondaryBtn_text)) {
                     if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                         UIApplication.shared.open(settingsURL)
                     }

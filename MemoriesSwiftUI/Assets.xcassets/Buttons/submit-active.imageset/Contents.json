@@ -3,6 +3,16 @@
     {
       "filename" : "submit-active.svg",
       "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "submit-active-dark.svg",
+      "idiom" : "universal"
     }
   ],
   "info" : {

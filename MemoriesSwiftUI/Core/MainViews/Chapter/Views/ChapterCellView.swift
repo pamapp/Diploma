@@ -9,85 +9,69 @@ import SwiftUI
 
 struct ChapterCellView: View {
     let persistenceController = PersistenceController.shared
-    let cellWidth = UIScreen.main.bounds.width - 32
+    let chapterService = ChapterDataService.shared
     
-    @EnvironmentObject var chapterViewModel: ChapterVM
-    @EnvironmentObject var quickActionSettings: QuickActionVM
-    @EnvironmentObject var popUp: BottomPopUpVM
+    @ObservedObject var audioPlayer: AudioPlayer
+    @ObservedObject private var vm: ChapterCellVM
 
-    @ObservedObject var audioPlayer: AudioPlayerVM
-    @ObservedObject var itemViewModel: ItemVM
-    
     @Binding var isKeyboardPresented: Bool
     @Binding var scrollToMemoryIndex: UUID?
     
-    private var chapterDate: String
-    private var chapterNum: Int
-    
     var chapter: ChapterMO
-    var searchText: String
-    
-    var searchResult: [ItemMO] {
-        if searchText.isEmpty {
-            return itemViewModel.items
-        } else {
-            return itemViewModel.items.filter {
-                $0.safeText.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-    }
     
     init(chapter: ChapterMO,
          searchText: String,
-         audioPlayer: AudioPlayerVM,
+         audioPlayer: AudioPlayer,
          isKeyboardPresented: Binding<Bool>,
          scrollToMemoryIndex: Binding<UUID?>) {
         self.chapter = chapter
-        self.itemViewModel = ItemVM(moc: PersistenceController.shared.viewContext, chapter: chapter)
-        self.chapterDate = chapter.safeDateContent.getFormattedDateString("d MMMM. EEEE")
-        self.chapterNum = chapter.safeContainsNumber
-        self.searchText = searchText
         self.audioPlayer = audioPlayer
         self._isKeyboardPresented = isKeyboardPresented
         self._scrollToMemoryIndex = scrollToMemoryIndex
+        
+        self.vm = ChapterCellVM(chapter: chapter, 
+                                searchText: searchText,
+                                audioPlayer: audioPlayer
+        )
     }
     
     var body: some View {
-        LazyVStack(alignment: .center, spacing: 16) {
+        VStack(alignment: .center, spacing: 16) {
             HStack(alignment: .center) {
-                Text(chapterDate)
+                Text(chapter.safeDateContent.dateToString("d MMMM. EEEE"))
                     .chapterDateStyle()
                 Spacer()
             }
-            .frame(width: cellWidth)
+            .frame(width: UI.cell_width)
             .background(Color.theme.c8)
             .cornerRadius(12)
             
             VStack(alignment: .leading, spacing: 16) {
-                if chapterNum != 0 {
-                    ForEach(searchResult, id: \.self) { item in
+                if chapter.safeContainsNumber != 0 {
+                    ForEach(vm.searchResult, id: \.self) { item in
                         MemoryCellView(memory: item,
+                                       isKeyboardPresented: $isKeyboardPresented, 
                                        audioPlayer: audioPlayer,
-                                       delete: { itemViewModel.deleteItem(item) },
+                                       delete: { vm.deleteItem(item) },
                                        edit: {
-                                            chapterViewModel.changeMessage(chapter: chapter, itemText: item.safeText)
+                                            chapterService.changeMessage(chapter: chapter, item: item)
                                             scrollToMemoryIndex = item.id
                                             isKeyboardPresented = true
                         })
                         .id(item.id)
-                        .frame(width: self.cellWidth - 32)
+                        .frame(width: UI.cell_width - 32)
                     }
                 } else {
                     MemoryEmptyCellView()
-                        .frame(width: cellWidth - 32)
+                        .frame(width: UI.cell_width - 32)
                 }
             }
             .padding(.vertical, 16)
-            .frame(width: cellWidth)
-            .background(Color.white)
+            .frame(width: UI.cell_width)
+            .background(Color.theme.cW)
             .cornerRadius(16)
             .shadowMemoryStatic()
         }
-        .frame(width: cellWidth)
+        .frame(width: UI.cell_width)
     }
 }

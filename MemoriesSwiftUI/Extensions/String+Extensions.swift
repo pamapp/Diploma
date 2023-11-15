@@ -22,6 +22,12 @@ extension String {
 extension String {
     func stringByRemovingEmoji() -> String { String(self.filter { !$0.isEmoji() }) }
     func stringByRemovingWords() -> String { String(self.filter { $0.isEmoji() }) }
+    
+    var isNumber: Bool {
+        let digitsCharacters = CharacterSet(charactersIn: "0123456789")
+        return CharacterSet(charactersIn: self).isSubset(of: digitsCharacters)
+    }
+    
 }
 
 

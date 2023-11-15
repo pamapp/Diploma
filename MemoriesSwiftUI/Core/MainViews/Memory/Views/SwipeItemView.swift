@@ -8,29 +8,31 @@
 import SwiftUI
 
 struct SwipeItem<Content: View, Right: View>: View {
+
     var content: () -> Content
     var right: () -> Right
     var itemHeight: CGFloat = 0
     
+    var anchorWidth: CGFloat { UI.screen_width / 4.2 }
+    var swipeThreshold: CGFloat { UI.screen_width / 15 }
+    
     @Binding var endSwipeAction: Bool
+    @Binding var isKeyboardPresented: Bool
 
     @State var hoffset: CGFloat = 0
     @State var anchor: CGFloat = 0
-
-    let screenWidth = UIScreen.main.bounds.width
-    var anchorWidth: CGFloat { screenWidth / 4.2 }
-    var swipeThreshold: CGFloat { screenWidth / 15 }
-
     @State var rightPast = false
-    
+
     init(@ViewBuilder content: @escaping () -> Content,
          @ViewBuilder right: @escaping () -> Right,
          itemHeight: CGFloat,
-         endSwipeAction: Binding<Bool>) {
+         endSwipeAction: Binding<Bool>,
+         isKeyboardPresented: Binding<Bool>) {
         self.content = content
         self.right = right
         self.itemHeight = itemHeight
         self._endSwipeAction = endSwipeAction
+        self._isKeyboardPresented = isKeyboardPresented
     }
 
     var drag: some Gesture {
@@ -40,7 +42,7 @@ struct SwipeItem<Content: View, Right: View>: View {
                     let translation = value.translation.width
                     
                     if translation < 0 {
-                        if abs(translation) > UIScreen.main.bounds.width / 10 {
+                        if abs(translation) > UI.screen_width / 10 {
                             hoffset = anchor + translation
                         }
                     } else {
@@ -102,6 +104,7 @@ struct SwipeItem<Content: View, Right: View>: View {
             }
         }
         .disabled(endSwipeAction)
+        .disabled(isKeyboardPresented)
     }
 }
 

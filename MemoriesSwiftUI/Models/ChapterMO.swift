@@ -20,8 +20,11 @@ extension ChapterMO {
         return NSFetchRequest<ChapterMO>(entityName: "ChapterMO")
     }
     
-    @nonobjc public class func resultsController(moc: NSManagedObjectContext, sortDescriptors: [NSSortDescriptor]) -> NSFetchedResultsController<ChapterMO> {
-        let request =  NSFetchRequest<ChapterMO>(entityName: "ChapterMO")
+    @nonobjc public class func resultsController(
+        moc: NSManagedObjectContext,
+        sortDescriptors: [NSSortDescriptor]) -> NSFetchedResultsController<ChapterMO> 
+    {
+        let request = NSFetchRequest<ChapterMO>(entityName: "ChapterMO")
         request.sortDescriptors = sortDescriptors
         return NSFetchedResultsController(fetchRequest: request, managedObjectContext: moc, sectionNameKeyPath: nil, cacheName: nil)
     }

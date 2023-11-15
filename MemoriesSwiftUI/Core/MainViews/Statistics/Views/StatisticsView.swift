@@ -17,70 +17,64 @@ struct StatisticsView: View {
     @EnvironmentObject var quickActionSettings: QuickActionVM
     @EnvironmentObject var popUpViewModel: BottomPopUpVM
     
-    @ObservedObject var chapterViewModel: ChapterVM
-    @ObservedObject var statsViewModel: StatisticsVM
-
+    @ObservedObject var vm: StatisticsVM
+    
     @State private var currentTab: Tab = .week
     @State private var totalHeight: CGFloat = CGFloat.zero
-//    @State private var isPopUpPresented = false
-    
     @State var offset : CGFloat = 0
     
-    let maxHeight = UIScreen.main.bounds.height / 4
+    let maxHeight = UI.screen_height / 4
     
     var topEdge: CGFloat
     
-    init(chapterModel: ChapterVM, topEdge: CGFloat) {
-        self.chapterViewModel = chapterModel
-        self.statsViewModel = StatisticsVM(chapterModel: chapterModel)
+    init(topEdge: CGFloat) {
         self.topEdge = topEdge
+        
+        self.vm = StatisticsVM()
     }
     
     var body: some View {
-        ZStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 24) {
-                    GeometryReader { proxy in
-                        StatusView(topEge: topEdge, offset: $offset, maxHeight: maxHeight)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: getHeaderHeight(), alignment: .bottom)
-                            .background(
-                                Color.theme.c4,
-                                in: RoundedCorner(radius: getCornerRadius(), corners: [.bottomRight, .bottomLeft])
-                            )
-                            .overlay(simplifiedHeader, alignment: .top)
-                    }
-                    .edgesIgnoringSafeArea(.top)
-                    .frame(height: maxHeight)
-                    .offset(y: -offset)
-                    .zIndex(1)
-                    
-                    VStack(spacing: 32) {
-                        PrivateMode()
-                        
-                        ChartView(title: UI.Strings.mood_chart_title,
-                                  text: UI.Strings.mood_chart_text)
-
-                        TopEmojiView(title: UI.Strings.emoji_top,
-                                     sequence: statsViewModel.popularEmojies)
-
-                        TopWordsView(title: UI.Strings.words_top_title,
-                                     text: UI.Strings.words_top_text,
-                                     sequence: statsViewModel.popularWords)
-                    }
-                    .padding(.horizontal, 16)
-                    .background(Color.theme.cW.edgesIgnoringSafeArea(.all))
-                    .zIndex(0)
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 24) {
+                GeometryReader { proxy in
+                    StatusView(topEge: topEdge, offset: $offset, maxHeight: maxHeight)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: getHeaderHeight(), alignment: .bottom)
+                        .background(
+                            Color.theme.c4,
+                            in: RoundedCorner(radius: getCornerRadius(), corners: [.bottomRight, .bottomLeft])
+                        )
+                        .overlay(simplifiedHeader, alignment: .top)
                 }
-                .modifier(OffsetModifier(offset: $offset))
+                .edgesIgnoringSafeArea(.top)
+                .frame(height: maxHeight)
+                .offset(y: -offset)
+                .zIndex(1)
+                
+                VStack(spacing: 32) {
+                    PrivateMode()
+                    
+                    PasswordView()
+                    
+                    ChartView(title: UI.Strings.mood_chart_title,
+                              text: UI.Strings.mood_chart_text)
+
+                    TopEmojiView(title: UI.Strings.emoji_top,
+                                 sequence: vm.popularEmojies)
+
+                    TopWordsView(title: UI.Strings.words_top_title,
+                                 text: UI.Strings.words_top_text,
+                                 sequence: vm.popularWords)
+                }
+                .padding(.horizontal, 16)
+                .zIndex(0)
             }
-            .coordinateSpace(name: "stats_scroll")
-            
-            BottomPopUpView(popUpVM: popUpViewModel, type: "settings")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .edgesIgnoringSafeArea(.all)
+            .offsetModifier($offset)
         }
+        .coordinateSpace(name: "stats_scroll")
+        .modifier(PopUpModifier(type: "settings"))
+        .background(Color.theme.cW.edgesIgnoringSafeArea(.all))
     }
     
     func StatusView(topEge: CGFloat, offset: Binding<CGFloat>, maxHeight: CGFloat) -> some View {
@@ -90,16 +84,14 @@ struct StatisticsView: View {
                     .foregroundColor(Color.theme.c8)
                     .frame(width: 96, height: 96)
                     .overlay(
-                        Image(chapterViewModel.getStatusImage())
+                        Image(vm.getStatusImage())
+                            .interpolation(.none)
                             .resizable()
                             .frame(width: 64, height: 84)
                     )
                     .shadowFloating()
                     .onTapGesture {
-                        withAnimation {
-                            popUpViewModel.enablePopUp()
-//                            self.isPopUpPresented.toggle()
-                        }
+                        popUpViewModel.enablePopUp()
                     }
             }
             statusIndicator
@@ -113,24 +105,57 @@ struct StatisticsView: View {
             Toggle(isOn: $quickActionSettings.isPrivateModeEnabled) {
                 HStack {
                     Image(UI.Icons.incognito)
+                        .foregroundColor(Color.theme.cB)
                         .padding(9)
                         .background {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color.theme.c8)
                         }
-                    Text(UI.Strings.privacy_mode_title.localized())
+                    Text(UI.Strings.privacy_mode_title)
                         .font(.title(17))
+                        .foregroundColor(Color.theme.c1)
                 }
             }
             .tint(Color.theme.c2)
             
+            
             HStack {
-                Text(UI.Strings.privacy_mode_text.localized())
+                Text(UI.Strings.privacy_mode_text)
                     .statsSubTitleStyle()
                 Spacer()
             }
         }
     }
+    
+    func PasswordView() -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(UI.Icons.passcode)
+                    .foregroundColor(Color.theme.cB)
+                    .padding(9)
+                    .background {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.theme.c8)
+                    }
+                Text(UI.Strings.passcode_title)
+                    .font(.title(17))
+                    .foregroundColor(Color.theme.c1)
+                
+                Spacer()
+                
+                Image(UI.Icons.chevron_right)
+                    .foregroundColor(Color.theme.cB)
+            }
+            
+            
+            HStack {
+                Text(UI.Strings.passcode_text)
+                    .statsSubTitleStyle()
+                Spacer()
+            }
+        }
+    }
+    
     
     func ChartView(title: String, text: String) -> some View {
         VStack(spacing: 24) {
@@ -139,19 +164,20 @@ struct StatisticsView: View {
             ZStack {
                 chartBody
                 
-                if statsViewModel.moodDynamics.isEmpty {
+                if vm.moodDynamics.isEmpty {
                     VStack {
                         Spacer()
                         
-                        Text(UI.Strings.mood_chart_empty_text.localized())
+                        Text(UI.Strings.mood_chart_empty_text)
                             .chartEmptyTextStyle()
                     }
                 }
             }
+//            .padding(.top, 5)
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .background {
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(statsViewModel.moodDynamics.isEmpty ? Color.theme.c8 : Color.theme.c11.opacity(0.2))
+                    .fill(vm.moodDynamics.isEmpty ? Color.theme.c8 : Color.theme.c11.opacity(0.2))
             }
             .overlay(
                 DottedLine()
@@ -259,25 +285,24 @@ extension StatisticsView {
     
     // MARK: - Private Variables
     
-    // View Objects Without Parameters
-    
     private var statusIndicator: some View {
         HStack(spacing: 2) {
             ForEach(1...7, id: \.self) { i in
                 Circle()
-                    .fill(chapterViewModel.statusValue < i ? Color.theme.c8 : Color.theme.c6)
+                    .fill(vm.statusValue < i ? Color.theme.c8 : Color.theme.c6)
                     .frame(width: 10)
             }
         }
     }
     
     private var chartBody: some View {
-        let pathProvider = LineChartProvider(data: statsViewModel.moodDynamics, lineRadius: 0.5)
+        let pathProvider = LineChartProvider(data: vm.moodDynamics, lineRadius: 0.5)
+        
         return GeometryReader { geometry in
             ZStack {
                 pathProvider.closedPath(for: geometry)
                     .fill(Color.theme.c11)
-                            
+
                 pathProvider.path(for: geometry)
                     .stroke(Color.theme.cW, style: StrokeStyle(lineWidth: 2.5))
             }
@@ -298,7 +323,7 @@ extension StatisticsView {
                 Button {
                     self.presentationMode.wrappedValue.dismiss()
                 } label: {
-                    Image(UI.Icons.cross_white)
+                    Image(UI.Icons.cross)
                 }
             }
         }
@@ -343,12 +368,12 @@ extension StatisticsView {
     private func sectionHeaderItem(title: String, subtitle: String) -> some View {
         VStack(spacing: 8) {
             HStack {
-                Text(title.localized())
+                Text(title)
                     .statsTitleStyle()
                 Spacer()
             }
             HStack {
-                Text(subtitle.localized())
+                Text(subtitle)
                     .statsSubTitleStyle()
                 Spacer()
             }
@@ -357,7 +382,7 @@ extension StatisticsView {
     
     private func wordItem(key: String, value: Int) -> some View {
         HStack {
-            Text(("\(key)").localized().capitalized)
+            Text(("\(key)").capitalized)
                 .wordTagStyle(color: value != 0 ? Color.theme.c1 : Color.theme.c7)
                 .lineLimit(1)
             if value != 0 {

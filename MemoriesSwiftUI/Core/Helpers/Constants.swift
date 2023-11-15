@@ -15,6 +15,9 @@ struct Errors {
 struct UI {
     static let screen_width: CGFloat = UIScreen.main.bounds.width
     static let screen_height: CGFloat = UIScreen.main.bounds.height
+    static let screen_size: CGSize = UIScreen.main.bounds.size
+
+    static let cell_width = UIScreen.main.bounds.width - 32
     static let chapters_spaces: CGFloat = 32
     
     enum PopUp {
@@ -44,7 +47,7 @@ struct UI {
     enum Icons {
         static let attachments: String = "attachment"
         static let cross_gray: String = "cross-gray"
-        static let cross_white: String = "cross-white"
+        static let cross: String = "cross"
         static let drower: String = "drower"
         static let profile: String = "profile"
         static let search: String = "search"
@@ -57,6 +60,8 @@ struct UI {
         static let audio_message: String = "audio-message"
         static let eye_slash_fill: String = "eye.slash.fill"
         static let incognito: String = "incognito"
+        static let passcode: String = "passcode"
+        static let chevron_right: String = "chevron-right"
         static let emoji: String = "emoji"
     }
     
@@ -69,6 +74,10 @@ struct UI {
         
         static let privacy_mode_title: String = "Privacy mode".localized()
         static let privacy_mode_text: String = "This will hide the recordings from prying eyes, for example, in public transport.".localized()
+        
+        
+        static let passcode_title: String = "Login password".localized()
+        static let passcode_text: String = "Create a 4-digit password to enter the diary.".localized()
         
         static let mood_chart_title: String = "Mood chart".localized()
         static let mood_chart_text: String = "Shows the general mood of your memories. It helps to track the level of emotions.".localized()

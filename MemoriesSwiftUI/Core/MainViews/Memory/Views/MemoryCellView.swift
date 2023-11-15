@@ -11,26 +11,27 @@ import AVFoundation
 struct MemoryCellView: View {
     @EnvironmentObject var quickActionSettings: QuickActionVM
     @EnvironmentObject var popUp: BottomPopUpVM
-    @EnvironmentObject var chapterViewModel: ChapterVM
+    
+    @ObservedObject private var vm: MemoryCellVM
+    @ObservedObject var audioPlayer: AudioPlayer
 
-    @ObservedObject var audioPlayer: AudioPlayerVM
+    @Binding var isKeyboardPresented: Bool
     
     @State private var sliderValue: Double = 0.0
     @State private var isDragging = false
-    
-    //added
     @State private var isSwipeable = false
     @State private var deleteSwipeAction = false
 
-    
     @State var cellHeight: CGFloat = 0
-    @State var cellWidth: CGFloat = UIScreen.main.bounds.width - 32
+   
+    let chapterService = ChapterDataService.shared
 
     let timer = Timer
         .publish(every: 0.01, on: .main, in: .common)
         .autoconnect()
     
     var memory: ItemMO
+    
     var delete: ()->()
     var edit: ()->()
 
@@ -39,11 +40,13 @@ struct MemoryCellView: View {
         GridItem(.flexible())
     ]
     
-    init(memory: ItemMO, audioPlayer: AudioPlayerVM, delete: @escaping ()->(), edit: @escaping ()->()) {
+    init(memory: ItemMO, isKeyboardPresented: Binding<Bool>, audioPlayer: AudioPlayer, delete: @escaping ()->(), edit: @escaping ()->()) {
         self.memory = memory
         self.audioPlayer = audioPlayer
         self.delete = delete
         self.edit = edit
+        self.vm = MemoryCellVM(memory: memory)
+        self._isKeyboardPresented = isKeyboardPresented
         
         let thumbImage : UIImage = UIImage(named: UI.Icons.drower)!
         UISlider.appearance().minimumTrackTintColor = UIColor(Color.theme.c3)
@@ -56,16 +59,16 @@ struct MemoryCellView: View {
             HStack(spacing: 14) {
                 RoundedRectangle(cornerRadius: 20)
                     .frame(width: 2.3)
-                    .foregroundColor(chapterViewModel.getEditingStatus(memory: memory) ? Color.theme.c8 : memory.safeSentimentColor)
+                    .foregroundColor(chapterService.getEditingStatus(memory: memory) ? Color.theme.c8 : vm.sentimentColor)
                 
                 VStack(alignment: .leading, spacing: 8) {
                     switch memory.type {
                     case ItemType.photo.rawValue:
                         CollageLayoutView(images: memory.mediaArray,
-                                          width: cellWidth)
+                                          width: UI.cell_width)
                     case ItemType.text.rawValue:
-                        memory.safeText.textWithHashtags(color: Color.theme.c6)
-                            .memoryTextBaseStyle(editingMode: chapterViewModel.getEditingStatus(memory: memory))
+                        memory.safeText.resolveHashtags(color: Color.theme.c6)
+                            .memoryTextBaseStyle(editingMode: chapterService.getEditingStatus(memory: memory))
                             .blur(radius: quickActionSettings.isPrivateModeEnabled ? 4.5 : 0)
                         
                     case ItemType.audio.rawValue:
@@ -73,10 +76,10 @@ struct MemoryCellView: View {
                         
                     case ItemType.textWithPhoto.rawValue:
                         CollageLayoutView(images: memory.mediaArray,
-                                          width: cellWidth)
+                                          width: UI.cell_width)
 
-                        memory.safeText.textWithHashtags(color: Color.theme.c6)
-                            .memoryTextImageStyle(editingMode: chapterViewModel.getEditingStatus(memory: memory))
+                        memory.safeText.resolveHashtags(color: Color.theme.c6)
+                            .memoryTextImageStyle(editingMode: chapterService.getEditingStatus(memory: memory))
                             .blur(radius: quickActionSettings.isPrivateModeEnabled ? 4.5 : 0)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
@@ -87,7 +90,7 @@ struct MemoryCellView: View {
                     }
 
                     HStack {
-                        Text(memory.safeTimestampContent.getFormattedDateString("HH:mm"))
+                        Text(memory.safeTimestampContent.dateToString("HH:mm"))
                             .memoryTimeStyle()
                         Spacer()
                         
@@ -155,7 +158,7 @@ struct MemoryCellView: View {
                     }
                 }
             }
-        }, itemHeight: cellHeight, endSwipeAction: $isSwipeable)
+        }, itemHeight: cellHeight, endSwipeAction: $isSwipeable, isKeyboardPresented: $isKeyboardPresented)
     }
     
     func MemoryVoiceView() -> some View {
@@ -238,7 +241,7 @@ struct MemoryCellView: View {
         }, label: {
             Image(UI.Icons.edit)
                 .foregroundColor(Color.theme.c6)
-        }).onChange(of: chapterViewModel.isEditingMode) { newValue in
+        }).onChange(of: chapterService.isEditingMode) { newValue in
             isSwipeable = false
         }
     }
@@ -269,7 +272,7 @@ struct MemoryEmptyCellView: View {
                 .foregroundColor(Color.theme.c8)
             
             VStack {
-                Text(UI.Strings.empty_chapter_text.localized())
+                Text(UI.Strings.empty_chapter_text)
                     .font(.memoryTextImage(18))
                     .foregroundColor(Color.theme.c7)
             }

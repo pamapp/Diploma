@@ -1,10 +1,10 @@
-////
-////  MemoryCellVM.swift
-////  MemoriesSwiftUI
-////
-////  Created by Alina Potapova on 12.10.2023.
-////
 //
+//  MemoryCellVM.swift
+//  MemoriesSwiftUI
+//
+//  Created by Alina Potapova on 12.10.2023.
+//
+
 import AVFoundation
 import UIKit
 import SwiftUI

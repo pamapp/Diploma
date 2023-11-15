@@ -7,24 +7,19 @@
 
 import SwiftUI
 
-let quickActionSettings = QuickActionVM()
-var shortcutItemToProcess: UIApplicationShortcutItem?
-
 @main
 struct MemoriesSwiftUIApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @Environment(\.scenePhase) var phase
-    
-    private var chapterVM = ChapterVM(moc: PersistenceController.shared.viewContext)
+    @StateObject private var vm = HomeVM()
     private var popUpVM = BottomPopUpVM()
+    private var quickActionSettings = QuickActionVM()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .preferredColorScheme(.light)
-                .environmentObject(chapterVM)
                 .environmentObject(quickActionSettings)
                 .environmentObject(popUpVM)
+                .environmentObject(vm)
                 .onAppear {
                     let os = UIDevice.current.userInterfaceIdiom
                     if os == .phone {
@@ -38,41 +33,6 @@ struct MemoriesSwiftUIApp: App {
                     }
                 }
         }
-        .onChange(of: phase) { (newPhase) in
-            switch newPhase {
-            case .active :
-                guard let name = shortcutItemToProcess?.userInfo?["name"] as? String else {
-                    return
-                }
-                switch name {
-                case "Private_mode":
-                    quickActionSettings.enablePrivateMode()
-                default:
-                    print("default ")
-                }
-            case .inactive:
-                print("App is inactive")
-            case .background:
-                print("App in Background")
-                addQuickActions()
-            @unknown default:
-                print("default")
-            }
-        }
-    }
-    
-    func addQuickActions() {
-        var privateMode: [String: NSSecureCoding] {
-            return ["name" : "Private_mode" as NSSecureCoding]
-        }
-
-        UIApplication.shared.shortcutItems = [
-            UIApplicationShortcutItem(type: "Private_mode", 
-                                      localizedTitle: UI.Strings.privacy_mode_title.localized(),
-                                      localizedSubtitle: "",
-                                      icon: UIApplicationShortcutIcon(systemImageName: UI.Icons.eye_slash_fill),
-                                      userInfo: privateMode),
-        ]
     }
 }
 
@@ -84,18 +44,5 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         return AppDelegate.orientationLock
-    }
-    
-    // MARK: - Quick actions
-    
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        if let shortcutItem = options.shortcutItem {
-            shortcutItemToProcess = shortcutItem
-        }
-
-        let sceneConfiguration = UISceneConfiguration(name: "Custom Configuration", sessionRole: connectingSceneSession.role)
-        sceneConfiguration.delegateClass = CustomSceneDelegate.self
-
-        return sceneConfiguration
     }
 }

@@ -12,8 +12,8 @@ import SwiftUI
 struct ShadowMemoryStatic: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .shadow(color: Color.theme.c8, radius: 20)
-            .shadow(color: Color.theme.cB.opacity(0.04), radius: 8)
+            .shadow(color: Color.theme.cSh1, radius: 20)
+            .shadow(color: Color.theme.cSh2.opacity(0.05), radius: 8)
     }
 }
 
@@ -28,7 +28,7 @@ struct ShadowInputControl: ViewModifier {
 struct ShadowFloating: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .shadow(color: Color.theme.cB.opacity(0.08), radius: 16, y: 8)
+            .shadow(color: Color.theme.cSh3.opacity(0.08), radius: 16, y: 8)
     }
 }
 
@@ -294,7 +294,7 @@ struct FloatingButtonModifier: ViewModifier {
             .onPreferenceChange(
                 ViewOffsetKey.self,
                 perform: { value in
-                    setFloatingBtnPresented(value >= UIScreen.main.bounds.height * 2)
+                    setFloatingBtnPresented(value >= UI.screen_height * 2)
                 }
             )
     }
@@ -320,5 +320,40 @@ struct PopUpModifier: ViewModifier {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .edgesIgnoringSafeArea(.all)
         }
+    }
+}
+
+struct Swipe: ViewModifier {
+    @Binding var text : String
+    @Binding var isPresented : Bool
+    @Binding var inSearchMode : Bool
+    var closeAddView: () -> ()
+    
+
+    init(text: Binding<String>, isPresented: Binding<Bool>, inSearchMode: Binding<Bool>, closeAddView: @escaping () -> ()) {
+        self._text = text
+        self._isPresented = isPresented
+        self._inSearchMode = inSearchMode
+        self.closeAddView = closeAddView
+    }
+
+    func body(content: Content) -> some View {
+        ZStack(alignment: .top) {
+            GeometryReader { geometry in
+                VStack {
+                    content
+                }
+                .frame(width: geometry.size.width, height: geometry.size.height)
+            }
+            if isPresented {
+                VStack(spacing: 0) {
+                    HStack(alignment: .center) {
+                        SearchView(searchText: $text, isPresented: $isPresented, inSearchMode: $inSearchMode, closeAddView: closeAddView)
+                            .animation(.linear(duration: 0.2), value: $isPresented.wrappedValue)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

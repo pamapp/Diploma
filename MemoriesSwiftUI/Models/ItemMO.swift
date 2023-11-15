@@ -30,7 +30,7 @@ extension ItemMO {
         sortDescriptors: [NSSortDescriptor],
         predicate: NSPredicate) -> NSFetchedResultsController<ItemMO>
     {
-        let request =  NSFetchRequest<ItemMO>(entityName: "ItemMO")
+        let request = NSFetchRequest<ItemMO>(entityName: "ItemMO")
         request.sortDescriptors = sortDescriptors
         request.predicate = predicate
         return NSFetchedResultsController(

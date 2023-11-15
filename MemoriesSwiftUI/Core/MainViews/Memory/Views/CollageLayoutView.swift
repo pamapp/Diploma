@@ -54,7 +54,6 @@ struct CollageLayoutView: View {
                 }
             } else {
                 VStack(spacing: 4) {
-                    
                     LazyImage(url: images[0].safeImageURL,
                               w: width / 1.5,
                               h: width / 1.5 / 1.5,

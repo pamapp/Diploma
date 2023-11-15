@@ -10,21 +10,23 @@ import CoreData
 import Foundation
 
 class MediaVM: ObservableObject {
+    private let persistenceController = PersistenceController.shared
+    private let controller: NSFetchedResultsController<MediaMO>
     @Published var alert: Bool = false
     @Published var alertMessage: String = ""
-    @Published var mediaItems: [MediaMO] = []
-    @Published var sentiment: String = ""
     
-    private let controller :  NSFetchedResultsController<MediaMO>
-//    private var itemVM: ItemVM
+    @Published var mediaItems: [MediaMO] = []
+    
     private var item: ItemMO
     
-    init(moc: NSManagedObjectContext, item: ItemMO) {
+    init(item: ItemMO) {
         let sortDescriptors = [NSSortDescriptor(keyPath: \MediaMO.date, ascending: true)]
-        controller = MediaMO.resultsController(moc: moc, sortDescriptors: sortDescriptors, predicate: NSPredicate(format: "item = %@", item))
+        controller = MediaMO.resultsController(moc: persistenceController.viewContext, sortDescriptors: sortDescriptors, predicate: NSPredicate(format: "item = %@", item))
         
         self.item = item        
         fetchItems()
+        
+      print("init MediaVM")
     }
     
     func fetchItems() {
