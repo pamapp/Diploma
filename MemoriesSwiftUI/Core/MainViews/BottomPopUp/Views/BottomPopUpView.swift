@@ -17,6 +17,7 @@ struct BottomPopUpView: View {
     var type: String
     
     private let width: CGFloat = UI.screen_width - 32
+    
     private var offset: CGFloat {
         popUpVM.isVisible ? 0 : maxHeight + (self.maxHeight / 2)
     }

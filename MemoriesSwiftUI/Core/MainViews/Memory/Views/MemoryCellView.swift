@@ -48,7 +48,7 @@ struct MemoryCellView: View {
         self.vm = MemoryCellVM(memory: memory)
         self._isKeyboardPresented = isKeyboardPresented
         
-        let thumbImage : UIImage = UIImage(named: UI.Icons.drower)!
+        let thumbImage: UIImage = UIImage(named: UI.Icons.drower)!
         UISlider.appearance().minimumTrackTintColor = UIColor(Color.theme.c3)
         UISlider.appearance().maximumTrackTintColor = UIColor(Color.theme.c4)
         UISlider.appearance().setThumbImage(thumbImage, for: .normal)

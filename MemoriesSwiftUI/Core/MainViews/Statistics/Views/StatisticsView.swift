@@ -122,6 +122,7 @@ struct StatisticsView: View {
             HStack {
                 Text(UI.Strings.privacy_mode_text)
                     .statsSubTitleStyle()
+                    .background(Color.green.opacity(0.3))
                 Spacer()
             }
         }
@@ -412,6 +413,7 @@ extension StatisticsView {
                     .font(.headline(25.92))
                     .lineLimit(1)
             }
+            
             Text(value.stringFormat)
                 .font(.title(17))
                 .foregroundColor(key == UI.Icons.emoji ? Color.theme.c4 : Color.theme.c11)

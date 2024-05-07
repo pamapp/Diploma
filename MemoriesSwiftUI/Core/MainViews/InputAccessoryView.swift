@@ -117,9 +117,9 @@ struct InputAccessoryView: View {
             .padding(.horizontal, isKeyboardPresented ? 0 : 16)
 //            .shadowInputControl()
             .background(
-                BlurView(style: .systemChromeMaterial, intensity: 0.1)
+                BlurView(style: .systemChromeMaterial, intensity: 0.2)
                     .edgesIgnoringSafeArea(.bottom)
-                    .padding(.horizontal, 16)
+//                    .padding(.horizontal, 16)
             )
             .edgesIgnoringSafeArea(.bottom)
         }

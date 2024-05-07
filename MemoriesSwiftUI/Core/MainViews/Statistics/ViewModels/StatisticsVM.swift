@@ -23,8 +23,6 @@ class StatisticsVM: ObservableObject {
         updateMoodDynamics()
         updatePopularWords()
         updatePopularEmojies()
-        
-//        print("init StatisticsVM")
     }
     
     func addSubscribers() {
@@ -157,11 +155,11 @@ struct WordCount {
         return false
     }
     
-    func getCountStrings() -> WordCount {
-        var tempArr : [String] = []
-        for item in words_only {
-            tempArr.append(item)
-        }
-        return WordCount(words: tempArr.separateElements())
-    }
+//    func getCountStrings() -> WordCount {
+//        var tempArr : [String] = []
+//        for item in words_only {
+//            tempArr.append(item)
+//        }
+//        return WordCount(words: tempArr.separateElements())
+//    }
 }

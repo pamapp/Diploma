@@ -133,14 +133,11 @@ extension ChapterDataService {
     // MARK: - StatusValue
 
     func updateStatusValue() {
-        print(statusManager.getStatusMO().safeIsChanged)
-        print(statusManager.getStatusMO().safeValue)
-
-        
         var streak = statusManager.getStatusMO().safeValue
         let currentChapter: ChapterMO = chapters.last ?? ChapterMO()
         let currentDate: Date = currentChapter.safeDateContent
-    
+        print(streak)
+        
         guard chapters.count != 1 else {
             if !currentChapter.itemsArray.isEmpty && !statusManager.getStatusMO().safeIsChanged {
                 streak = 1
