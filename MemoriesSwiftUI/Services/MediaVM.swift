@@ -25,8 +25,6 @@ class MediaVM: ObservableObject {
         
         self.item = item        
         fetchItems()
-        
-      print("init MediaVM")
     }
     
     func fetchItems() {

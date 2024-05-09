@@ -122,8 +122,7 @@ struct StatisticsView: View {
             HStack {
                 Text(UI.Strings.privacy_mode_text)
                     .statsSubTitleStyle()
-                    .background(Color.green.opacity(0.3))
-                Spacer()
+//                Spacer()
             }
         }
     }

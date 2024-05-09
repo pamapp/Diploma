@@ -28,8 +28,6 @@ class ChapterCellVM: ObservableObject {
        
         self.setupSearch()
         self.updateAll()
-        
-        print("init ChapterCellVM")
     }
     
     func updateAll() {

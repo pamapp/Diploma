@@ -35,6 +35,8 @@ struct AutosizingTextField: UIViewRepresentable {
     
         view.text = hint
         view.textColor = UIColor.theme.c3
+        view.backgroundColor = .clear
+        view.font = .newYorkFont()
         view.tintColor = UIColor.theme.c2
         view.delegate = context.coordinator
         view.adjustsFontForContentSizeCategory = false

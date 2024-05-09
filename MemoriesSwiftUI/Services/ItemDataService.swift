@@ -40,7 +40,6 @@ class ItemDataService: ObservableObject {
         self.chapterVM = ChapterDataService.shared
 
         fetchItems()
-//        print("init ItemDataService")
     }
     
     func addItemParagraph(chapter: ChapterMO, text: String) {

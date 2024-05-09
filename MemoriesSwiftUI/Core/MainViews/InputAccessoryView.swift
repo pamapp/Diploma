@@ -111,15 +111,15 @@ struct InputAccessoryView: View {
                 }
             }
             .background(backgroundColor)
-            .cornerRadius(isKeyboardPresented ? 8 : 16, 
+            .cornerRadius(isKeyboardPresented ? 8 : 16,
                           corners: isKeyboardPresented ? [.topLeft, .topRight] : [.allCorners])
             .shadowInputControl()
             .padding(.horizontal, isKeyboardPresented ? 0 : 16)
 //            .shadowInputControl()
             .background(
-                BlurView(style: .systemChromeMaterial, intensity: 0.2)
+                BlurView(style: .systemChromeMaterial, intensity: 0.1)
                     .edgesIgnoringSafeArea(.bottom)
-//                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 16)
             )
             .edgesIgnoringSafeArea(.bottom)
         }
@@ -145,15 +145,15 @@ extension InputAccessoryView {
         
         if !currentMessage.isEmpty {
             if selectedItems.isEmpty {
-                itemViewModel.addItemParagraph(chapter: chapter, 
+                itemViewModel.addItemParagraph(chapter: chapter,
                                                text: currentMessage)
             } else {
-                itemViewModel.addItemParagraphAndMedia(chapter: chapter, 
+                itemViewModel.addItemParagraphAndMedia(chapter: chapter,
                                                        attachments: selectedItems,
                                                        text: currentMessage)
             }
         } else if !selectedItems.isEmpty {
-            itemViewModel.addItemMedia(chapter: chapter, 
+            itemViewModel.addItemMedia(chapter: chapter,
                                        attachments: selectedItems,
                                        type: ItemType.photo)
         }

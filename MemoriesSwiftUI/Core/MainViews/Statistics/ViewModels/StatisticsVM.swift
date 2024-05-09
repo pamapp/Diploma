@@ -29,7 +29,6 @@ class StatisticsVM: ObservableObject {
         chapterService.$statusValue
             .sink { [weak self] statusValue in
                 self?.statusValue = statusValue
-                print("обновил statusValue")
             }
             .store(in: &cancellables)
     }

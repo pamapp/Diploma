@@ -33,13 +33,10 @@ class HomeVM: ObservableObject {
     enum State: Comparable {
         case good
         case isLoading
-//        case loadedAll
-//        case error(String)
     }
     
     init() {
         self.addSubscribers()
-//        print("init HomeVM")
     }
     
     func addSubscribers() {
@@ -48,7 +45,6 @@ class HomeVM: ObservableObject {
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sink { [weak self] term in
                 self?.state = .good
-//                self?.allChapters = []
                 self?.filterChapters(for: term)
             }.store(in: &cancellables)
         
@@ -103,36 +99,3 @@ class HomeVM: ObservableObject {
         }
     }
 }
-
-
-//        $searchText
-//            .combineLatest(chapterService.$chapters)
-//            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-//            .map(filterChapters)
-//            .sink { [weak self] (returnedChapters) in
-////                if returnedChapters.isEmpty {
-////                    self?.allChapters = [ self?.currentChapter ]
-////                }
-//                self?.state = .good
-//                self?.allChapters = returnedChapters
-//                print("обновил allChapters через searchText")
-//            }
-//            .store(in: &cancellables)
-        
-
-//    private func filterChapters(text: String, chapters: [ChapterMO]) -> [ChapterMO] {
-//        guard !text.isEmpty else {
-//            return chapters
-//        }
-//
-//        guard state == State.good else {
-//            return
-//        }
-//
-//        return chapters.filter { chapter in
-//            let hasMatchingItem = chapter.itemsArray.contains { item in
-//                item.safeText.localizedCaseInsensitiveContains(text)
-//            }
-//            return hasMatchingItem
-//        }
-//    }

@@ -17,8 +17,6 @@ class MemoryCellVM: ObservableObject {
     init(memory: ItemMO) {
         self.memory = memory
         self.updateSentimentColor()
-        
-//        print("init MemoryCellVM")
     }
     
     func updateSentimentColor() {

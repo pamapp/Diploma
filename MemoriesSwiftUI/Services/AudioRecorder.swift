@@ -19,9 +19,6 @@ class AudioRecorder: ObservableObject {
 
     init(itemModel: ItemDataService) {
         self.itemModel = itemModel
-        
-//        print("init AudioRecorder")
-
     }
     
     func startRecording() {
